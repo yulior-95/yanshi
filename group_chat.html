@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>群聊</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        .header .info {
+            flex: 1;
+        }
+        
+        .header .name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header .members {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .header .encryption-status {
+            font-size: 12px;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .encryption-status i {
+            margin-right: 4px;
+        }
+        
+        .header .actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .actions i {
+            font-size: 20px;
+            color: #333;
+            margin-left: 15px;
+        }
+        
+        .chat-body {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-info {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        
+        .message.received {
+            align-items: flex-start;
+        }
+        
+        .message.sent {
+            align-items: flex-end;
+        }
+        
+        .message.received .message-bubble {
+            background-color: white;
+            color: #333;
+            border: 1px solid #e1e4e8;
+            border-top-left-radius: 0;
+        }
+        
+        .message.sent .message-bubble {
+            background-color: #1890ff;
+            color: white;
+            border-top-right-radius: 0;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .sender-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .encryption-mark {
+            font-size: 10px;
+            margin-right: 5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .message.received .encryption-mark {
+            color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .message-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .message-voice {
+            display: flex;
+            align-items: center;
+            min-width: 80px;
+        }
+        
+        .message-voice i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .input-area {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .input-actions i {
+            font-size: 24px;
+            color: #666;
+            margin-right: 15px;
+        }
+        
+        .text-input {
+            flex: 1;
+            background-color: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .text-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        
+        .text-input i {
+            color: #999;
+            font-size: 20px;
+        }
+        
+        .send-button {
+            margin-left: 10px;
+            width: 36px;
+            height: 36px;
+            background-color: #1890ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .system-message {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #666;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            margin: 10px auto;
+            max-width: 70%;
+        }
+        
+        /* 添加消息状态样式 */
+        .message-status {
+            font-size: 12px;
+            margin-left: 5px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .status-sending {
+            color: #999;
+            animation: rotate 1s linear infinite;
+        }
+        
+        .status-sent {
+            color: #999;
+        }
+        
+        .status-delivered {
+            color: #999;
+        }
+        
+        .status-read {
+            color: #1890ff;
+        }
+        
+        .status-failed {
+            color: #ff3b30;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 发送失败消息样式 */
+        .message.failed .message-bubble {
+            border: 1px solid rgba(255, 59, 48, 0.3);
+        }
+        
+        /* 重发按钮样式 */
+        .resend-button {
+            font-size: 12px;
+            color: #ff3b30;
+            background-color: rgba(255, 59, 48, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            cursor: pointer;
+            align-self: flex-end;
+            display: none;
+        }
+        
+        .message.failed .resend-button {
+            display: inline-block;
+        }
+        
+        .resend-button:hover {
+            background-color: rgba(255, 59, 48, 0.2);
+        }
+        
+        /* 消息已读人数指示器 */
+        .read-count {
+            font-size: 11px;
+            color: #999;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back"></i>
+        <div class="info">
+            <div class="name">网络安全群 (28)</div>
+            <div class="encryption-status">
+                <i class="fas fa-lock"></i>
+                <span>端对端加密群聊</span>
+            </div>
+        </div>
+        <div class="actions">
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+    </div>
+    
+    <div class="chat-body">
+        <div class="message-info">
+            今天 19:30
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">王五</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                团队成员们，我们今天需要讨论一下网络安全升级方案。
+            </div>
+            <div class="message-time">19:30</div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">赵六</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                好的，我刚完成了安全扫描报告，现在分享给大家。
+            </div>
+            <div class="message-time">19:32</div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">赵六</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                <img src="https://images.unsplash.com/photo-1598520106830-8c45c2035460?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="图片" class="message-image">
+            </div>
+            <div class="message-time">19:33</div>
+        </div>
+        
+        <div class="message sent">
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                我已经看过了报告，我们需要优先解决服务器漏洞问题。
+            </div>
+            <div class="message-time">
+                19:35
+                <div class="message-status status-read">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="read-count">5人已读</div>
+            </div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">孙七</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                同意，我可以今天下午着手处理服务器漏洞问题。
+            </div>
+            <div class="message-time">19:38</div>
+        </div>
+        
+        <!-- 添加发送中消息示例 -->
+        <div class="message sent">
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                我正在上传最新的安全配置文档，请大家稍等。
+            </div>
+            <div class="message-time">
+                19:40
+                <div class="message-status status-sending">
+                    <i class="fas fa-circle-notch"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加发送失败消息示例 -->
+        <div class="message sent failed">
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                这份安全协议太大了，网络不稳定，我稍后再尝试上传。
+            </div>
+            <div class="message-time">
+                19:42
+                <div class="message-status status-failed">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+            </div>
+            <div class="resend-button">
+                <i class="fas fa-redo-alt"></i> 重新发送
+            </div>
+        </div>
+    </div>
+    
+    <div class="input-area">
+        <div class="input-container">
+            <div class="input-actions">
+                <i class="fas fa-microphone"></i>
+            </div>
+            <div class="text-input">
+                <i class="far fa-smile"></i>
+                <input type="text" placeholder="输入消息...">
+                <i class="fas fa-paperclip"></i>
+            </div>
+            <div class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加JavaScript处理消息状态 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 实时更新状态栏时间
+            function updateTime() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                document.querySelector('.time').textContent = `${hours}:${minutes}`;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // 失败消息点击重发事件
+            const resendButtons = document.querySelectorAll('.resend-button');
+            resendButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const messageElement = this.parentElement;
+                    
+                    // 移除失败状态
+                    messageElement.classList.remove('failed');
+                    
+                    // 获取状态指示器
+                    const statusIndicator = messageElement.querySelector('.message-status');
+                    statusIndicator.className = 'message-status status-sending';
+                    statusIndicator.innerHTML = '<i class="fas fa-circle-notch"></i>';
+                    
+                    // 隐藏重发按钮
+                    this.style.display = 'none';
+                    
+                    // 模拟重发过程
+                    setTimeout(() => {
+                        statusIndicator.className = 'message-status status-sent';
+                        statusIndicator.innerHTML = '<i class="fas fa-check"></i>';
+                        
+                        setTimeout(() => {
+                            statusIndicator.className = 'message-status status-delivered';
+                            statusIndicator.innerHTML = '<i class="fas fa-check-double"></i>';
+                            
+                            // 添加已读人数
+                            const readCount = document.createElement('div');
+                            readCount.className = 'read-count';
+                            readCount.textContent = '2人已读';
+                            messageElement.querySelector('.message-time').appendChild(readCount);
+                            
+                            setTimeout(() => {
+                                statusIndicator.className = 'message-status status-read';
+                                readCount.textContent = '5人已读';
+                            }, 3000);
+                        }, 1500);
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

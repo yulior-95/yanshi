@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索好友</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .search-input {
+            flex: 1;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+        
+        .search-input i {
+            color: #999;
+            margin-right: 10px;
+        }
+        
+        .search-input input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .cancel-btn {
+            color: #1890ff;
+            font-size: 16px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .search-tip {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            margin: 30px 0;
+        }
+        
+        .search-results {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .result-header {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        
+        .result-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .result-info {
+            flex: 1;
+        }
+        
+        .result-name {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .result-detail {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .result-action {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .result-action.added {
+            background-color: #f0f2f5;
+            color: #999;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .history-title {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .history-clear {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .history-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .history-tag {
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .tab-bar {
+            height: 50px;
+            background-color: white;
+            display: flex;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .tab.active {
+            color: #1890ff;
+        }
+        
+        .tab i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back" onclick="window.location.href='add_friend.html'"></i>
+        <div class="search-input">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="手机号/ID搜索" id="searchInput" autofocus>
+            <i class="fas fa-times" style="color: #ccc; display: none;" id="clearBtn"></i>
+        </div>
+        <div class="cancel-btn" onclick="window.location.href='add_friend.html'">取消</div>
+    </div>
+    
+    <div class="content">
+        <!-- 初始状态：搜索历史 -->
+        <div id="historyView">
+            <div class="history-header">
+                <div class="history-title">搜索历史</div>
+                <div class="history-clear">清空</div>
+            </div>
+            <div class="history-tags">
+                <div class="history-tag">13800138000</div>
+                <div class="history-tag">张伟</div>
+                <div class="history-tag">王芳</div>
+                <div class="history-tag">tech_group</div>
+            </div>
+        </div>
+        
+        <!-- 搜索结果状态 (初始隐藏) -->
+        <div id="resultsView" style="display: none;">
+            <div class="search-results">
+                <div class="result-header">搜索结果</div>
+                <div class="result-item" onclick="window.location.href='add_friend_detail.html'">
+                    <div class="result-avatar">
+                        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                    </div>
+                    <div class="result-info">
+                        <div class="result-name">李明 (13912345678)</div>
+                        <div class="result-detail">ID: liming2023</div>
+                    </div>
+                    <button class="result-action">添加</button>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-avatar">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                    </div>
+                    <div class="result-info">
+                        <div class="result-name">王芳 (13812345678)</div>
+                        <div class="result-detail">ID: wangfang1990</div>
+                    </div>
+                    <button class="result-action added">已添加</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 无结果状态 (初始隐藏) -->
+        <div id="noResultView" style="display: none;">
+            <div class="search-tip">未找到匹配的用户，请检查ID或手机号是否正确</div>
+        </div>
+    </div>
+
+    
+    <script>
+        // 更新状态栏时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.querySelector('.time').textContent = `${hours}:${minutes}`;
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearBtn');
+            const historyView = document.getElementById('historyView');
+            const resultsView = document.getElementById('resultsView');
+            const noResultView = document.getElementById('noResultView');
+            
+            // 监听输入框变化
+            searchInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    clearBtn.style.display = 'block';
+                    
+                    // 模拟搜索结果
+                    if (this.value === '13912345678' || this.value.toLowerCase() === 'liming2023') {
+                        historyView.style.display = 'none';
+                        resultsView.style.display = 'block';
+                        noResultView.style.display = 'none';
+                    } else if (this.value.length > 5) {
+                        historyView.style.display = 'none';
+                        resultsView.style.display = 'none';
+                        noResultView.style.display = 'block';
+                    } else {
+                        historyView.style.display = 'block';
+                        resultsView.style.display = 'none';
+                        noResultView.style.display = 'none';
+                    }
+                } else {
+                    clearBtn.style.display = 'none';
+                    historyView.style.display = 'block';
+                    resultsView.style.display = 'none';
+                    noResultView.style.display = 'none';
+                }
+            });
+            
+            // 清除输入框
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                this.style.display = 'none';
+                historyView.style.display = 'block';
+                resultsView.style.display = 'none';
+                noResultView.style.display = 'none';
+                searchInput.focus();
+            });
+            
+            // 清空历史记录
+            document.querySelector('.history-clear').addEventListener('click', function() {
+                document.querySelector('.history-tags').innerHTML = '';
+            });
+            
+            // 点击历史标签
+            document.querySelectorAll('.history-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    searchInput.value = this.textContent;
+                    clearBtn.style.display = 'block';
+                    
+                    // 模拟搜索结果
+                    if (this.textContent === '13800138000' || this.textContent === '张伟') {
+                        historyView.style.display = 'none';
+                        resultsView.style.display = 'block';
+                        noResultView.style.display = 'none';
+                    } else {
+                        historyView.style.display = 'none';
+                        resultsView.style.display = 'none';
+                        noResultView.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

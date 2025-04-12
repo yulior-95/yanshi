@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>群聊（带公告）</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        .header .info {
+            flex: 1;
+        }
+        
+        .header .name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header .members {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .header .status {
+            display: flex;
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+            align-items: center;
+        }
+        
+        .header .encryption-status {
+            font-size: 12px;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .encryption-status i {
+            margin-right: 4px;
+        }
+        
+        .burn-setting-badge {
+            background-color: #fff1e6;
+            color: #ff9500;
+            font-size: 12px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 2px 6px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .burn-setting-badge i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+        
+        .header .actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .actions i {
+            font-size: 20px;
+            color: #333;
+            margin-left: 15px;
+        }
+        
+        .notice-banner {
+            background-color: #f0f7ff;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e6f0fc;
+            cursor: pointer;
+        }
+        
+        .notice-icon {
+            font-size: 16px;
+            color: #1890ff;
+            margin-right: 10px;
+        }
+        
+        .notice-content {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .notice-arrow {
+            color: #999;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+        
+        .chat-body {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-info {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        
+        .message.received {
+            align-items: flex-start;
+        }
+        
+        .message.sent {
+            align-items: flex-end;
+        }
+        
+        .message.received .message-bubble {
+            background-color: white;
+            color: #333;
+            border: 1px solid #e1e4e8;
+            border-top-left-radius: 0;
+        }
+        
+        .message.sent .message-bubble {
+            background-color: #1890ff;
+            color: white;
+            border-top-right-radius: 0;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .sender-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .burn-countdown {
+            margin-left: 5px;
+            font-size: 11px;
+            color: #ff9500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .burn-countdown i {
+            margin-right: 2px;
+        }
+        
+        .encryption-mark {
+            font-size: 10px;
+            margin-right: 5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .message.received .encryption-mark {
+            color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .message-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .message-voice {
+            display: flex;
+            align-items: center;
+            min-width: 80px;
+        }
+        
+        .message-voice i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .input-area {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .input-actions i {
+            font-size: 24px;
+            color: #666;
+            margin-right: 15px;
+        }
+        
+        .text-input {
+            flex: 1;
+            background-color: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .text-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        
+        .text-input i {
+            color: #999;
+            font-size: 20px;
+        }
+        
+        .send-button {
+            margin-left: 10px;
+            width: 36px;
+            height: 36px;
+            background-color: #1890ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .system-message {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #666;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 10px;
+            margin: 10px auto;
+            max-width: 70%;
+        }
+        
+        .function-panel {
+            position: absolute;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            background-color: white;
+            z-index: 10;
+            border-top: 1px solid #eaeaea;
+            display: none;
+        }
+        
+        .function-content {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .function-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .function-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #1890ff;
+            margin-bottom: 8px;
+        }
+        
+        .function-name {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back"></i>
+        <div class="info">
+            <div class="name">网络安全群 (28)</div>
+            <div class="status">
+                <div class="encryption-status">
+                    <i class="fas fa-lock"></i>
+                    <span>端对端加密群聊</span>
+                </div>
+                <div class="burn-setting-badge">
+                    <i class="fas fa-fire-alt"></i>
+                    <span>5分钟后销毁</span>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+    </div>
+    
+    <div class="notice-banner">
+        <div class="notice-icon">
+            <i class="fas fa-bullhorn"></i>
+        </div>
+        <div class="notice-content">
+            请所有群成员于本周五前完成最新版本的安全补丁更新，以防止可能的数据泄露风险。
+        </div>
+        <div class="notice-arrow">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+    
+    <div class="chat-body">
+        <div class="message-info">
+            今天 19:10
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">李四 (管理员)</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                各位好，刚刚我已经更新了群公告，请大家注意查看，务必在周五前完成安全补丁更新。
+            </div>
+            <div class="message-time">
+                19:12
+                <div class="burn-countdown">
+                    <i class="fas fa-fire-alt"></i> 4:12
+                </div>
+            </div>
+        </div>
+        
+        <div class="system-message">
+            王五加入了群聊
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">王五</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                大家好，我是新加入的成员，看到群公告了，我会尽快更新的。
+            </div>
+            <div class="message-time">
+                19:15
+                <div class="burn-countdown">
+                    <i class="fas fa-fire-alt"></i> 4:15
+                </div>
+            </div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">张三</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="图片" class="message-image">
+            </div>
+            <div class="message-time">
+                19:18
+                <div class="burn-countdown">
+                    <i class="fas fa-fire-alt"></i> 4:18
+                </div>
+            </div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">张三</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                这是最近发现的安全漏洞截图，如果不更新补丁会有风险，再次提醒大家尽快更新
+            </div>
+            <div class="message-time">
+                19:18
+                <div class="burn-countdown">
+                    <i class="fas fa-fire-alt"></i> 4:18
+                </div>
+            </div>
+        </div>
+        
+        <div class="message sent">
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                我已经研究了这个问题，建议我们采用多重加密方案，我发现一个不错的解决方案
+            </div>
+            <div class="message-time">
+                19:20
+                <div class="burn-countdown">
+                    <i class="fas fa-fire-alt"></i> 4:20
+                </div>
+            </div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+            </div>
+            <div class="sender-name">李四 (管理员)</div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                <div class="message-voice">
+                    <i class="fas fa-play"></i>
+                    <span>0:30"</span>
+                </div>
+            </div>
+            <div class="message-time">
+                19:22
+                <div class="burn-countdown">
+                    <i class="fas fa-fire-alt"></i> 4:22
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="input-area">
+        <div class="input-container">
+            <div class="input-actions">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div class="text-input">
+                <i class="far fa-smile"></i>
+                <input type="text" placeholder="输入消息...">
+                <i class="fas fa-microphone"></i>
+            </div>
+            <div class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="function-panel">
+        <div class="function-content">
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="function-name">相册</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <div class="function-name">拍摄</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-file"></i>
+                </div>
+                <div class="function-name">文件</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="function-name">位置</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="function-name">名片</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-poll"></i>
+                </div>
+                <div class="function-name">投票</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="function-name">日程</div>
+            </div>
+            
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-fire-alt"></i>
+                </div>
+                <div class="function-name">阅后即焚</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

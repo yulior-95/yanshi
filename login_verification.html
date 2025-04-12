@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>验证码登录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .container {
+            padding: 30px 20px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo h1 {
+            margin-top: 10px;
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            height: 50px;
+            background-color: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 10px;
+            padding: 0 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus-within {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+        
+        .form-control i {
+            color: #adb5bd;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .form-control input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+        }
+        
+        .form-control .verification-code {
+            color: #1890ff;
+            font-size: 14px;
+            padding: 8px 12px;
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        
+        .form-control .verification-code:active {
+            background-color: #e6f7ff;
+        }
+        
+        .form-control .verification-code.disabled {
+            color: #adb5bd;
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .login-type {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .login-type input {
+            margin-right: 5px;
+        }
+        
+        .forgot-password {
+            color: #1890ff;
+            cursor: pointer;
+        }
+        
+        .btn-login {
+            width: 100%;
+            height: 50px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            background-color: #40a9ff;
+        }
+        
+        .btn-login:active {
+            background-color: #096dd9;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .tab-bar {
+            height: 50px;
+            background-color: white;
+            display: flex;
+            border-top: 1px solid #eaeaea;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+        
+        .tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .tab.active {
+            color: #1890ff;
+        }
+        
+        .tab i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .countdown {
+            color: #adb5bd;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="logo">
+            <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="加密聊天">
+            <h1>安全加密聊天</h1>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-control">
+                <i class="fas fa-mobile-alt"></i>
+                <input type="tel" placeholder="请输入手机号/邮箱" id="phoneEmail">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="form-control">
+                <i class="fas fa-shield-alt"></i>
+                <input type="text" placeholder="请输入验证码" maxlength="6">
+                <div class="verification-code" id="getCode">获取验证码</div>
+            </div>
+        </div>
+        
+        <div class="login-options">
+            <div class="login-type" onclick="window.location.href='login.html'">
+                <input type="radio" id="password" name="login-type">
+                <label for="password">密码登录</label>
+            </div>
+            <div class="login-type">
+                <input type="radio" id="verification" name="login-type" checked>
+                <label for="verification">验证码登录</label>
+            </div>
+            <div class="forgot-password" onclick="window.location.href='#'">忘记密码？</div>
+        </div>
+        
+        <button class="btn-login">登 录</button>
+        
+        <div class="register-link">
+            还没有账号？<a href="register.html">立即注册</a>
+        </div>
+    </div>
+    
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 实时更新状态栏时间
+            function updateTime() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                document.querySelector('.time').textContent = `${hours}:${minutes}`;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // 获取验证码按钮倒计时功能
+            const getCodeBtn = document.getElementById('getCode');
+            const phoneEmailInput = document.getElementById('phoneEmail');
+            
+            getCodeBtn.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) return;
+                
+                const phoneEmail = phoneEmailInput.value.trim();
+                if (!phoneEmail) {
+                    alert('请输入手机号或邮箱');
+                    return;
+                }
+                
+                // 验证手机号/邮箱格式
+                const isPhone = /^1\d{10}$/.test(phoneEmail);
+                const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(phoneEmail);
+                
+                if (!isPhone && !isEmail) {
+                    alert('请输入正确的手机号或邮箱');
+                    return;
+                }
+                
+                // 开始倒计时
+                let countdown = 60;
+                this.classList.add('disabled');
+                this.innerHTML = `重新获取(${countdown}s)`;
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    this.innerHTML = `重新获取(${countdown}s)`;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        this.innerHTML = '获取验证码';
+                        this.classList.remove('disabled');
+                    }
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

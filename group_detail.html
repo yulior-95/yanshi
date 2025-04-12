@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>群聊详情</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        .header .title {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+            margin-right: 28px;
+        }
+        
+        .group-info {
+            background-color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .group-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e6f7ff;
+            color: #1890ff;
+            font-size: 40px;
+        }
+        
+        .group-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .group-id {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .group-info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .group-info-text i {
+            margin-right: 5px;
+            color: #1890ff;
+        }
+        
+        .member-section {
+            background-color: white;
+            margin-top: 10px;
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title span {
+            color: #999;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .edit-members {
+            color: #1890ff;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+        
+        .member-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .member-name {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .add-member {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #999;
+            background-color: #f8f8f8;
+        }
+        
+        .remove-member {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #ff3b30;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            z-index: 2;
+        }
+        
+        .online-status {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #34c759;
+            border: 2px solid white;
+        }
+        
+        .offline-status {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #8e8e93;
+            border: 2px solid white;
+        }
+        
+        .menu-group {
+            background-color: white;
+            margin-top: 10px;
+        }
+        
+        .menu-item {
+            display: flex;
+            padding: 16px 15px;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-label {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .menu-switch {
+            position: relative;
+            width: 51px;
+            height: 31px;
+            border-radius: 31px;
+            background-color: #1890ff;
+            transition: all 0.3s;
+        }
+        
+        .menu-switch:before {
+            content: '';
+            position: absolute;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            right: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .menu-switch.off {
+            background-color: #e1e1e1;
+        }
+        
+        .menu-switch.off:before {
+            right: 22px;
+        }
+        
+        .danger-button {
+            margin-top: 20px;
+            background-color: white;
+            padding: 16px;
+            text-align: center;
+            color: #ff3b30;
+            font-size: 16px;
+        }
+        
+        .admin-badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            background-color: #1890ff;
+            color: white;
+            position: absolute;
+            right: -3px;
+            bottom: -3px;
+        }
+        
+        .container {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+        
+        .edit-mode-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .cancel-edit {
+            background-color: #f5f5f5;
+            padding: 8px 15px;
+            border-radius: 6px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .confirm-edit {
+            background-color: #1890ff;
+            padding: 8px 15px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .add-member-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 100;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .panel-close {
+            font-size: 20px;
+            color: #999;
+        }
+        
+        .contact-search {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-search i {
+            color: #999;
+            margin-right: 8px;
+        }
+        
+        .contact-search input {
+            border: none;
+            background: transparent;
+            flex: 1;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .contact-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .contact-item {
+            display: flex;
+            padding: 12px 0;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 12px;
+        }
+        
+        .contact-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-name {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .contact-select {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .contact-select.selected {
+            background-color: #1890ff;
+            border-color: #1890ff;
+        }
+        
+        .add-button {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back"></i>
+        <div class="title">群聊详情</div>
+    </div>
+    
+    <div class="container">
+        <div class="group-info">
+            <div class="group-avatar">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="group-name">网络安全群</div>
+            <div class="group-id">群号: 87654321</div>
+            <div class="group-info-text">
+                <i class="fas fa-lock"></i>
+                端对端加密群聊
+            </div>
+        </div>
+        
+        <div class="member-section">
+            <div class="section-title">
+                群成员 <span>28人</span>
+                <div class="edit-members">编辑</div>
+            </div>
+            
+            <div class="member-grid">
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="admin-badge">群主</div>
+                        <div class="online-status"></div>
+                    </div>
+                    <div class="member-name">李四</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="admin-badge">管理</div>
+                        <div class="online-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">张三</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="offline-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">王五</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="online-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">赵六</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="online-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">刘红</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="offline-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">陈琳</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="offline-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">林峰</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="offline-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">孙敏</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                        <div class="online-status"></div>
+                        <div class="remove-member" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    <div class="member-name">杨光</div>
+                </div>
+                
+                <div class="member-item">
+                    <div class="member-avatar add-member">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="member-name">邀请</div>
+                </div>
+            </div>
+            
+            <div class="edit-mode-actions" style="display: none;">
+                <div class="cancel-edit">取消</div>
+                <div class="confirm-edit">确认</div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-item">
+                <div class="menu-label">群聊名称</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">群公告</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">群二维码</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-item">
+                <div class="menu-label">置顶聊天</div>
+                <div class="menu-switch"></div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">消息免打扰</div>
+                <div class="menu-switch off"></div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">保存到通讯录</div>
+                <div class="menu-switch"></div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-item">
+                <div class="menu-label">禁止群成员互加好友</div>
+                <div class="menu-switch off"></div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">全员禁言</div>
+                <div class="menu-switch off"></div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">管理员设置</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">群隐私设置</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-item">
+                <div class="menu-label">清空聊天记录</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">查找聊天记录</div>
+                <i class="fas fa-chevron-right" style="color: #999;"></i>
+            </div>
+        </div>
+        
+        <div class="danger-button">
+            退出群聊
+        </div>
+    </div>
+    
+    <div class="add-member-panel" style="display: none;">
+        <div class="panel-header">
+            <div class="panel-title">邀请好友</div>
+            <i class="fas fa-times panel-close"></i>
+        </div>
+        
+        <div class="contact-search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="搜索好友">
+        </div>
+        
+        <div class="contact-list">
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">周明</div>
+                </div>
+                <div class="contact-select">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">王丽</div>
+                </div>
+                <div class="contact-select selected">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">郭晓</div>
+                </div>
+                <div class="contact-select">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <div class="contact-avatar">
+                    <img src="https://images.unsplash.com/photo-1546456073-6712f79251bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">曾强</div>
+                </div>
+                <div class="contact-select selected">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+        </div>
+        
+        <button class="add-button">添加(2)</button>
+    </div>
+</body>
+</html>

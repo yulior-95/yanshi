@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫一扫</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            z-index: 10;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: white;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .header .title {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+            margin-right: 28px;
+        }
+        
+        .scanner {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .camera-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1576837242875-aed9a0dc781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.7;
+        }
+        
+        .scan-area {
+            width: 250px;
+            height: 250px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #1890ff;
+            box-shadow: 0 0 8px #1890ff;
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        
+        .scan-corners {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #1890ff;
+            border-style: solid;
+            border-width: 0;
+        }
+        
+        .top-left {
+            top: -2px;
+            left: -2px;
+            border-top-width: 2px;
+            border-left-width: 2px;
+        }
+        
+        .top-right {
+            top: -2px;
+            right: -2px;
+            border-top-width: 2px;
+            border-right-width: 2px;
+        }
+        
+        .bottom-left {
+            bottom: -2px;
+            left: -2px;
+            border-bottom-width: 2px;
+            border-left-width: 2px;
+        }
+        
+        .bottom-right {
+            bottom: -2px;
+            right: -2px;
+            border-bottom-width: 2px;
+            border-right-width: 2px;
+        }
+        
+        .scan-tip {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .functions {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 50px;
+        }
+        
+        .function-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .function-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+        
+        .function-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back" onclick="window.location.href='add_friend.html'"></i>
+        <div class="title">扫一扫</div>
+    </div>
+    
+    <div class="scanner">
+        <div class="camera-view"></div>
+        <div class="scan-area">
+            <div class="scan-line"></div>
+            <div class="scan-corners top-left"></div>
+            <div class="scan-corners top-right"></div>
+            <div class="scan-corners bottom-left"></div>
+            <div class="scan-corners bottom-right"></div>
+        </div>
+        <div class="scan-tip">将二维码放入框内，即可自动扫描</div>
+        
+        <div class="functions">
+            <div class="function-item">
+                <div class="function-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="function-text">相册</div>
+            </div>
+            <div class="function-item">
+                <div class="function-icon" onclick="window.location.href='my_qrcode.html'">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="function-text">我的二维码</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 更新状态栏时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.querySelector('.time').textContent = `${hours}:${minutes}`;
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // 模拟扫码成功跳转
+            setTimeout(() => {
+                window.location.href = 'add_friend_detail.html';
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱注册</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .back {
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .header .title {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        
+        .container {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-control {
+            width: 100%;
+            height: 50px;
+            background-color: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 10px;
+            padding: 0 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus-within {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+        
+        .form-control i {
+            color: #adb5bd;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .form-control input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+        }
+        
+        .form-control .verification-code {
+            color: #1890ff;
+            font-size: 14px;
+            padding: 8px 12px;
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        .form-control .verification-code:active {
+            background-color: #e6f7ff;
+        }
+        
+        .form-control .verification-code.disabled {
+            color: #adb5bd;
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        .agreement {
+            display: flex;
+            align-items: flex-start;
+            font-size: 14px;
+            color: #666;
+            margin-top: 15px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .agreement input {
+            margin-right: 8px;
+            margin-top: 3px;
+        }
+        
+        .agreement a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .btn-register {
+            width: 100%;
+            height: 50px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-register:hover {
+            background-color: #40a9ff;
+        }
+        
+        .btn-register:active {
+            background-color: #096dd9;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .login-link a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .register-type {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .register-type-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid transparent;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .register-type-item.active {
+            color: #1890ff;
+            border-bottom-color: #1890ff;
+            font-weight: 500;
+        }
+        
+        .tab-bar {
+            height: 50px;
+            background-color: white;
+            display: flex;
+            border-top: 1px solid #eaeaea;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+        
+        .tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .tab.active {
+            color: #1890ff;
+        }
+        
+        .tab i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            flex: 1;
+            margin: 0 2px;
+            background-color: #eee;
+            border-radius: 2px;
+        }
+        
+        .strength-bar.weak.active {
+            background-color: #ff4d4f;
+        }
+        
+        .strength-bar.medium.active {
+            background-color: #faad14;
+        }
+        
+        .strength-bar.strong.active {
+            background-color: #52c41a;
+        }
+        
+        .strength-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back" onclick="window.location.href='login.html'"></i>
+        <div class="title">注册账号</div>
+    </div>
+    
+    <div class="container">
+        <div class="register-type">
+            <div class="register-type-item" onclick="window.location.href='register.html'">手机注册</div>
+            <div class="register-type-item active">邮箱注册</div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">邮箱</label>
+            <div class="form-control">
+                <i class="fas fa-envelope"></i>
+                <input type="email" placeholder="请输入邮箱地址" id="email">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">验证码</label>
+            <div class="form-control">
+                <i class="fas fa-shield-alt"></i>
+                <input type="text" placeholder="请输入验证码" maxlength="6">
+                <div class="verification-code" id="getCode">获取验证码</div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">设置密码</label>
+            <div class="form-control">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="请设置8-20位密码" id="password">
+            </div>
+            <div class="password-strength">
+                <div class="strength-bar weak"></div>
+                <div class="strength-bar medium"></div>
+                <div class="strength-bar strong"></div>
+            </div>
+            <div class="strength-text">密码强度：请输入密码</div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">确认密码</label>
+            <div class="form-control">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="请再次输入密码" id="confirmPassword">
+            </div>
+        </div>
+        
+        <div class="agreement">
+            <input type="checkbox" id="agree" checked>
+            <label for="agree">我已阅读并同意<a href="#">《用户协议》</a>和<a href="#">《隐私政策》</a>，以及同意接收来自应用的消息推送</label>
+        </div>
+        
+        <button class="btn-register">注 册</button>
+        
+        <div class="login-link">
+            已有账号？<a href="login.html">立即登录</a>
+        </div>
+    </div>
+    
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 实时更新状态栏时间
+            function updateTime() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                document.querySelector('.time').textContent = `${hours}:${minutes}`;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // 获取验证码按钮倒计时功能
+            const getCodeBtn = document.getElementById('getCode');
+            const emailInput = document.getElementById('email');
+            
+            getCodeBtn.addEventListener('click', function() {
+                if (this.classList.contains('disabled')) return;
+                
+                const email = emailInput.value.trim();
+                if (!email) {
+                    alert('请输入邮箱地址');
+                    return;
+                }
+                
+                // 验证邮箱格式
+                const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                
+                if (!isEmail) {
+                    alert('请输入正确的邮箱地址');
+                    return;
+                }
+                
+                // 开始倒计时
+                let countdown = 60;
+                this.classList.add('disabled');
+                this.innerHTML = `重新获取(${countdown}s)`;
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    this.innerHTML = `重新获取(${countdown}s)`;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        this.innerHTML = '获取验证码';
+                        this.classList.remove('disabled');
+                    }
+                }, 1000);
+            });
+            
+            // 密码强度检测
+            const passwordInput = document.getElementById('password');
+            const strengthBars = document.querySelectorAll('.strength-bar');
+            const strengthText = document.querySelector('.strength-text');
+            
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                // 重置所有强度条
+                strengthBars.forEach(bar => {
+                    bar.classList.remove('active');
+                });
+                
+                if (password.length === 0) {
+                    strengthText.textContent = '密码强度：请输入密码';
+                    return;
+                }
+                
+                // 检查密码长度
+                if (password.length >= 8) strength += 1;
+                
+                // 检查是否包含字母和数字
+                if (/[a-zA-Z]/.test(password) && /[0-9]/.test(password)) strength += 1;
+                
+                // 检查是否包含特殊字符
+                if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+                
+                // 更新强度条显示
+                for (let i = 0; i < strength; i++) {
+                    strengthBars[i].classList.add('active');
+                }
+                
+                // 更新强度文本
+                switch(strength) {
+                    case 1:
+                        strengthText.textContent = '密码强度：弱';
+                        strengthText.style.color = '#ff4d4f';
+                        break;
+                    case 2:
+                        strengthText.textContent = '密码强度：中';
+                        strengthText.style.color = '#faad14';
+                        break;
+                    case 3:
+                        strengthText.textContent = '密码强度：强';
+                        strengthText.style.color = '#52c41a';
+                        break;
+                    default:
+                        strengthText.textContent = '密码强度：弱';
+                        strengthText.style.color = '#ff4d4f';
+                }
+            });
+            
+            // 确认密码检测
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            
+            confirmPasswordInput.addEventListener('blur', function() {
+                if (this.value && this.value !== passwordInput.value) {
+                    alert('两次输入的密码不一致');
+                    this.focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

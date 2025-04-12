@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        .header .title {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+            margin-right: 28px;
+        }
+        
+        .settings-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .menu-group {
+            background-color: white;
+            margin-bottom: 10px;
+        }
+        
+        .group-title {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #666;
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item {
+            display: flex;
+            padding: 16px 15px;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-label {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .menu-description {
+            font-size: 14px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .menu-action {
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-action i {
+            color: #999;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 51px;
+            height: 31px;
+            border-radius: 31px;
+            background-color: #1890ff;
+            transition: all 0.3s;
+        }
+        
+        .toggle-switch:before {
+            content: '';
+            position: absolute;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            right: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toggle-switch.off {
+            background-color: #e1e1e1;
+        }
+        
+        .toggle-switch.off:before {
+            right: 22px;
+        }
+        
+        .menu-selector {
+            color: #999;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .danger-text {
+            color: #ff3b30;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back"></i>
+        <div class="title">隐私设置</div>
+    </div>
+    
+    <div class="settings-container">
+        <div class="menu-group">
+            <div class="group-title">聊天隐私</div>
+            
+            <div class="menu-item">
+                <div class="menu-label">阅后即焚</div>
+                <div class="menu-action">
+                    <div class="toggle-switch"></div>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">
+                    消息撤回时限
+                    <div class="menu-description">设置发送消息后可撤回的时间</div>
+                </div>
+                <div class="menu-action">
+                    <div class="menu-selector">2小时</div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">截屏通知</div>
+                <div class="menu-action">
+                    <div class="toggle-switch"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="group-title">加密设置</div>
+            
+            <div class="menu-item">
+                <div class="menu-label">
+                    加密级别
+                    <div class="menu-description">设置聊天内容的加密强度</div>
+                </div>
+                <div class="menu-action">
+                    <div class="menu-selector">最高</div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">密钥管理</div>
+                <div class="menu-action">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">双重验证</div>
+                <div class="menu-action">
+                    <div class="toggle-switch"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="group-title">账号安全</div>
+            
+            <div class="menu-item">
+                <div class="menu-label">登录设备管理</div>
+                <div class="menu-action">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">修改密码</div>
+                <div class="menu-action">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="menu-item">
+                <div class="menu-label">紧急联系人</div>
+                <div class="menu-action">
+                    <div class="menu-selector">未设置</div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-item">
+                <div class="menu-label danger-text">退出登录</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

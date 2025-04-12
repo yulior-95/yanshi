@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加操作菜单</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: rgba(0, 0, 0, 0.5);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .message-interface {
+            flex: 1;
+            position: relative;
+            background-color: #f8f9fa;
+        }
+        
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .header .actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .actions i {
+            font-size: 20px;
+            color: #1890ff;
+            margin-left: 20px;
+        }
+        
+        .popup-menu {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            width: 160px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            overflow: hidden;
+        }
+        
+        .popup-item {
+            display: flex;
+            padding: 12px 15px;
+            align-items: center;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        
+        .popup-item:last-child {
+            border-bottom: none;
+        }
+        
+        .popup-item:active {
+            background-color: #f8f8f8;
+        }
+        
+        .popup-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            color: #1890ff;
+            font-size: 16px;
+        }
+        
+        .popup-text {
+            font-size: 15px;
+            color: #333;
+        }
+        
+        .popup-arrow {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="message-interface">
+        <div class="header">
+            <div class="title">消息</div>
+            <div class="actions">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+        </div>
+        
+        <div class="popup-menu">
+            <div class="popup-arrow"></div>
+            <div class="popup-item">
+                <div class="popup-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="popup-text">添加好友</div>
+            </div>
+            
+            <div class="popup-item">
+                <div class="popup-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="popup-text">创建群聊</div>
+            </div>
+            
+            <div class="popup-item">
+                <div class="popup-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <div class="popup-text">加入群聊</div>
+            </div>
+            
+            <div class="popup-item">
+                <div class="popup-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="popup-text">分享名片</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

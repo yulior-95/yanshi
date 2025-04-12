@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>群聊语音来电</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #1890ff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .call-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 60px 20px 40px;
+        }
+        
+        .call-info {
+            text-align: center;
+        }
+        
+        .call-type {
+            font-size: 18px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .call-type i {
+            margin-right: 8px;
+        }
+        
+        .group-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 0 auto 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .group-avatar i {
+            font-size: 60px;
+            color: white;
+        }
+        
+        .group-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .group-member-count {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+        
+        .call-status {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 15px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .member-avatars {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid white;
+            margin: 0 -8px;
+        }
+        
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .member-more {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            margin: 0 -8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .call-actions {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .call-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .action-button {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .action-button.answer {
+            background-color: #34c759;
+        }
+        
+        .action-button.decline {
+            background-color: #ff3b30;
+        }
+        
+        .action-button.speaker {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-label {
+            font-size: 14px;
+        }
+        
+        .call-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .call-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .option-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .option-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .encryption-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .encryption-badge i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="call-container">
+        <div class="call-info">
+            <div class="call-type">
+                <i class="fas fa-users"></i>
+                <span>群语音通话</span>
+            </div>
+            <div class="group-avatar">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="group-name">网络安全群</div>
+            <div class="group-member-count">28人</div>
+            <div class="encryption-badge">
+                <i class="fas fa-lock"></i>
+                <span>端对端加密通话</span>
+            </div>
+            
+            <div class="member-avatars">
+                <div class="member-avatar">
+                    <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="member-avatar">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="member-avatar">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                </div>
+                <div class="member-more">
+                    +4
+                </div>
+            </div>
+            
+            <div class="call-status">群聊邀请中...</div>
+        </div>
+        
+        <div>
+            <div class="call-options">
+                <div class="call-option">
+                    <div class="option-button">
+                        <i class="fas fa-volume-up"></i>
+                    </div>
+                    <div class="option-label">扬声器</div>
+                </div>
+                
+                <div class="call-option">
+                    <div class="option-button">
+                        <i class="fas fa-microphone-slash"></i>
+                    </div>
+                    <div class="option-label">静音</div>
+                </div>
+            </div>
+            
+            <div class="call-actions">
+                <div class="call-action">
+                    <div class="action-button decline">
+                        <i class="fas fa-phone-slash"></i>
+                    </div>
+                    <div class="action-label">拒绝</div>
+                </div>
+                
+                <div class="call-action">
+                    <div class="action-button answer">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>                     
+                      <div class="action-label">接听</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

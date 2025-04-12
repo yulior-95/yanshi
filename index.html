@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密聊天APP原型</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .app-info {
+            text-align: right;
+        }
+        
+        .app-version {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            color: #333;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: #1890ff;
+        }
+        
+        .prototype-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .prototype-item {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 812px; /* iPhone X height */
+            width: 375px; /* iPhone X width */
+            position: relative;
+        }
+        
+        .prototype-title {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+            text-align: center;
+            position: relative;
+            z-index: 50;
+        }
+        
+        .frame-container {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 47px);
+            overflow: hidden;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .feature-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-description ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .feature-description li {
+            margin-bottom: 8px;
+        }
+        
+        .category-navigation {
+            position: sticky;
+            top: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .category-link {
+            padding: 8px 15px;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .category-link:hover, .category-link.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        
+        .category-link i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i> 加密聊天APP
+        </div>
+        <div class="app-info">
+            <div>高保真原型展示</div>
+            <div class="app-version">版本 2.0.0</div>
+        </div>
+    </div>
+    
+    <div class="category-navigation">
+        <a href="#login-register" class="category-link"><i class="fas fa-sign-in-alt"></i> 登录注册</a>
+        <a href="#core-messaging" class="category-link"><i class="fas fa-comment-dots"></i> 核心通信</a>
+        <a href="#contacts" class="category-link"><i class="fas fa-address-book"></i> 联系人管理</a>
+        <a href="#calls" class="category-link"><i class="fas fa-phone-alt"></i> 通话功能</a>
+        <a href="#groups" class="category-link"><i class="fas fa-users"></i> 群组管理</a>
+        <a href="#user-center" class="category-link"><i class="fas fa-user-cog"></i> 用户中心</a>
+        <a href="#message-actions" class="category-link"><i class="fas fa-ellipsis-h"></i> 消息操作</a>
+        <a href="#customer-service" class="category-link"><i class="fas fa-headset"></i> 客服支持</a>
+    </div>
+    
+    <div class="feature-description">
+        <strong>应用概述：</strong>
+        <p>这款加密聊天应用提供安全的通信解决方案，支持一对一聊天、群聊、语音/视频通话等功能，同时确保所有通信内容端到端加密。</p>
+        <br>
+        <strong>核心功能：</strong>
+        <ol>
+            <li>安全加密通信（一对一聊天、群聊）</li>
+            <li>语音/视频通话支持</li>
+            <li>完善的群组管理功能（公告、成员管理）</li>
+            <li>丰富的消息类型支持（文本、图片、语音、视频、文件）</li>
+            <li>个人资料和隐私设置</li>
+            <li>在线客服支持</li>
+        </ol>
+    </div>
+    
+    <div id="login-register" class="section-title">
+        <i class="fas fa-sign-in-alt"></i>登录注册
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">密码登录</div>
+            <div class="frame-container">
+                <iframe src="login.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">验证码登录</div>
+            <div class="frame-container">
+                <iframe src="login_verification.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">手机注册</div>
+            <div class="frame-container">
+                <iframe src="register.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">邮箱注册</div>
+            <div class="frame-container">
+                <iframe src="register_email.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="core-messaging" class="section-title">
+        <i class="fas fa-comment-dots"></i>核心通信
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">消息列表</div>
+            <div class="frame-container">
+                <iframe src="message.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">聊天页面</div>
+            <div class="frame-container">
+                <iframe src="chat.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">群聊页面</div>
+            <div class="frame-container">
+                <iframe src="group_chat.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">聊天功能窗口</div>
+            <div class="frame-container">
+                <iframe src="chat_functions.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="contacts" class="section-title">
+        <i class="fas fa-address-book"></i>联系人管理
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">通讯录</div>
+            <div class="frame-container">
+                <iframe src="contacts.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">好友详情</div>
+            <div class="frame-container">
+                <iframe src="friend_detail.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">添加操作</div>
+            <div class="frame-container">
+                <iframe src="add_action.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">添加好友</div>
+            <div class="frame-container">
+                <iframe src="add_friend.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">搜索好友</div>
+            <div class="frame-container">
+                <iframe src="add_friend_search.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">扫码添加</div>
+            <div class="frame-container">
+                <iframe src="add_friend_scan.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">通讯录添加</div>
+            <div class="frame-container">
+                <iframe src="add_friend_contacts.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">好友申请</div>
+            <div class="frame-container">
+                <iframe src="add_friend_detail.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">分享名片</div>
+            <div class="frame-container">
+                <iframe src="share_contact_card.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="calls" class="section-title">
+        <i class="fas fa-phone-alt"></i>通话功能
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">通话记录</div>
+            <div class="frame-container">
+                <iframe src="calls.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">语音来电</div>
+            <div class="frame-container">
+                <iframe src="voice_call_incoming.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">视频来电</div>
+            <div class="frame-container">
+                <iframe src="video_call_incoming.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">群聊语音来电</div>
+            <div class="frame-container">
+                <iframe src="group_call_incoming.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="groups" class="section-title">
+        <i class="fas fa-users"></i>群组管理
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">群聊详情</div>
+            <div class="frame-container">
+                <iframe src="group_detail.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">群公告管理</div>
+            <div class="frame-container">
+                <iframe src="group_notice.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">带公告的群聊页面</div>
+            <div class="frame-container">
+                <iframe src="group_chat_with_notice.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">创建群聊</div>
+            <div class="frame-container">
+                <iframe src="create_group.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">设置群信息</div>
+            <div class="frame-container">
+                <iframe src="create_group_info.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="user-center" class="section-title">
+        <i class="fas fa-user-cog"></i>用户中心
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">个人中心</div>
+            <div class="frame-container">
+                <iframe src="profile.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">设置页面</div>
+            <div class="frame-container">
+                <iframe src="settings.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message-actions" class="section-title">
+        <i class="fas fa-ellipsis-h"></i>消息操作
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">消息操作菜单</div>
+            <div class="frame-container">
+                <iframe src="message_action.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="customer-service" class="section-title">
+        <i class="fas fa-headset"></i>客服支持
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">客服中心</div>
+            <div class="frame-container">
+                <iframe src="customer_service.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 导航栏活跃状态控制
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryLinks = document.querySelectorAll('.category-link');
+            
+            // 点击导航链接时添加活跃状态
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    categoryLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // 滚动监听，高亮当前所在区域
+            window.addEventListener('scroll', function() {
+                const sections = document.querySelectorAll('.section-title');
+                let currentSection = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    
+                    if (window.pageYOffset >= (sectionTop - 100)) {
+                        currentSection = section.getAttribute('id');
+                    }
+                });
+                
+                if (currentSection !== '') {
+                    categoryLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${currentSection}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+            
+            // 获取所有iframe以检查是否加载完成
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.onload = function() {
+                    // iframe加载完成后的处理
+                    // 可以在这里添加加载动画或其他处理
+                };
+            });
+        });
+    </script>
+</body>
+</html>
