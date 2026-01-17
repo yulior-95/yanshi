@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .select-header {
+      padding: 24px 24px 0 24px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #222;
+    }
+    .user-list {
+      margin: 24px 0 0 0;
+      padding: 0 24px;
+    }
+    .user-card {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: box-shadow .2s;
+    }
+    .user-card.selected {
+      border: 2px solid #ffcc33;
+      box-shadow: 0 2px 8px rgba(255, 204, 51, 0.08);
+    }
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      margin-right: 16px;
+      object-fit: cover;
+    }
+    .user-info {
+      flex: 1;
+    }
+    .user-info h4 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      color: #222;
+    }
+    .user-info p {
+      margin: 0;
+      color: #888;
+      font-size: 13px;
+    }
+    .user-check {
+      color: #ffcc33;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="select-header">选择免死账号</div>
+  <div class="user-list">
+    <div class="user-card selected">
+      <img src="../assets/images/avatar1.jpg" class="user-avatar" alt="用户1">
+      <div class="user-info">
+        <h4>小明</h4>
+        <p>微信号：xiaoming123</p>
+      </div>
+      <i class="fa-solid fa-check-circle user-check"></i>
+    </div>
+    <div class="user-card">
+      <img src="../assets/images/avatar2.jpg" class="user-avatar" alt="用户2">
+      <div class="user-info">
+        <h4>小红</h4>
+        <p>微信号：xiaohong456</p>
+      </div>
+    </div>
+    <div class="user-card">
+      <img src="../assets/images/avatar3.jpg" class="user-avatar" alt="用户3">
+      <div class="user-info">
+        <h4>小刚</h4>
+        <p>微信号：xiaogang789</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

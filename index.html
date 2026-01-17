@@ -180,8 +180,12 @@
         <a href="#calls" class="category-link"><i class="fas fa-phone-alt"></i> 通话功能</a>
         <a href="#groups" class="category-link"><i class="fas fa-users"></i> 群组管理</a>
         <a href="#user-center" class="category-link"><i class="fas fa-user-cog"></i> 用户中心</a>
+        <a href="#security-verification" class="category-link"><i class="fas fa-shield-alt"></i> 安全验证</a>
         <a href="#message-actions" class="category-link"><i class="fas fa-ellipsis-h"></i> 消息操作</a>
+        <a href="#poker-emoji" class="category-link"><i class="fas fa-chess-queen"></i> 扑克牌表情</a>
         <a href="#customer-service" class="category-link"><i class="fas fa-headset"></i> 客服支持</a>
+        <a href="#itoken-binding" class="category-link"><i class="fas fa-shield-halved"></i> iToken设备绑定</a>
+        <a href="#itoken-flowchart" class="category-link"><i class="fas fa-project-diagram"></i> iToken流程图</a>
     </div>
     
     <div class="feature-description">
@@ -423,6 +427,48 @@
                 <iframe src="settings.html"></iframe>
             </div>
         </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">选择修改安全项</div>
+            <div class="frame-container">
+                <iframe src="security_settings.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">安全验证</div>
+            <div class="frame-container">
+                <iframe src="security_verification.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">更新联系方式</div>
+            <div class="frame-container">
+                <iframe src="security_update_contact.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">身份证上传</div>
+            <div class="frame-container">
+                <iframe src="security_id_upload.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">提交成功</div>
+            <div class="frame-container">
+                <iframe src="security_success.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">实名认证中心</div>
+            <div class="frame-container">
+                <iframe src="auth-center.html"></iframe>
+            </div>
+        </div>
     </div>
     
     <div id="message-actions" class="section-title">
@@ -433,6 +479,18 @@
             <div class="prototype-title">消息操作菜单</div>
             <div class="frame-container">
                 <iframe src="message_action.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div id="poker-emoji" class="section-title">
+        <i class="fas fa-chess-queen"></i>扑克牌表情
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">扑克牌聊天</div>
+            <div class="frame-container">
+                <iframe src="poker_chat.html"></iframe>
             </div>
         </div>
     </div>
@@ -448,6 +506,229 @@
             </div>
         </div>
     </div>
+    
+    <!-- iToken小程序功能原型展示区域 -->
+    <div id="itoken-binding" class="section-title">
+        <i class="fas fa-shield-halved"></i>iToken 小程序
+    </div>
+    <div class="feature-description">
+        <strong>功能说明：</strong>
+        <p>iToken 是独立于主应用的安全验证小程序，类似微信小程序的架构设计。即使主APP出现问题，用户的设备绑定信息和验证功能仍然安全可用。</p>
+        <br>
+        <strong>架构优势：</strong>
+        <ol>
+            <li><strong>风险隔离</strong> - 主APP被报毒/下架不影响iToken的设备绑定关系</li>
+            <li><strong>数据安全</strong> - 用户信息、设备信息、iToken关联存储在独立模块中</li>
+            <li><strong>灵活更新</strong> - iToken模块可以独立更新，不依赖主APP版本</li>
+            <li><strong>硬件级安全</strong> - 密钥存储于设备安全芯片，私钥永不离开设备</li>
+        </ol>
+        <br>
+        <strong>激活流程：</strong>
+        <ol>
+            <li>生物识别 + 手机验证码 → 发送激活申请给服务端</li>
+            <li>服务端返回激活许可 → 设备安全芯片生成密钥对</li>
+            <li>提交公钥和激活许可 → 服务端用根私钥签发证书</li>
+            <li>证书返回APP → 激活成功</li>
+        </ol>
+        <br>
+        <strong>绑定账号流程：</strong>
+        <ol>
+            <li>添加68账号（68号+密码 / 手机号+验证码 / 邮箱+验证码）</li>
+            <li>进行生物识别验证</li>
+            <li>绑定成功，显示该账号专属的 iToken 验证码</li>
+        </ol>
+    </div>
+    <div class="prototype-container">
+        <!-- iToken小程序入口 -->
+        <div class="prototype-item">
+            <div class="prototype-title">iToken 小程序入口</div>
+            <div class="frame-container">
+                <iframe src="itoken_entry.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken首页-未激活 -->
+        <div class="prototype-item">
+            <div class="prototype-title">首页（未激活状态）</div>
+            <div class="frame-container">
+                <iframe src="itoken_home.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken激活流程 -->
+        <div class="prototype-item">
+            <div class="prototype-title">激活流程（4步）</div>
+            <div class="frame-container">
+                <iframe src="itoken_activate.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken首页-已激活无账号 -->
+        <div class="prototype-item">
+            <div class="prototype-title">首页（已激活-无账号）</div>
+            <div class="frame-container">
+                <iframe src="itoken_home_activated.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 添加账号 -->
+        <div class="prototype-item">
+            <div class="prototype-title">绑定68账号</div>
+            <div class="frame-container">
+                <iframe src="itoken_add_account.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken首页-有绑定账号 -->
+        <div class="prototype-item">
+            <div class="prototype-title">首页（已绑定账号）</div>
+            <div class="frame-container">
+                <iframe src="itoken_home_bindlist.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <!-- iToken 旧版页面（备用） -->
+    <div id="itoken-legacy" class="section-title">
+        <i class="fas fa-archive"></i>iToken 旧版页面（备用）
+    </div>
+    <div class="prototype-container">
+        <!-- iToken授权入口界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">旧版-首次绑定授权</div>
+            <div class="frame-container">
+                <iframe src="itoken_authorize.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken生成中界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">旧版-iToken生成中</div>
+            <div class="frame-container">
+                <iframe src="itoken_generating.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken绑定成功界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">旧版-iToken绑定成功</div>
+            <div class="frame-container">
+                <iframe src="itoken_success.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 生物识别变更提示界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">生物识别变更提示</div>
+            <div class="frame-container">
+                <iframe src="itoken_biometric_change.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 身份验证界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">身份验证恢复</div>
+            <div class="frame-container">
+                <iframe src="itoken_verify_identity.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 确认生物识别界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">确认生物识别</div>
+            <div class="frame-container">
+                <iframe src="itoken_confirm_biometric.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- iToken恢复成功界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">iToken恢复成功</div>
+            <div class="frame-container">
+                <iframe src="itoken_restore_success.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <!-- iToken流程图展示区域 -->
+    <div id="itoken-flowchart" class="section-title">
+        <i class="fas fa-project-diagram"></i>iToken绑定流程图
+    </div>
+    <div style="width: 100%; height: 700px; background: #1a1a2e; border-radius: 20px; overflow: hidden;">
+        <iframe src="itoken_flowchart.html" style="width: 100%; height: 100%; border: none;"></iframe>
+    </div>
+    
+    <!-- 指纹验证功能原型展示区域 -->
+    <div id="fingerprint-verification" class="section-title">
+        <i class="fas fa-fingerprint"></i>指纹验证功能
+    </div>
+    <div class="prototype-container">
+        <!-- 指纹验证界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">指纹验证界面</div>
+            <div class="frame-container">
+                <iframe src="fingerprint_verify.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 指纹验证失败界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">指纹验证失败界面</div>
+            <div class="frame-container">
+                <iframe src="fingerprint_fail.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 未录入指纹提示界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">未录入指纹提示界面</div>
+            <div class="frame-container">
+                <iframe src="no_fingerprint.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 选择修改安全项界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">新版安全设置界面</div>
+            <div class="frame-container">
+                <iframe src="security_settings.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 安全设置界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">指纹安全设置</div>
+            <div class="frame-container">
+                <iframe src="security_settings.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 指纹录入界面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">指纹录入管理</div>
+            <div class="frame-container">
+                <iframe src="fingerprint_enroll.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 朋友详情界面 (已有的页面) -->
+        <div class="prototype-item">
+            <div class="prototype-title">朋友详情界面</div>
+            <div class="frame-container">
+                <iframe src="./friend_detail.html"></iframe>
+            </div>
+        </div>
+    </div>
+
+        <!-- 资产记录页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">资产记录界面</div>
+            <div class="frame-container">
+                <iframe src="./asset-record.html"></iframe>
+            </div>
+        </div>
+    </div>
+
     
     <script>
         // 导航栏活跃状态控制

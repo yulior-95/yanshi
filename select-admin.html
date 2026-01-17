@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .select-header {
+      padding: 24px 24px 0 24px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #222;
+    }
+    .admin-list {
+      margin: 24px 0 0 0;
+      padding: 0 24px;
+    }
+    .admin-card {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: box-shadow .2s;
+    }
+    .admin-card.selected {
+      border: 2px solid #007aff;
+      box-shadow: 0 2px 8px rgba(0,122,255,0.08);
+    }
+    .admin-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      margin-right: 16px;
+      object-fit: cover;
+    }
+    .admin-info {
+      flex: 1;
+    }
+    .admin-info h4 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      color: #222;
+    }
+    .admin-info p {
+      margin: 0;
+      color: #888;
+      font-size: 13px;
+    }
+    .admin-check {
+      color: #007aff;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="select-header">分配管理员账户</div>
+  <div class="admin-list">
+    <div class="admin-card selected">
+      <img src="../assets/images/avatar1.jpg" class="admin-avatar" alt="管理员1">
+      <div class="admin-info">
+        <h4>小明</h4>
+        <p>管理员账户</p>
+      </div>
+      <i class="fa-solid fa-check-circle admin-check"></i>
+    </div>
+    <div class="admin-card">
+      <img src="../assets/images/avatar2.jpg" class="admin-avatar" alt="管理员2">
+      <div class="admin-info">
+        <h4>小红</h4>
+        <p>管理员账户</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

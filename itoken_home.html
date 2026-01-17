@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iToken - 安全验证</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+        }
+
+        .status-bar .time {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .status-bar .icons i {
+            font-size: 14px;
+            color: #fff;
+        }
+
+        /* 小程序顶部栏 */
+        .mini-program-header {
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            padding: 0 16px 24px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 44px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .close-btn i {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .header-title {
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .header-btn i {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        /* iToken 状态卡片 */
+        .itoken-status-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .status-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-icon i {
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .status-icon.inactive {
+            background: rgba(255, 149, 0, 0.3);
+        }
+
+        .status-icon.inactive i {
+            color: #FFD60A;
+        }
+
+        .status-info h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .status-info p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .status-badge {
+            margin-left: auto;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.inactive {
+            background: rgba(255, 149, 0, 0.3);
+            color: #FFD60A;
+        }
+
+        .status-badge.active {
+            background: rgba(52, 199, 89, 0.3);
+            color: #30D158;
+        }
+
+        /* 主内容区 */
+        .content {
+            padding: 20px;
+            padding-bottom: 120px;
+        }
+
+        /* 区块标题 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            margin-top: 8px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .section-action {
+            font-size: 14px;
+            color: #007AFF;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f5f5f7;
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e5e5e7 0%, #d1d1d6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .empty-icon i {
+            font-size: 32px;
+            color: #86868b;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #86868b;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .empty-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            color: #fff;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: none;
+        }
+
+        .empty-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 激活提示卡片 */
+        .activate-card {
+            background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activate-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .activate-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .activate-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activate-icon i {
+            font-size: 22px;
+            color: #fff;
+        }
+
+        .activate-text h3 {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .activate-text p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .activate-btn {
+            width: 100%;
+            padding: 14px;
+            background: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #FF9500;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .activate-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 功能说明 */
+        .feature-list {
+            background: #f5f5f7;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: #fff;
+            margin-bottom: 1px;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-icon.blue {
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+        }
+
+        .feature-icon.green {
+            background: linear-gradient(135deg, #34C759 0%, #30B350 100%);
+        }
+
+        .feature-icon.orange {
+            background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+        }
+
+        .feature-icon i {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .feature-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #1d1d1f;
+        }
+
+        .feature-text p {
+            font-size: 12px;
+            color: #86868b;
+        }
+
+        /* 底部安全栏 */
+        .bottom-safe-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            padding: 12px 20px;
+            padding-bottom: 34px;
+            background: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .safe-bar-icon {
+            color: #86868b;
+            font-size: 14px;
+        }
+
+        .safe-bar-text {
+            font-size: 13px;
+            color: #86868b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- iOS状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- 小程序顶部栏 -->
+        <div class="mini-program-header">
+            <div class="header-top">
+                <div class="header-left">
+                    <div class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <span class="header-title">iToken</span>
+                </div>
+                <div class="header-right">
+                    <div class="header-btn">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- iToken 状态 -->
+            <div class="itoken-status-card">
+                <div class="status-header">
+                    <div class="status-icon inactive">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="status-info">
+                        <h3>iToken 安全验证器</h3>
+                        <p>设备安全芯片保护</p>
+                    </div>
+                    <div class="status-badge inactive">未激活</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="content">
+            <!-- 激活提示 -->
+            <div class="activate-card">
+                <div class="activate-card-header">
+                    <div class="activate-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="activate-text">
+                        <h3>激活 iToken</h3>
+                        <p>激活后可绑定68账号，为您的资产提供硬件级安全保护</p>
+                    </div>
+                </div>
+                <button class="activate-btn" id="activateBtn">
+                    <i class="fas fa-fingerprint"></i>
+                    立即激活
+                </button>
+            </div>
+
+            <!-- 已绑定账号列表 -->
+            <div class="section-header">
+                <span class="section-title">已绑定账号</span>
+            </div>
+
+            <!-- 空状态 -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="empty-title">暂无绑定账号</div>
+                <div class="empty-desc">激活 iToken 后，可添加68账号<br>获取专属安全验证码</div>
+            </div>
+
+            <!-- 功能说明 -->
+            <div class="section-header">
+                <span class="section-title">iToken 功能</span>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon blue">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>动态验证码</h4>
+                        <p>每30秒自动刷新的安全验证码</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon green">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>硬件级安全</h4>
+                        <p>密钥存储于设备安全芯片，永不泄露</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon orange">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>资产保护</h4>
+                        <p>即使密码泄露，资产依然安全</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部安全栏 -->
+        <div class="bottom-safe-bar">
+            <i class="fas fa-lock safe-bar-icon"></i>
+            <span class="safe-bar-text">iToken 由设备安全芯片提供保护</span>
+        </div>
+    </div>
+
+    <script>
+        // 激活按钮
+        document.getElementById('activateBtn').addEventListener('click', function() {
+            window.location.href = 'itoken_activate.html';
+        });
+
+        // 关闭按钮
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.location.href = 'profile.html';
+        });
+    </script>
+</body>
+</html>

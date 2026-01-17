@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实名认证中心</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        /* 状态栏样式 */
+        .status-bar {
+            background-color: #000;
+            color: white;
+            padding: 5px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .status-bar .time {
+            font-weight: 600;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* 导航栏样式 */
+        .nav-bar {
+            background-color: #fff;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #eee;
+        }
+
+        .nav-bar .title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* 认证状态卡片 */
+        .auth-status {
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .auth-level {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .level-card {
+            flex: 1;
+            margin: 0 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        .level-card.active {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .level-card .level-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* 限额表格样式 */
+        .limit-table {
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .limit-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .limit-table th, .limit-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .limit-table th {
+            background-color: #fafafa;
+            font-weight: 600;
+        }
+
+        .limit-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 按钮样式 */
+        .auth-button {
+            display: block;
+            width: calc(100% - 40px);
+            margin: 20px;
+            padding: 15px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .auth-button:disabled {
+            background-color: #d9d9d9;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <div class="title">实名认证中心</div>
+    </div>
+
+    <!-- 认证状态 -->
+    <div class="auth-status">
+        <div class="auth-level">
+            <div class="level-card">
+                <div class="level-title">初级认证</div>
+                <div class="level-icon">
+                    <i class="fas fa-user-shield fa-2x" style="color: #1890ff;"></i>
+                </div>
+                <div class="level-status">已完成</div>
+            </div>
+            <div class="level-card">
+                <div class="level-title">高级认证</div>
+                <div class="level-icon">
+                    <i class="fas fa-user-check fa-2x" style="color: #52c41a;"></i>
+                </div>
+                <div class="level-status">未认证</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 限额表格 -->
+    <div class="limit-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>币种</th>
+                    <th>初级认证限额</th>
+                    <th>高级认证限额</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>C</td>
+                    <td>5,000 C/日</td>
+                    <td>100,000 C/日</td>
+                </tr>
+                <tr>
+                    <td>USDT</td>
+                    <td>1,000 USDT/日</td>
+                    <td>50,000 USDT/日</td>
+                </tr>
+                <tr>
+                    <td>BTC</td>
+                    <td>0.1 BTC/日</td>
+                    <td>5 BTC/日</td>
+                </tr>
+                <tr>
+                    <td>TRX</td>
+                    <td>10,000 TRX/日</td>
+                    <td>500,000 TRX/日</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 认证按钮 -->
+    <button class="auth-button">
+        开始高级认证
+        <i class="fas fa-arrow-right"></i>
+    </button>
+</body>
+</html>

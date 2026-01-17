@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .edit-header {
+      padding: 24px 24px 0 24px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #222;
+    }
+    .form-group {
+      margin: 24px 24px 0 24px;
+    }
+    .form-label {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      font-size: 16px;
+      margin-bottom: 12px;
+      background: #fafafa;
+    }
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .switch-label {
+      font-size: 15px;
+      color: #555;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { display: none; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #ccc;
+      border-radius: 24px;
+      transition: .4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .4s;
+    }
+    .switch input:checked + .slider {
+      background: #ffcc33;
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    .select-btn {
+      width: 100%;
+      padding: 12px;
+      background: #fffbe6;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      color: #b8860b;
+      font-size: 15px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .save-btn {
+      width: 90%;
+      margin: 32px auto 0 auto;
+      display: block;
+      padding: 16px 0;
+      background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="edit-header">红包设置</div>
+  <form>
+    <div class="form-group">
+      <label class="form-label">金额范围（元）</label>
+      <input type="number" class="form-input" placeholder="最小金额，如10">
+      <input type="number" class="form-input" placeholder="最大金额，如100">
+    </div>
+    <div class="form-group switch-row">
+      <span class="switch-label">开启免死权限</span>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="form-group">
+      <button type="button" class="select-btn"><i class="fa-solid fa-user-shield"></i> 选择免死账号</button>
+      <button type="button" class="select-btn"><i class="fa-solid fa-user-cog"></i> 分配管理员账户</button>
+    </div>
+    <button type="submit" class="save-btn"><i class="fa-solid fa-check"></i> 保存设置</button>
+  </form>
+</body>
+</html> 

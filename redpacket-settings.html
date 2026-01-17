@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .settings-header {
+      padding: 24px 24px 0 24px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #222;
+    }
+    .redpacket-list {
+      margin: 24px 0 0 0;
+      padding: 0 24px;
+    }
+    .redpacket-card {
+      background: #fffbe6;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(255, 204, 51, 0.08);
+      padding: 18px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .redpacket-info {
+      flex: 1;
+    }
+    .redpacket-info h3 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+      color: #b8860b;
+    }
+    .redpacket-info p {
+      margin: 0;
+      color: #888;
+      font-size: 13px;
+    }
+    .edit-btn {
+      background: none;
+      border: none;
+      color: #ff9800;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 12px;
+    }
+    .add-btn {
+      width: 90%;
+      margin: 24px auto 0 auto;
+      display: block;
+      padding: 14px 0;
+      background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-header">红包接龙设置</div>
+  <div class="redpacket-list">
+    <div class="redpacket-card">
+      <div class="redpacket-info">
+        <h3>红包1</h3>
+        <p>金额范围：10-50元 | 免死账号：已设置 | 分配管理员：小明</p>
+      </div>
+      <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
+    </div>
+    <div class="redpacket-card">
+      <div class="redpacket-info">
+        <h3>红包2</h3>
+        <p>金额范围：20-100元 | 免死账号：未设置 | 分配管理员：小红</p>
+      </div>
+      <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
+    </div>
+  </div>
+  <button class="add-btn"><i class="fa-solid fa-plus"></i> 添加红包</button>
+</body>
+</html> 

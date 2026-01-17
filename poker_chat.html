@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扑克牌表情包聊天</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+        }
+        
+        .header .info {
+            flex: 1;
+        }
+        
+        .header .name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header .status {
+            display: flex;
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+            align-items: center;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        
+        .status-dot.online {
+            background-color: #34c759;
+        }
+        
+        .header .encryption-status {
+            font-size: 12px;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+        }
+        
+        .header .encryption-status i {
+            margin-right: 4px;
+        }
+        
+        .header .actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .actions i {
+            font-size: 20px;
+            color: #333;
+            margin-left: 15px;
+        }
+        
+        .chat-body {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-info {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .message.received {
+            align-items: flex-start;
+        }
+        
+        .message.sent {
+            align-items: flex-end;
+        }
+        
+        .message.received .message-bubble {
+            background-color: white;
+            color: #333;
+            border: 1px solid #e1e4e8;
+            border-top-left-radius: 0;
+        }
+        
+        .message.sent .message-bubble {
+            background-color: #1890ff;
+            color: white;
+            border-top-right-radius: 0;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .online-status {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #34c759;
+            border: 1px solid white;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-area {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .input-actions i {
+            font-size: 24px;
+            color: #666;
+            margin-right: 15px;
+        }
+        
+        .text-input {
+            flex: 1;
+            background-color: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .text-input input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        
+        .text-input i {
+            color: #999;
+            font-size: 20px;
+        }
+        
+        .send-button {
+            margin-left: 10px;
+            width: 36px;
+            height: 36px;
+            background-color: #1890ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        /* 表情包面板样式 */
+        .emoji-panel {
+            position: absolute;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #eaeaea;
+            padding: 15px;
+            height: 300px;
+            display: none;
+        }
+        
+        .emoji-panel.show {
+            display: block;
+        }
+        
+        .emoji-tabs {
+            display: flex;
+            border-bottom: 1px solid #eaeaea;
+            margin-bottom: 10px;
+        }
+        
+        .emoji-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .emoji-tab i {
+            font-size: 24px;
+        }
+        
+        .emoji-tab.active {
+            color: #1890ff;
+            border-bottom: 2px solid #1890ff;
+        }
+        
+        .emoji-tab-content {
+            display: none;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            padding: 10px 0;
+        }
+        
+        .emoji-tab-content.active {
+            display: grid;
+        }
+        
+        .emoji-content {
+            height: calc(300px - 45px);
+            overflow-y: auto;
+        }
+        
+        .emoji-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-size: 24px;
+        }
+        
+        .emoji-item:hover {
+            transform: scale(1.2);
+        }
+        
+        /* 扑克牌表情包样式 */
+        .poker-emoji {
+            width: 70px;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        
+        .poker-emoji img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* 消息中的扑克牌表情样式 */
+        .poker-message {
+            width: 90px;
+            height: 130px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            margin: 5px auto;
+        }
+        
+        .poker-message img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #ffffff;
+        }
+        
+        /* 扑克牌表情动画效果 */
+        @keyframes pokerFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        .poker-animation {
+            animation: pokerFlip 3s ease-in-out forwards;
+            transform-style: preserve-3d;
+        }
+        
+        /* 底部导航栏样式 */
+        .tab-bar {
+            height: 50px;
+            background-color: white;
+            display: flex;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .tab.active {
+            color: #1890ff;
+        }
+        
+        .tab i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        /* 发送扑克牌状态样式 */
+        .poker-status {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+        
+        /* 添加新的无框扑克牌样式 */
+        .poker-gif {
+            width: 120px;
+            height: auto;
+            max-height: 180px;
+            margin: 5px 0;
+            display: block;
+            object-fit: contain;
+        }
+        
+        .poker-gif-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            min-height: 150px;
+        }
+        
+        /* 移除message-bubble对扑克牌的样式限制 */
+        .message-bubble.no-style {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 5px 0;
+            box-shadow: none;
+        }
+        
+        .message.sent .message-bubble.no-style {
+            background: transparent;
+            color: #333;
+        }
+        
+        .message.received .message-bubble.no-style {
+            background: transparent;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <i class="fas fa-arrow-left back"></i>
+        <div class="info">
+            <div class="name">张三</div>
+            <div class="status">
+                <div class="status-dot online"></div>
+                <span>在线</span>
+                <div class="encryption-status">
+                    <i class="fas fa-lock"></i>
+                    <span>端对端加密</span>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <i class="fas fa-phone-alt"></i>
+            <i class="fas fa-video"></i>
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+    </div>
+    
+    <div class="chat-body">
+        <div class="message-info">
+            今天 19:30
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                <div class="online-status"></div>
+            </div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                你好，今天有时间一起玩扑克牌吗？
+            </div>
+            <div class="message-time">19:31</div>
+        </div>
+        
+        <div class="message sent">
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                好啊，我很喜欢玩扑克牌游戏。
+            </div>
+            <div class="message-time">19:32</div>
+        </div>
+        
+        <div class="message received">
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=80" alt="头像">
+                <div class="online-status"></div>
+            </div>
+            <div class="message-bubble">
+                <i class="fas fa-lock encryption-mark"></i>
+                我给你看看我的牌，猜猜我抽到了什么？
+            </div>
+            <div class="message-time">19:33</div>
+        </div>
+        
+        <div class="message received">
+            <div class="message-bubble no-style">
+                <div class="poker-gif-container">
+                    <img src="img/扑克牌静态默认图.png" alt="扑克牌" id="pokerCard1" class="poker-gif">
+                </div>
+            </div>
+            <div class="message-time">19:34</div>
+        </div>
+        
+        <div class="message sent">
+            <div class="message-bubble no-style">
+                <div class="poker-gif-container">
+                    <img src="img/扑克牌静态默认图.png" alt="扑克牌" id="pokerCard2" class="poker-gif">
+                </div>
+            </div>
+            <div class="message-time">19:35</div>
+        </div>
+    </div>
+    
+    <div class="input-area">
+        <div class="input-container">
+            <div class="input-actions">
+                <i class="fas fa-plus-circle" id="plusButton"></i>
+            </div>
+            <div class="text-input">
+                <i class="far fa-smile" id="emojiButton"></i>
+                <input type="text" placeholder="输入消息...">
+                <i class="fas fa-paperclip"></i>
+            </div>
+            <div class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="emoji-panel" id="emojiPanel">
+        <div class="emoji-tabs">
+            <div class="emoji-tab active">
+                <i class="far fa-smile"></i>
+            </div>
+            <div class="emoji-tab">
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        <div class="emoji-content" id="emojiContent">
+            <!-- 默认显示微笑表情tab内容 -->
+            <div class="emoji-tab-content active" id="smileTab">
+                <div class="emoji-item">😀</div>
+                <div class="emoji-item">😁</div>
+                <div class="emoji-item">😂</div>
+                <div class="emoji-item">🤣</div>
+                <div class="emoji-item">😃</div>
+                <div class="emoji-item">😄</div>
+                <div class="emoji-item">😅</div>
+                <div class="emoji-item">😆</div>
+                <div class="emoji-item">😉</div>
+                <div class="emoji-item">😊</div>
+                <div class="emoji-item">😋</div>
+                <div class="emoji-item">😎</div>
+                <div class="emoji-item">😍</div>
+                <div class="emoji-item">😘</div>
+            </div>
+            
+            <!-- 爱心表情tab内容，包含扑克牌表情 -->
+            <div class="emoji-tab-content" id="heartTab">
+                <div class="emoji-item poker-emoji">
+                    <img src="img/扑克牌静态默认图.png" alt="扑克牌">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-bar">
+        <div class="tab active">
+            <i class="fas fa-comment"></i>
+            <span>消息</span>
+        </div>
+        <div class="tab">
+            <i class="fas fa-address-book"></i>
+            <span>通讯录</span>
+        </div>
+        <div class="tab">
+            <i class="fas fa-compass"></i>
+            <span>发现</span>
+        </div>
+        <div class="tab">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script>
+        // 更新状态栏时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.querySelector('.time').textContent = `${hours}:${minutes}`;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        // 表情面板切换
+        const emojiButton = document.getElementById('emojiButton');
+        const emojiPanel = document.getElementById('emojiPanel');
+        const emojiTabs = document.querySelectorAll('.emoji-tab');
+        const emojiTabContents = document.querySelectorAll('.emoji-tab-content');
+        
+        emojiButton.addEventListener('click', function() {
+            emojiPanel.classList.toggle('show');
+        });
+        
+        // 表情tab切换
+        emojiTabs.forEach((tab, index) => {
+            tab.addEventListener('click', function() {
+                // 移除所有tab的active状态
+                emojiTabs.forEach(t => t.classList.remove('active'));
+                emojiTabContents.forEach(c => c.classList.remove('active'));
+                
+                // 给当前点击的tab添加active状态
+                this.classList.add('active');
+                emojiTabContents[index].classList.add('active');
+            });
+        });
+        
+        // 扑克牌动画效果
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                // 第一张扑克牌动画
+                const pokerCard1 = document.getElementById('pokerCard1');
+                // 直接使用GIF动画
+                pokerCard1.src = 'img/扑克牌gif动态效果.gif';
+                
+                // 3秒后显示最终扑克牌效果
+                setTimeout(function() {
+                    pokerCard1.src = 'img/最终效果正面图.png';
+                }, 3000);
+                
+                // 第二张扑克牌动画，延迟1秒开始
+                setTimeout(function() {
+                    const pokerCard2 = document.getElementById('pokerCard2');
+                    // 直接使用GIF动画
+                    pokerCard2.src = 'img/扑克牌gif动态效果.gif';
+                    
+                    // 3秒后显示最终扑克牌效果
+                    setTimeout(function() {
+                        pokerCard2.src = 'img/最终效果正面图.png';
+                    }, 3000);
+                }, 2000);
+            }, 1000);
+        });
+        
+        // 模拟发送扑克牌表情
+        const emojiItems = document.querySelectorAll('.poker-emoji');
+        const chatBody = document.querySelector('.chat-body');
+        const sendButton = document.querySelector('.send-button');
+        
+        emojiItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // 创建新消息元素
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message sent';
+                
+                // 创建无样式的message-bubble
+                const messageBubble = document.createElement('div');
+                messageBubble.className = 'message-bubble no-style';
+                
+                // 创建GIF容器
+                const gifContainer = document.createElement('div');
+                gifContainer.className = 'poker-gif-container';
+                
+                // 创建扑克牌图片
+                const pokerImg = document.createElement('img');
+                pokerImg.className = 'poker-gif';
+                pokerImg.src = 'img/扑克牌静态默认图.png';
+                pokerImg.alt = '扑克牌';
+                
+                // 组装元素
+                gifContainer.appendChild(pokerImg);
+                messageBubble.appendChild(gifContainer);
+                
+                // 创建时间标签
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                messageTime.textContent = `${hours}:${minutes}`;
+                
+                // 组装消息
+                messageElement.appendChild(messageBubble);
+                messageElement.appendChild(messageTime);
+                
+                // 添加到聊天区域
+                chatBody.appendChild(messageElement);
+                
+                // 隐藏表情面板
+                emojiPanel.classList.remove('show');
+                
+                // 滚动到最新消息
+                chatBody.scrollTop = chatBody.scrollHeight;
+                
+                // 短暂延迟后显示GIF动态效果
+                setTimeout(function() {
+                    // 直接使用GIF动态效果
+                    pokerImg.src = 'img/扑克牌gif动态效果.gif';
+                    
+                    // GIF播放后显示最终扑克牌效果 (3秒后)
+                    setTimeout(function() {
+                        pokerImg.src = 'img/最终效果正面图.png';
+                    }, 3000);
+                }, 500);
+            });
+        });
+        
+        // 发送按钮功能
+        sendButton.addEventListener('click', function() {
+            const textInput = document.querySelector('.text-input input');
+            const messageText = textInput.value.trim();
+            
+            if (messageText) {
+                // 创建新消息元素
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message sent';
+                
+                const messageBubble = document.createElement('div');
+                messageBubble.className = 'message-bubble';
+                messageBubble.innerHTML = `<i class="fas fa-lock encryption-mark"></i>${messageText}`;
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                messageTime.textContent = `${hours}:${minutes}`;
+                
+                messageElement.appendChild(messageBubble);
+                messageElement.appendChild(messageTime);
+                
+                // 添加到聊天区域
+                chatBody.appendChild(messageElement);
+                
+                // 清空输入框
+                textInput.value = '';
+                
+                // 滚动到最新消息
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全验证修改</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .app-info {
+            text-align: right;
+        }
+        
+        .app-version {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            color: #333;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: #1890ff;
+        }
+        
+        .prototype-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .prototype-item {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            background-color: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .prototype-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding: 15px;
+            border-bottom: 1px solid #f0f2f5;
+            background-color: #fafafa;
+        }
+        
+        .frame-container {
+            height: 600px;
+            overflow: hidden;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        
+        .frame-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .feature-description {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .feature-description ol {
+            padding-left: 20px;
+        }
+        
+        .feature-description strong {
+            color: #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i> 安全验证修改
+        </div>
+        <div class="app-info">
+            <div>高保真原型展示</div>
+            <div class="app-version">版本 1.0.0</div>
+        </div>
+    </div>
+    
+    <div class="feature-description">
+        <strong>功能概述：</strong>
+        <p>此功能允许用户修改多种安全验证方式，包括手机号码、邮箱、谷歌验证码和安全交易密码。整个流程包含多步验证，确保账户安全。</p>
+        <br>
+        <strong>核心流程：</strong>
+        <ol>
+            <li>选择需要修改的安全验证项（支持多选）</li>
+            <li>通过现有安全方式进行身份验证（N-1验证）</li>
+            <li>设置新的联系方式（如需修改手机号/邮箱）</li>
+            <li>上传身份证明文件进行最终确认</li>
+            <li>完成修改</li>
+        </ol>
+    </div>
+    
+    <div class="section-title">
+        <i class="fas fa-shield-alt"></i>安全验证修改流程
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">选择修改安全项</div>
+            <div class="frame-container">
+                <iframe src="security_settings.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">安全验证</div>
+            <div class="frame-container">
+                <iframe src="security_verification.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">更新联系方式</div>
+            <div class="frame-container">
+                <iframe src="security_update_contact.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">身份证上传</div>
+            <div class="frame-container">
+                <iframe src="security_id_upload.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="prototype-item">
+            <div class="prototype-title">提交成功</div>
+            <div class="frame-container">
+                <iframe src="security_success.html"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

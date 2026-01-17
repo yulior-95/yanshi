@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>确认生物识别</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .status-bar .time {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .status-bar .icons i {
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .nav-bar .back {
+            color: #007AFF;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #1d1d1f;
+        }
+
+        .nav-bar .placeholder {
+            width: 60px;
+        }
+
+        /* 主内容区 */
+        .content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: calc(100vh - 88px);
+        }
+
+        /* 步骤指示器 */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 50px;
+            width: 100%;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            background: #e5e5e7;
+            color: #86868b;
+        }
+
+        .step-num.active {
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            color: #fff;
+        }
+
+        .step-num.completed {
+            background: #34C759;
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        .step-label.active {
+            color: #007AFF;
+            font-weight: 500;
+        }
+
+        .step-label.completed {
+            color: #34C759;
+        }
+
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: #e5e5e7;
+        }
+
+        .step-line.completed {
+            background: #34C759;
+        }
+
+        /* 指纹动画区域 */
+        .biometric-section {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fingerprint-wrapper {
+            width: 160px;
+            height: 160px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .fingerprint-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(88, 86, 214, 0.1) 100%);
+            animation: fingerprint-pulse 2s ease-in-out infinite;
+        }
+
+        .fingerprint-bg::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(88, 86, 214, 0.15) 100%);
+        }
+
+        @keyframes fingerprint-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .fingerprint-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 70px;
+            color: #007AFF;
+        }
+
+        .biometric-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1d1d1f;
+        }
+
+        .biometric-subtitle {
+            font-size: 15px;
+            color: #86868b;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        /* 提示信息 */
+        .info-box {
+            width: 100%;
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box-title i {
+            color: #007AFF;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .info-item i {
+            color: #34C759;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .info-item span {
+            font-size: 13px;
+            color: #86868b;
+            line-height: 1.5;
+        }
+
+        /* 底部按钮区域 */
+        .bottom-section {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            padding: 20px;
+            padding-bottom: 34px;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.95) 30%);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            height: 54px;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .secondary-btn {
+            width: 100%;
+            height: 54px;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .secondary-btn:active {
+            transform: scale(0.98);
+            background: #e5e5e7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- iOS状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="back">
+                <i class="fas fa-chevron-left"></i>
+                <span>返回</span>
+            </div>
+            <div class="title">确认生物识别</div>
+            <div class="placeholder"></div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="content">
+            <!-- 步骤指示器 -->
+            <div class="step-indicator">
+                <div class="step">
+                    <div class="step-num completed"><i class="fas fa-check" style="font-size: 12px;"></i></div>
+                    <span class="step-label completed">验证身份</span>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="step">
+                    <div class="step-num active">2</div>
+                    <span class="step-label active">确认生物识别</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <span class="step-label">恢复完成</span>
+                </div>
+            </div>
+
+            <!-- 指纹动画区域 -->
+            <div class="biometric-section">
+                <div class="fingerprint-wrapper">
+                    <div class="fingerprint-bg"></div>
+                    <i class="fas fa-fingerprint fingerprint-icon"></i>
+                </div>
+                <h1 class="biometric-title">请验证指纹</h1>
+                <p class="biometric-subtitle">使用当前设备已录入的指纹进行验证，确认您是设备的合法使用者</p>
+            </div>
+
+            <!-- 提示信息 -->
+            <div class="info-box">
+                <div class="info-box-title">
+                    <i class="fas fa-info-circle"></i>
+                    验证说明
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-check"></i>
+                    <span>验证成功后，iToken将与新的生物识别信息绑定</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-check"></i>
+                    <span>后续敏感操作将使用新的生物识别进行验证</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-check"></i>
+                    <span>如再次变更生物识别，需重新进行身份验证</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="bottom-section">
+            <div class="btn-group">
+                <button class="primary-btn" onclick="window.location.href='itoken_restore_success.html'">
+                    <i class="fas fa-fingerprint"></i>
+                    开始验证
+                </button>
+                <button class="secondary-btn">
+                    使用面容识别
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+

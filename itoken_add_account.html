@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绑定账号 - iToken</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .status-bar .time {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .status-bar .icons i {
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            position: relative;
+        }
+
+        .nav-bar .back {
+            color: #007AFF;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-bar .placeholder {
+            width: 60px;
+        }
+
+        /* 主内容区 */
+        .content {
+            padding: 20px;
+            padding-bottom: 120px;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+
+        .page-title p {
+            font-size: 15px;
+            color: #86868b;
+            line-height: 1.5;
+        }
+
+        /* 登录方式切换 */
+        .login-tabs {
+            display: flex;
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .login-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #86868b;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .login-tab.active {
+            background: #fff;
+            color: #007AFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 表单区域 */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 52px;
+            border: 2px solid #e5e5e7;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #007AFF;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+
+        .form-input.with-icon {
+            padding-left: 48px;
+        }
+
+        .form-input.with-btn {
+            padding-right: 110px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #86868b;
+            font-size: 18px;
+        }
+
+        .input-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .input-btn:disabled {
+            background: #e5e5e7;
+            color: #86868b;
+            cursor: not-allowed;
+        }
+
+        .input-btn:not(:disabled):active {
+            transform: translateY(-50%) scale(0.98);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #86868b;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* 68号前缀 */
+        .id-prefix {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            font-weight: 600;
+            color: #007AFF;
+        }
+
+        .form-input.with-prefix {
+            padding-left: 50px;
+        }
+
+        /* 提示信息 */
+        .form-hint {
+            font-size: 12px;
+            color: #86868b;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-hint i {
+            font-size: 12px;
+        }
+
+        /* 生物识别验证区域 */
+        .biometric-verify {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .biometric-verify.active {
+            display: block;
+        }
+
+        .biometric-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .biometric-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 122, 255, 0.2);
+            animation: biometric-pulse 2s ease-in-out infinite;
+        }
+
+        .biometric-ring:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes biometric-pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .biometric-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+        }
+
+        .biometric-icon i {
+            font-size: 26px;
+            color: #fff;
+        }
+
+        .biometric-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+
+        .biometric-desc {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        /* 绑定成功 */
+        .success-section {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-section.active {
+            display: block;
+        }
+
+        .success-animation {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .success-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.2) 0%, rgba(48, 179, 80, 0.2) 100%);
+            animation: success-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes success-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .success-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #34C759 0%, #30B350 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(52, 199, 89, 0.4);
+        }
+
+        .success-icon i {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #34C759;
+            margin-bottom: 8px;
+        }
+
+        .success-desc {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+
+        /* iToken 识别码展示 */
+        .token-code-card {
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .token-code-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .token-account {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .token-account-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .token-account-icon i {
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .token-account-info {
+            color: #fff;
+        }
+
+        .token-account-info .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .token-account-info .value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .token-code-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+        }
+
+        .token-code-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .token-code {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 6px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+        }
+
+        .copy-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .copy-btn i {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .token-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .timer-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .timer-progress {
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+            width: 70%;
+            transition: width 1s linear;
+        }
+
+        .timer-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+
+        /* 安全提示 */
+        .security-notice {
+            background: #e8f4fd;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            border: 1px solid #b3d9f7;
+        }
+
+        .security-notice i {
+            color: #007AFF;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .security-notice-text {
+            font-size: 12px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        /* 底部按钮区域 */
+        .bottom-section {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            padding: 20px;
+            padding-bottom: 34px;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.95) 30%);
+        }
+
+        .primary-btn {
+            width: 100%;
+            height: 54px;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .primary-btn:disabled {
+            background: #e5e5e7;
+            color: #86868b;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .primary-btn:not(:disabled):active {
+            transform: scale(0.98);
+        }
+
+        .primary-btn.success {
+            background: linear-gradient(135deg, #34C759 0%, #30B350 100%);
+            box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
+        }
+
+        /* 复制成功提示 */
+        .copy-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .copy-toast i {
+            color: #34C759;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- iOS状态栏 -->
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="back" id="backBtn">
+                <i class="fas fa-chevron-left"></i>
+                <span>返回</span>
+            </div>
+            <div class="title">绑定账号</div>
+            <div class="placeholder"></div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="content">
+            <!-- 登录表单区域 -->
+            <div id="loginSection">
+                <div class="page-title">
+                    <h1>绑定68账号</h1>
+                    <p>绑定后可使用 iToken 验证码保护此账号</p>
+                </div>
+
+                <!-- 登录方式切换 -->
+                <div class="login-tabs">
+                    <div class="login-tab active" data-type="id">68号登录</div>
+                    <div class="login-tab" data-type="phone">手机号登录</div>
+                    <div class="login-tab" data-type="email">邮箱登录</div>
+                </div>
+
+                <!-- 68号+密码 -->
+                <div class="form-section active" id="idForm">
+                    <div class="form-group">
+                        <label class="form-label">68号</label>
+                        <div class="form-input-wrapper">
+                            <span class="id-prefix">68</span>
+                            <input type="text" class="form-input with-prefix" placeholder="请输入您的68号" id="idInput">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">登录密码</label>
+                        <div class="form-input-wrapper">
+                            <input type="password" class="form-input" placeholder="请输入登录密码" id="passwordInput">
+                            <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 手机号+验证码 -->
+                <div class="form-section" id="phoneForm">
+                    <div class="form-group">
+                        <label class="form-label">手机号</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-mobile-alt input-icon"></i>
+                            <input type="tel" class="form-input with-icon" placeholder="请输入手机号" id="phoneInput">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">验证码</label>
+                        <div class="form-input-wrapper">
+                            <input type="text" class="form-input with-btn" placeholder="请输入验证码" id="phoneSmsInput">
+                            <button class="input-btn" id="phoneSmsBtn">获取验证码</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 邮箱+验证码 -->
+                <div class="form-section" id="emailForm">
+                    <div class="form-group">
+                        <label class="form-label">邮箱地址</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" class="form-input with-icon" placeholder="请输入邮箱地址" id="emailInput">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">验证码</label>
+                        <div class="form-input-wrapper">
+                            <input type="text" class="form-input with-btn" placeholder="请输入验证码" id="emailCodeInput">
+                            <button class="input-btn" id="emailCodeBtn">获取验证码</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="security-notice-text">
+                        绑定账号需要进行生物识别验证，确保是您本人操作。绑定成功后，此账号的敏感操作将需要 iToken 验证码。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 生物识别验证 -->
+            <div class="biometric-verify" id="biometricSection">
+                <div class="biometric-animation">
+                    <div class="biometric-ring"></div>
+                    <div class="biometric-ring"></div>
+                    <div class="biometric-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                </div>
+                <div class="biometric-title">验证您的身份</div>
+                <div class="biometric-desc">请使用指纹或面容完成验证</div>
+            </div>
+
+            <!-- 绑定成功 -->
+            <div class="success-section" id="successSection">
+                <div class="success-animation">
+                    <div class="success-ring"></div>
+                    <div class="success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <div class="success-title">绑定成功</div>
+                <div class="success-desc">账号已绑定到 iToken，请妥善保管验证码</div>
+
+                <!-- iToken 识别码 -->
+                <div class="token-code-card">
+                    <div class="token-account">
+                        <div class="token-account-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="token-account-info">
+                            <div class="label">绑定账号</div>
+                            <div class="value" id="boundAccount">68****8888</div>
+                        </div>
+                    </div>
+                    <div class="token-code-label">iToken 验证码</div>
+                    <div class="token-code-display">
+                        <div class="token-code" id="tokenCode">847 291</div>
+                        <div class="copy-btn" id="copyBtn">
+                            <i class="fas fa-copy"></i>
+                        </div>
+                    </div>
+                    <div class="token-timer">
+                        <div class="timer-bar">
+                            <div class="timer-progress" id="timerProgress"></div>
+                        </div>
+                        <span class="timer-text" id="timerText">21秒后刷新</span>
+                    </div>
+                </div>
+
+                <div class="security-notice">
+                    <i class="fas fa-shield-halved"></i>
+                    <div class="security-notice-text">
+                        当您在其他设备登录或进行敏感操作时，需要输入此验证码。验证码每30秒自动刷新。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 复制成功提示 -->
+        <div class="copy-toast" id="copyToast">
+            <i class="fas fa-check-circle"></i>
+            验证码已复制
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="bottom-section">
+            <button class="primary-btn" id="nextBtn" disabled>
+                绑定账号
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'id';
+        let currentStep = 'login'; // login, biometric, success
+
+        const loginSection = document.getElementById('loginSection');
+        const biometricSection = document.getElementById('biometricSection');
+        const successSection = document.getElementById('successSection');
+        const nextBtn = document.getElementById('nextBtn');
+        const backBtn = document.getElementById('backBtn');
+
+        // Tab 切换
+        const tabs = document.querySelectorAll('.login-tab');
+        const forms = {
+            id: document.getElementById('idForm'),
+            phone: document.getElementById('phoneForm'),
+            email: document.getElementById('emailForm')
+        };
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const type = this.dataset.type;
+                currentTab = type;
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                Object.values(forms).forEach(f => f.classList.remove('active'));
+                forms[type].classList.add('active');
+                
+                checkFormValid();
+            });
+        });
+
+        // 密码显示切换
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordInput = document.getElementById('passwordInput');
+        passwordToggle.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+
+        // 表单验证
+        const idInput = document.getElementById('idInput');
+        const phoneInput = document.getElementById('phoneInput');
+        const phoneSmsInput = document.getElementById('phoneSmsInput');
+        const emailInput = document.getElementById('emailInput');
+        const emailCodeInput = document.getElementById('emailCodeInput');
+
+        [idInput, passwordInput, phoneInput, phoneSmsInput, emailInput, emailCodeInput].forEach(input => {
+            input.addEventListener('input', checkFormValid);
+        });
+
+        function checkFormValid() {
+            let valid = false;
+            switch (currentTab) {
+                case 'id':
+                    valid = idInput.value.length >= 4 && passwordInput.value.length >= 6;
+                    break;
+                case 'phone':
+                    valid = phoneInput.value.length >= 11 && phoneSmsInput.value.length >= 4;
+                    break;
+                case 'email':
+                    valid = emailInput.value.includes('@') && emailCodeInput.value.length >= 4;
+                    break;
+            }
+            nextBtn.disabled = !valid;
+        }
+
+        // 获取验证码按钮
+        function setupSmsBtn(btn, input) {
+            let countdown = 0;
+            btn.addEventListener('click', function() {
+                if (countdown > 0) return;
+                countdown = 60;
+                btn.disabled = true;
+                btn.textContent = `${countdown}s`;
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        btn.disabled = false;
+                        btn.textContent = '获取验证码';
+                    } else {
+                        btn.textContent = `${countdown}s`;
+                    }
+                }, 1000);
+            });
+        }
+
+        setupSmsBtn(document.getElementById('phoneSmsBtn'), phoneInput);
+        setupSmsBtn(document.getElementById('emailCodeBtn'), emailInput);
+
+        // 下一步按钮
+        nextBtn.addEventListener('click', function() {
+            if (currentStep === 'login') {
+                // 进入生物识别
+                currentStep = 'biometric';
+                loginSection.style.display = 'none';
+                biometricSection.classList.add('active');
+                nextBtn.innerHTML = '<i class="fas fa-fingerprint"></i> 开始验证';
+                nextBtn.disabled = false;
+            } else if (currentStep === 'biometric') {
+                // 模拟验证成功
+                currentStep = 'success';
+                biometricSection.classList.remove('active');
+                successSection.classList.add('active');
+                nextBtn.innerHTML = '完成';
+                nextBtn.classList.add('success');
+                
+                // 设置绑定账号显示
+                let account = '';
+                switch (currentTab) {
+                    case 'id':
+                        account = '68' + idInput.value.slice(0, 2) + '****' + idInput.value.slice(-2);
+                        break;
+                    case 'phone':
+                        account = phoneInput.value.slice(0, 3) + '****' + phoneInput.value.slice(-4);
+                        break;
+                    case 'email':
+                        const [name, domain] = emailInput.value.split('@');
+                        account = name.slice(0, 2) + '***@' + domain;
+                        break;
+                }
+                document.getElementById('boundAccount').textContent = account;
+                
+                // 启动验证码倒计时
+                startTokenTimer();
+            } else if (currentStep === 'success') {
+                window.location.href = 'itoken_home_bindlist.html';
+            }
+        });
+
+        // 返回按钮
+        backBtn.addEventListener('click', function() {
+            if (currentStep === 'login') {
+                window.location.href = 'itoken_home_activated.html';
+            } else if (currentStep === 'biometric') {
+                currentStep = 'login';
+                biometricSection.classList.remove('active');
+                loginSection.style.display = 'block';
+                nextBtn.innerHTML = '绑定账号';
+                checkFormValid();
+            }
+        });
+
+        // 验证码倒计时
+        let timeLeft = 21;
+        function startTokenTimer() {
+            const timerProgress = document.getElementById('timerProgress');
+            const timerText = document.getElementById('timerText');
+            const tokenCode = document.getElementById('tokenCode');
+
+            function generateCode() {
+                const code = Math.floor(100000 + Math.random() * 900000).toString();
+                return code.slice(0, 3) + ' ' + code.slice(3);
+            }
+
+            setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    timeLeft = 30;
+                    tokenCode.textContent = generateCode();
+                }
+                timerProgress.style.width = (timeLeft / 30 * 100) + '%';
+                timerText.textContent = timeLeft + '秒后刷新';
+            }, 1000);
+        }
+
+        // 复制功能
+        const copyBtn = document.getElementById('copyBtn');
+        const copyToast = document.getElementById('copyToast');
+
+        copyBtn.addEventListener('click', function() {
+            const code = document.getElementById('tokenCode').textContent.replace(' ', '');
+            navigator.clipboard.writeText(code).then(function() {
+                copyToast.classList.add('show');
+                setTimeout(function() {
+                    copyToast.classList.remove('show');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
+

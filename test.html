@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P项目等级成本测算工具 - 专业版</title>
+    <style>
+        /* 完整的CSS样式代码 - 已修复所有问题 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft Yahei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100px); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            color: white;
+        }
+        
+        .card-header h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .card-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .card-body {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        
+        .level-inputs {
+            background: #f7fafc;
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .level-inputs h3 {
+            color: #2d3748;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .level-inputs h3::before {
+            content: '🎮';
+            margin-right: 8px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        
+        .radio-option label {
+            display: block;
+            padding: 12px 20px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .radio-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .radio-option label:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .intensity-group {
+            margin-top: 16px;
+            padding: 16px;
+            background: #fff3cd;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .intensity-group.hidden {
+            display: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 30px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .result-header h3 {
+            color: #2d3748;
+            font-size: 22px;
+        }
+        
+        .total-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .result-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .result-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .result-table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .result-table tbody tr:hover {
+            background: #f7fafc;
+            transform: scale(1.01);
+        }
+        
+        .result-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .level-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .badge-lv1 { background: #e0e7ff; color: #4338ca; }
+        .badge-lv4 { background: #bee3f8; color: #2c5282; }
+        .badge-lv8 { background: #c6f6d5; color: #22543d; }
+        .badge-lv10 { background: #feebc8; color: #7c2d12; }
+        .badge-lv12 { background: #fed7d7; color: #742a2a; }
+        
+        .tips {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%);
+            border-left: 4px solid #f39c12;
+            border-radius: 12px;
+            color: #7d6608;
+        }
+        
+        .tips strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .tips li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .tips li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .card-body {
+                padding: 24px;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .radio-option {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 P项目等级成本测算工具</h1>
+            <p>智能化用户等级成本预算系统 - 支持时间维度分析</p>
+        </div>
+        
+        <div class="main-card">
+            <div class="card-header">
+                <h2>基础参数配置</h2>
+                <p>请选择运营周期并输入项目基础数据，系统将自动计算预算成本</p>
+            </div>
+            
+            <div class="card-body">
+                <!-- 运营周期选择 -->
+                <div class="section">
+                    <div class="section-title">⏱️ 运营周期选择</div>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="period3" name="period" value="3" onchange="updatePeriodData()">
+                            <label for="period3">3个月<br><small>启动期</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="period6" name="period" value="6" onchange="updatePeriodData()">
+                            <label for="period6">6个月<br><small>成长期</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="period9" name="period" value="9" onchange="updatePeriodData()">
+                            <label for="period9">9个月<br><small>成熟期</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="period12" name="period" value="12" checked onchange="updatePeriodData()">
+                            <label for="period12">12个月<br><small>稳定期</small></label>
+                        </div>
+                    </div>
+                    
+                    <!-- 运营力度选择（仅12个月显示） -->
+                    <div class="intensity-group" id="intensityGroup">
+                        <div class="section-title" style="margin-bottom: 12px; font-size: 14px;">🎯 运营力度选择（12个月专用）</div>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="intensityHigh" name="intensity" value="high" onchange="updatePeriodData()">
+                                <label for="intensityHigh">强运营</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="intensityNormal" name="intensity" value="normal" checked onchange="updatePeriodData()">
+                                <label for="intensityNormal">常规运营</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="intensityLow" name="intensity" value="low" onchange="updatePeriodData()">
+                                <label for="intensityLow">弱运营</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 基础参数 -->
+                <div class="section">
+                    <div class="section-title">📊 基础参数</div>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>总用户数</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="totalUsers" value="10000" min="1">
+                                <span class="input-suffix">人</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 等级分布设置 -->
+                <div class="level-inputs">
+                    <h3>用户等级分布设置</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>🌱 LV1-LV3 新手用户</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rateLv1_3" value="30" min="0" max="100" oninput="updateProgressBars()">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-lv1" style="width: 30%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>🥉 LV4-LV7 进阶用户</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rateLv4_7" value="45" min="0" max="100" oninput="updateProgressBars()">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-lv4" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>🥈 LV8-LV9 高级用户</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rateLv8_9" value="15" min="0" max="100" oninput="updateProgressBars()">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-lv8" style="width: 15%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>🥇 LV10-LV11 精英用户</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rateLv10_11" value="8" min="0" max="100" oninput="updateProgressBars()">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-lv10" style="width: 8%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>👑 LV12 满级用户</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="rateLv12" value="2" min="0" max="100" oninput="updateProgressBars()">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-lv12" style="width: 2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="calculateCost()">🚀 开始智能测算</button>
+                
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <div class="result-header">
+                        <h3>📈 测算结果</h3>
+                        <div class="total-badge" id="totalBadge">总预算：0.00 万元</div>
+                    </div>
+                    
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>等级区间</th>
+                                <th>用户占比</th>
+                                <th>用户数量</th>
+                                <th>单用户成本</th>
+                                <th>小计金额</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultBody">
+                        </tbody>
+                    </table>
+                    
+                    <div class="tips">
+                        <strong>💡 测算说明</strong>
+                        <ul>
+                            <li>单用户成本基准：LV1-LV3=¥482.5 | LV4-LV7=¥4,165 | LV8-LV9=¥10,717.5 | LV10-LV11=¥31,650 | LV12=¥109,940</li>
+                            <li>系统自动调整占比总和至100%，确保数据准确性</li>
+                            <li>不同运营周期预设了典型的用户等级分布模式，可手动调整</li>
+                            <li>12个月周期支持强/常规/弱三种运营力度，对应不同的用户成长预期</li>
+                            <li>金额单位：万元（保留2位小数），便于预算管理</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 各等级单用户累计成本（元）
+        const levelCosts = {
+            lv1_3: 482.5,
+            lv4_7: 4165,
+            lv8_9: 10717.5,
+            lv10_11: 31650,
+            lv12: 109940
+        };
+        
+        // 不同运营周期的默认等级分布
+        const periodPresets = {
+            '3': { // 3个月启动期
+                lv1_3: 80,
+                lv4_7: 15,
+                lv8_9: 4,
+                lv10_11: 1,
+                lv12: 0
+            },
+            '6': { // 6个月成长期
+                lv1_3: 40,
+                lv4_7: 45,
+                lv8_9: 10,
+                lv10_11: 4,
+                lv12: 1
+            },
+            '9': { // 9个月成熟期
+                lv1_3: 30,
+                lv4_7: 45,
+                lv8_9: 15,
+                lv10_11: 8,
+                lv12: 2
+            },
+            '12-high': { // 12个月强运营
+                lv1_3: 25,
+                lv4_7: 40,
+                lv8_9: 18,
+                lv10_11: 10,
+                lv12: 7
+            },
+            '12-normal': { // 12个月常规运营
+                lv1_3: 30,
+                lv4_7: 45,
+                lv8_9: 15,
+                lv10_11: 8,
+                lv12: 2
+            },
+            '12-low': { // 12个月弱运营
+                lv1_3: 35,
+                lv4_7: 50,
+                lv8_9: 12,
+                lv10_11: 3,
+                lv12: 0
+            }
+        };
+        
+        // 初始化：加载默认数据
+        window.onload = function() {
+            updatePeriodData();
+        };
+        
+        // 更新周期数据
+        function updatePeriodData() {
+            const period = document.querySelector('input[name="period"]:checked').value;
+            const intensityGroup = document.getElementById('intensityGroup');
+            
+            // 显示/隐藏运营力度选择
+            if (period === '12') {
+                intensityGroup.classList.remove('hidden');
+                const intensity = document.querySelector('input[name="intensity"]:checked').value;
+                const presetKey = '12-' + intensity;
+                loadPreset(presetKey);
+            } else {
+                intensityGroup.classList.add('hidden');
+                loadPreset(period);
+            }
+        }
+        
+        // 加载预设数据
+        function loadPreset(key) {
+            const preset = periodPresets[key];
+            if (preset) {
+                document.getElementById('rateLv1_3').value = preset.lv1_3;
+                document.getElementById('rateLv4_7').value = preset.lv4_7;
+                document.getElementById('rateLv8_9').value = preset.lv8_9;
+                document.getElementById('rateLv10_11').value = preset.lv10_11;
+                document.getElementById('rateLv12').value = preset.lv12;
+                updateProgressBars();
+            }
+        }
+        
+        // 更新进度条
+        function updateProgressBars() {
+            document.getElementById('progress-lv1').style.width = document.getElementById('rateLv1_3').value + '%';
+            document.getElementById('progress-lv4').style.width = document.getElementById('rateLv4_7').value + '%';
+            document.getElementById('progress-lv8').style.width = document.getElementById('rateLv8_9').value + '%';
+            document.getElementById('progress-lv10').style.width = document.getElementById('rateLv10_11').value + '%';
+            document.getElementById('progress-lv12').style.width = document.getElementById('rateLv12').value + '%';
+        }
+
+        // 计算成本
+        function calculateCost() {
+            // 获取输入值
+            const totalUsers = parseInt(document.getElementById('totalUsers').value) || 10000;
+            const rateLv1_3 = parseFloat(document.getElementById('rateLv1_3').value) || 0;
+            const rateLv4_7 = parseFloat(document.getElementById('rateLv4_7').value) || 0;
+            const rateLv8_9 = parseFloat(document.getElementById('rateLv8_9').value) || 0;
+            const rateLv10_11 = parseFloat(document.getElementById('rateLv10_11').value) || 0;
+            const rateLv12 = parseFloat(document.getElementById('rateLv12').value) || 0;
+
+            // 计算占比总和并自动调整
+            const totalRate = rateLv1_3 + rateLv4_7 + rateLv8_9 + rateLv10_11 + rateLv12;
+            const adjustRatio = totalRate > 0 ? 100 / totalRate : 1;
+            
+            // 调整后的占比
+            const adjRateLv1_3 = rateLv1_3 * adjustRatio;
+            const adjRateLv4_7 = rateLv4_7 * adjustRatio;
+            const adjRateLv8_9 = rateLv8_9 * adjustRatio;
+            const adjRateLv10_11 = rateLv10_11 * adjustRatio;
+            const adjRateLv12 = rateLv12 * adjustRatio;
+
+            // 计算各等级用户数
+            const usersLv1_3 = Math.round(totalUsers * adjRateLv1_3 / 100);
+            const usersLv4_7 = Math.round(totalUsers * adjRateLv4_7 / 100);
+            const usersLv8_9 = Math.round(totalUsers * adjRateLv8_9 / 100);
+            const usersLv10_11 = Math.round(totalUsers * adjRateLv10_11 / 100);
+            const usersLv12 = Math.round(totalUsers * adjRateLv12 / 100);
+
+            // 计算各等级成本（万元）
+            const costLv1_3 = (usersLv1_3 * levelCosts.lv1_3) / 10000;
+            const costLv4_7 = (usersLv4_7 * levelCosts.lv4_7) / 10000;
+            const costLv8_9 = (usersLv8_9 * levelCosts.lv8_9) / 10000;
+            const costLv10_11 = (usersLv10_11 * levelCosts.lv10_11) / 10000;
+            const costLv12 = (usersLv12 * levelCosts.lv12) / 10000;
+            const totalCost = costLv1_3 + costLv4_7 + costLv8_9 + costLv10_11 + costLv12;
+
+            // 显示结果
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('totalBadge').textContent = `总预算：${totalCost.toFixed(2)} 万元`;
+            
+            const resultBody = document.getElementById('resultBody');
+            resultBody.innerHTML = `
+                <tr>
+                    <td><span class="level-badge badge-lv1">LV1-LV3</span></td>
+                    <td>${adjRateLv1_3.toFixed(1)}%</td>
+                    <td>${usersLv1_3.toLocaleString()} 人</td>
+                    <td>¥${levelCosts.lv1_3.toLocaleString()}</td>
+                    <td><strong>${costLv1_3.toFixed(2)} 万元</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge badge-lv4">LV4-LV7</span></td>
+                    <td>${adjRateLv4_7.toFixed(1)}%</td>
+                    <td>${usersLv4_7.toLocaleString()} 人</td>
+                    <td>¥${levelCosts.lv4_7.toLocaleString()}</td>
+                    <td><strong>${costLv4_7.toFixed(2)} 万元</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge badge-lv8">LV8-LV9</span></td>
+                    <td>${adjRateLv8_9.toFixed(1)}%</td>
+                    <td>${usersLv8_9.toLocaleString()} 人</td>
+                    <td>¥${levelCosts.lv8_9.toLocaleString()}</td>
+                    <td><strong>${costLv8_9.toFixed(2)} 万元</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge badge-lv10">LV10-LV11</span></td>
+                    <td>${adjRateLv10_11.toFixed(1)}%</td>
+                    <td>${usersLv10_11.toLocaleString()} 人</td>
+                    <td>¥${levelCosts.lv10_11.toLocaleString()}</td>
+                    <td><strong>${costLv10_11.toFixed(2)} 万元</strong></td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge badge-lv12">LV12</span></td>
+                    <td>${adjRateLv12.toFixed(1)}%</td>
+                    <td>${usersLv12.toLocaleString()} 人</td>
+                    <td>¥${levelCosts.lv12.toLocaleString()}</td>
+                    <td><strong>${costLv12.toFixed(2)} 万元</strong></td>
+                </tr>
+            `;
+            
+            // 滚动到结果区域
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

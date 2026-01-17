@@ -338,6 +338,90 @@
             color: #999;
             margin-left: 5px;
         }
+
+        /* 直播中公告样式 */
+        .live-notice {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(90deg, #212b41 0%, #20437a 100%);
+            border-radius: 9px;
+            border: 1.2px solid #328bee33;
+            box-shadow: 0 1px 6px #3080fe22;
+            min-height: 36px;
+            height: 36px;
+            padding: 0 7px 0 11px;
+            margin-bottom: 10px;
+            width: 98%;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 14px;
+            overflow: hidden;
+            gap: 7px;
+        }
+        .live-web3-icon {
+            font-size: 14px;
+            color: #329fff;
+            margin-right: 6px;
+            flex-shrink: 0;
+            animation: pulse 1.28s infinite alternate;
+        }
+        @keyframes pulse {
+            to { filter: drop-shadow(0 0 20px #ea32efee); color: #ea32ef; }
+        }
+        .live-info-web3 {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+        }
+        .live-title-web3 {
+            font-size: 13.5px;
+            color: #e9f4ff;
+            font-weight: 500;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 145px;
+            flex-shrink: 1;
+            flex-grow: 1;
+        }
+        .live-badge-web3 {
+            display: inline-block;
+            background: linear-gradient(90deg, #2cbbfa 70%, #79e3ff 100%);
+            color: #fff;
+            font-size: 11px;
+            padding: 1.5px 7.5px 1.5px 5.7px;
+            border-radius: 100px;
+            font-weight: 600;
+            box-shadow: 0 0 7px #328bee30;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+        .live-button-web3 {
+            border: none;
+            outline: none;
+            padding: 0 14px;
+            height: 26px;
+            line-height: 26px;
+            border-radius: 7.5px;
+            background: linear-gradient(90deg,#35b0fd 35%, #70eafd 100%);
+            color: #182e3e;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            box-shadow: 0 0.5px 3px #328bee14;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .live-button-web3:active {
+            box-shadow: 0 0 4px #44caf4cc;
+        }
     </style>
 </head>
 <body>
@@ -369,6 +453,14 @@
     </div>
     
     <div class="chat-body">
+      <!-- 直播中公告 Start -->
+      <div class="live-notice">
+        <span class="live-web3-icon"><i class="fa-solid fa-bolt-lightning"></i></span>
+        <span class="live-badge-web3">LIVE</span>
+        <span class="live-title-web3">Web3链上直播：DAO协议深度分析</span>
+        <button class="live-button-web3"><i class="fa-solid fa-arrow-right"></i>直 播 间</button>
+      </div>
+      <!-- 直播中公告 End -->
         <div class="message-info">
             今天 19:30
         </div>

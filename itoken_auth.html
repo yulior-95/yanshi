@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iToken 设备绑定</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .container {
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            height: 100vh;
+            min-height: 812px;
+        }
+        
+        .status-bar {
+            background: transparent;
+            color: #fff;
+        }
+        
+        .nav-bar {
+            background: transparent;
+            border-bottom: none;
+            color: #fff;
+        }
+        
+        .nav-bar .back {
+            color: #00d4aa;
+        }
+        
+        .nav-bar .title {
+            color: #fff;
+        }
+        
+        .content {
+            height: calc(100% - 88px);
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+        
+        .token-icon-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+        
+        .token-icon-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2) 0%, rgba(0, 122, 255, 0.2) 100%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+        }
+        
+        .token-icon {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #00d4aa 0%, #007AFF 100%);
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(0, 212, 170, 0.3);
+        }
+        
+        .token-icon i {
+            font-size: 48px;
+            color: #fff;
+        }
+        
+        .hero-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        .hero-subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        .features-section {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon.security {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+        }
+        
+        .feature-icon.chip {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+        }
+        
+        .feature-icon.lock {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .feature-icon i {
+            font-size: 20px;
+            color: #fff;
+        }
+        
+        .feature-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .feature-content p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.5;
+        }
+        
+        .action-section {
+            padding: 20px 0 40px;
+        }
+        
+        .agreement-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-wrapper {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-wrapper.checked {
+            background: linear-gradient(135deg, #00d4aa 0%, #007AFF 100%);
+            border-color: transparent;
+        }
+        
+        .checkbox-wrapper i {
+            font-size: 12px;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .checkbox-wrapper.checked i {
+            opacity: 1;
+        }
+        
+        .agreement-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .agreement-text a {
+            color: #00d4aa;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 212, 170, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 212, 170, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .security-badge i {
+            color: #00d4aa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">12:30</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="back"><i class="fas fa-chevron-left"></i> 返回</div>
+            <div class="title">设备安全绑定</div>
+            <div></div>
+        </div>
+        
+        <!-- 内容区 -->
+        <div class="content">
+            <!-- 顶部英雄区 -->
+            <div class="hero-section">
+                <div class="token-icon-wrapper">
+                    <div class="token-icon-bg"></div>
+                    <div class="token-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                </div>
+                <h1 class="hero-title">启用 iToken 保护</h1>
+                <p class="hero-subtitle">将您的账户与当前设备安全绑定，有效防止账号被盗和资产损失</p>
+            </div>
+            
+            <!-- 功能特性 -->
+            <div class="features-section">
+                <div class="feature-card">
+                    <div class="feature-icon security">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>防盗号保护</h3>
+                        <p>即使密码泄露，他人也无法在其他设备登录您的账户</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon chip">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>硬件级安全</h3>
+                        <p>利用设备安全芯片生成唯一密钥，私钥永不离开设备</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon lock">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>资产安全</h3>
+                        <p>所有资产操作需设备验证，保护您的数字资产安全</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 操作区 -->
+            <div class="action-section">
+                <div class="agreement-row">
+                    <div class="checkbox-wrapper checked" onclick="toggleCheckbox(this)">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="agreement-text">我已阅读并同意 <a href="#">《iToken服务协议》</a></span>
+                </div>
+                
+                <button class="btn-primary" onclick="window.location.href='itoken_generating.html'">
+                    <i class="fas fa-lock"></i> 立即绑定设备
+                </button>
+                
+                <button class="btn-secondary">
+                    稍后再说
+                </button>
+                
+                <div class="security-badge">
+                    <i class="fas fa-shield-check"></i>
+                    <span>采用银行级安全加密技术</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleCheckbox(el) {
+            el.classList.toggle('checked');
+            const btn = document.querySelector('.btn-primary');
+            btn.disabled = !el.classList.contains('checked');
+        }
+    </script>
+</body>
+</html>
+

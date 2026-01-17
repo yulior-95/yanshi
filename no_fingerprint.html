@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未录入指纹</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">12:30</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+        
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+            <div class="back"><i class="fas fa-chevron-left"></i> 返回</div>
+            <div class="title">验证身份</div>
+            <div></div>
+        </div>
+        
+        <!-- 内容区 -->
+        <div class="content">
+            <div class="error-container">
+                <i class="fas fa-fingerprint fingerprint-icon" style="color: #8e8e93;"></i>
+                <h2 class="fingerprint-title">未设置指纹</h2>
+                <p class="fingerprint-desc">您尚未设置指纹验证，请前往设置添加指纹以提高账户安全性</p>
+                <button class="btn">立即前往设置指纹</button>
+                <button class="btn btn-secondary">使用其他方式验证</button>
+            </div>
+        </div>
+        
+        <!-- 底部标签栏 -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-bell"></i>
+                <span>通知</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

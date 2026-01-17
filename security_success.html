@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交成功</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery {
+            margin-left: 5px;
+        }
+        
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .header .back-button {
+            font-size: 16px;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header .back-button i {
+            margin-right: 5px;
+        }
+        
+        .header .title {
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #f6ffed;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 4px solid #52c41a;
+            color: #52c41a;
+            font-size: 40px;
+        }
+        
+        .success-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .success-message {
+            font-size: 15px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            max-width: 280px;
+        }
+        
+        .info-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .info-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .info-title i {
+            margin-right: 8px;
+            color: #1890ff;
+        }
+        
+        .info-item {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        
+        .info-label {
+            width: 80px;
+            font-size: 14px;
+            color: #999;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+            word-break: break-all;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #e6f7ff;
+            border-radius: 4px;
+            color: #1890ff;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .button-container {
+            width: 100%;
+            padding: 0 20px 20px;
+        }
+        
+        .btn-back {
+            width: 100%;
+            height: 44px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .separator {
+            width: 100%;
+            height: 1px;
+            background-color: #f0f0f0;
+            margin: 5px 0 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <div class="time">19:45</div>
+        </div>
+        <div class="status-bar-right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi" style="margin-left: 5px;"></i>
+            <div class="battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header">
+        <div class="back-button" style="visibility: hidden;">
+            <i class="fas fa-chevron-left"></i>
+            返回
+        </div>
+        <div class="title">提交成功</div>
+        <div style="width: 60px;"></div>
+    </div>
+    
+    <div class="content">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        
+        <div class="success-title">申请提交成功</div>
+        
+        <div class="success-message">
+            您的安全验证修改申请已成功提交，我们将在1-3个工作日内完成审核。审核结果将通过APP通知您。
+        </div>
+        
+        <div class="info-card">
+            <div class="info-title">
+                <i class="fas fa-shield-alt"></i>申请详情
+            </div>
+            
+            <div class="separator"></div>
+            
+            <div class="info-item">
+                <div class="info-label">申请编号</div>
+                <div class="info-value">SA2023112700001</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">申请时间</div>
+                <div class="info-value">2023-11-27 19:45:30</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">修改项目</div>
+                <div class="info-value">
+                    <span class="tag">手机号码</span>
+                    <span class="tag">谷歌验证器</span>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">处理状态</div>
+                <div class="info-value" style="color: #fa8c16;">
+                    <i class="fas fa-hourglass-half" style="margin-right: 5px;"></i>
+                    审核中
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="button-container">
+        <button class="btn-back">返回个人中心</button>
+    </div>
+</body>
+</html>

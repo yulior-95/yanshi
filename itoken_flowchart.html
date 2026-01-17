@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iToken绑定流程图</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .mermaid {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>iToken 设备绑定流程图</h1>
+    
+    <div class="mermaid">
+flowchart TD
+    A[开始: 用户请求创建i-Token] --> B
+    
+    subgraph B [第一步: 服务端授权]
+        B1[1. 验证用户身份与权限] --> B2[2. 生成一次性'激活许可'<br>并下发至App]
+    end
+
+    B --> C
+    
+    subgraph C [第二步: 客户端生成密钥对]
+        C1[3. App向手机安全芯片发起请求] --> C2[4. 安全芯片内部:<br>• 调用真随机数生成器<br>• 生成密钥对<br>• 私钥永久锁定]
+    end
+
+    C --> D
+    
+    subgraph D [第三步: 服务端签发凭证]
+        D1[5. 芯片将公钥传给App] --> D2[6. App将公钥与'激活许可'<br>提交至服务器]
+        D2 --> D3[7. 服务器用根私钥签名<br>生成'数字证书']
+    end
+
+    D --> E
+    
+    subgraph E [第四步: 客户端完成绑定]
+        E1[8. 证书下传至App] --> E2[9. 证书存入安全芯片<br>与私钥绑定]
+        E2 --> E3[10. 激活成功]
+    end
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#007AFF',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#0055D4',
+                lineColor: '#5856D6',
+                secondaryColor: '#f0f0f0',
+                tertiaryColor: '#e8e8e8',
+                background: '#ffffff',
+                mainBkg: '#007AFF',
+                nodeBorder: '#0055D4',
+                clusterBkg: '#f8f9fa',
+                clusterBorder: '#dee2e6',
+                titleColor: '#333'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 20
+            }
+        });
+    </script>
+</body>
+</html>

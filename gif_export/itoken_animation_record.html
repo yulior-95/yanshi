@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iToken动画 - 用于录制GIF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 动画容器 - 录制这个区域 */
+        .record-area {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .token-icon-wrapper {
+            width: 140px;
+            height: 140px;
+            position: relative;
+        }
+
+        .token-icon-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.3) 0%, rgba(88, 86, 214, 0.3) 100%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .token-icon-bg::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.5) 0%, rgba(88, 86, 214, 0.5) 100%);
+        }
+
+        .token-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0, 122, 255, 0.4);
+        }
+
+        .token-icon::before {
+            content: '🛡️';
+            font-size: 36px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            font-family: sans-serif;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="record-area">
+        <div class="token-icon-wrapper">
+            <div class="token-icon-bg"></div>
+            <div class="token-icon"></div>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        使用 ScreenToGif 或其他工具录制上方动画区域<br>
+        建议录制 2-3 秒，帧率 15-20fps
+    </div>
+    
+    <style>
+        .instructions {
+            color: rgba(0,0,0,0.4);
+        }
+    </style>
+</body>
+</html>
+

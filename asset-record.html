@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产记录 - C币钱包</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* iOS状态栏模拟 */
+        .status-bar {
+            height: 44px;
+            background: #F8F9FA;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #1A1A1A;
+        }
+        /* 导航栏 */
+        .nav-bar {
+            height: 48px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        /* 余额卡片 */
+        .balance-card {
+            margin: 16px;
+            padding: 20px;
+            background: #2B2D42;
+            border-radius: 16px;
+            color: white;
+        }
+        /* 横向tab栏 */
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 16px;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .tab {
+            padding: 8px 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: #4ECDC4;
+            border-color: #4ECDC4;
+            color: white;
+        }
+        /* 交易记录列表 */
+        .record-list {
+            padding: 0 16px;
+        }
+        .record-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .record-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #E5E7EB url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29pbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60') center/cover;
+            margin-right: 12px;
+        }
+        .record-info {
+            flex: 1;
+        }
+        .fee-tag {
+            font-size: 12px;
+            color: #FF6B6B;
+            margin-top: 4px;
+        }
+        /* 底部导航栏 */
+        .bottom-tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部状态栏 -->
+    <div class="status-bar">
+        <div>9:41</div>
+        <div>
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <i class="fas fa-chevron-left"></i>
+        <h2 style="margin: 0 16px; font-size: 18px;">资产记录</h2>
+    </div>
+
+    <!-- 余额卡片 -->
+    <div class="balance-card">
+        <p style="font-size: 14px; margin: 0;">当前可用余额</p>
+        <h3 style="font-size: 24px; margin: 8px 0;">123.45 C币</h3>
+        <p style="font-size: 14px; color: #CED4DA; margin: 0;">冻结余额：15.00 C币</p>
+    </div>
+
+    <!-- 横向tab栏 -->
+    <div class="tabs">
+        <div class="tab active">全部</div>
+        <div class="tab">红包</div>
+        <div class="tab">私聊转账</div>
+        <div class="tab">群聊转账</div>
+        <div class="tab">购买</div>
+        <div class="tab">出售</div>
+        <div class="tab">返现</div>
+    </div>
+
+    <!-- 交易记录列表（手续费标签方案1：悬浮标签） -->
+    <div class="record-list">
+        <div class="record-item">
+            <div class="record-icon"></div>
+            <div class="record-info">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>红包收入</span>
+                    <span style="color: #22C55E;">+5.00 C币</span>
+                </div>
+                <p style="font-size: 12px; color: #6B7280; margin: 4px 0;">2024-06-10 14:23</p>
+                <div class="fee-tag">手续费：0.05 C币</div>
+            </div>
+        </div>
+        <div class="record-item">
+            <div class="record-icon" style="background-image: url('https://images.unsplash.com/photo-1583401716469-9124a5b30781?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y29pbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60')"></div>
+            <div class="record-info">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>群聊转账</span>
+                    <span style="color: #EF4444;">-8.00 C币</span>
+                </div>
+                <p style="font-size: 12px; color: #6B7280; margin: 4px 0;">2024-06-09 20:15</p>
+                <div class="fee-tag" style="background: #FF6B6B; color: white; padding: 2px 8px; border-radius: 8px; display: inline-block;">0.10 C币</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-tabbar">
+        <div>
+            <i class="fas fa-home" style="font-size: 20px;"></i>
+            <p style="font-size: 12px; margin: 4px 0;">首页</p>
+        </div>
+        <div>
+            <i class="fas fa-comment" style="font-size: 20px;"></i>
+            <p style="font-size: 12px; margin: 4px 0;">消息</p>
+        </div>
+        <div>
+            <i class="fas fa-wallet" style="font-size: 20px; color: #4ECDC4;"></i>
+            <p style="font-size: 12px; margin: 4px 0; color: #4ECDC4;">资产</p>
+        </div>
+        <div>
+            <i class="fas fa-cog" style="font-size: 20px;"></i>
+            <p style="font-size: 12px; margin: 4px 0;">设置</p>
+        </div>
+    </div>
+</body>
+</html>
