@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全验证码</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .content {
+            padding-top: 14px;
+        }
+
+        .verify-hero {
+            min-height: 190px;
+            border-radius: 14px;
+            padding: 18px;
+            color: #fff;
+            margin-bottom: 16px;
+            background-image:
+                linear-gradient(130deg, rgba(15, 23, 42, 0.72), rgba(79, 70, 229, 0.75)),
+                url('https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .verify-hero h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .verify-hero p {
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0.96;
+        }
+
+        .card {
+            padding: 16px;
+        }
+
+        .field-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .code-input {
+            width: 100%;
+            height: 46px;
+            border-radius: 11px;
+            border: 1px solid #d1d5db;
+            padding: 0 12px;
+            font-size: 17px;
+            letter-spacing: 4px;
+            outline: none;
+            font-weight: 700;
+        }
+
+        .code-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        }
+
+        .hint {
+            margin-top: 10px;
+            color: #8e8e93;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            width: 100%;
+            margin-top: 16px;
+            border: none;
+            border-radius: 11px;
+            height: 46px;
+            background: #2563eb;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 11px;
+            height: 44px;
+            background: #fff;
+            color: #374151;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            padding: 20px;
+        }
+
+        .modal-mask.show {
+            display: flex;
+        }
+
+        .success-card {
+            width: 100%;
+            max-width: 328px;
+            border-radius: 16px;
+            background: #fff;
+            padding: 20px 18px;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            background: rgba(52, 199, 89, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #34c759;
+            font-size: 26px;
+        }
+
+        .success-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .success-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+
+        .success-btn {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            height: 42px;
+            background: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="back" onclick="window.location.href='google_auth_setup.html'" style="cursor:pointer;"><i class="fas fa-chevron-left"></i> 谷歌验证码</div>
+            <div class="title">安全验证码</div>
+            <div style="width:42px;"></div>
+        </div>
+
+        <div class="content">
+            <div class="verify-hero">
+                <h2>输入谷歌验证码</h2>
+                <p>请打开 Google Authenticator，输入当前 6 位动态验证码完成验证绑定。</p>
+            </div>
+
+            <div class="card">
+                <div class="field-label">谷歌验证码</div>
+                <input id="googleCodeInput" class="code-input" type="text" inputmode="numeric" maxlength="6" placeholder="请输入6位验证码">
+                <div class="hint">验证码每 30 秒更新。若失败，请检查手机时间是否与网络自动同步。</div>
+                <button class="btn-primary" id="confirmBtn">确认绑定</button>
+                <button class="btn-secondary" onclick="window.location.href='google_auth_setup.html'">稍后再说</button>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-bell"></i>
+                <span>通知</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-mask" id="successModal">
+        <div class="success-card">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <div class="success-title">设置成功</div>
+            <div class="success-desc">谷歌验证码已可用，已返回设置页继续配置交易验证方式。</div>
+            <button class="success-btn" id="doneBtn">返回设置页</button>
+        </div>
+    </div>
+
+    <script>
+        const codeInput = document.getElementById('googleCodeInput');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const successModal = document.getElementById('successModal');
+        const doneBtn = document.getElementById('doneBtn');
+
+        confirmBtn.addEventListener('click', () => {
+            const value = codeInput.value.trim();
+            if (!/^\d{6}$/.test(value)) {
+                codeInput.focus();
+                codeInput.style.borderColor = '#ef4444';
+                return;
+            }
+            codeInput.style.borderColor = '#d1d5db';
+            localStorage.setItem('googleAuthenticatorBound', '1');
+            if (!localStorage.getItem('tradeVerificationMethod')) {
+                localStorage.setItem('tradeVerificationMethod', 'phone');
+            }
+            successModal.classList.add('show');
+        });
+
+        doneBtn.addEventListener('click', () => {
+            window.location.href = 'google_auth_setup.html';
+        });
+    </script>
+</body>
+</html>

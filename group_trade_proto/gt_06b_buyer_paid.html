@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>买方 · 已付款待放币</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:45</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_05_chat_packet.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">交易详情</div><div class="sub">已付款 · 等待卖方放币</div></div>
+      <div class="side"></div>
+    </div>
+    <div class="body pad">
+      <div style="display:flex;justify-content:center;margin-bottom:4px">
+        <span class="tag blue"><i class="fa-solid fa-check"></i> 已付款</span>
+      </div>
+      <div class="countdown">
+        <div class="clock">06:18</div>
+        <div class="hint">等待卖方确认收款并放币</div>
+      </div>
+      <div class="amount-hero">
+        <div class="coin">USDT</div>
+        <div class="num">200.00</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <img src="../figma_proto/assets/media/avatar_albert.png" class="avatar lg" alt="" style="margin-bottom:10px">
+        <div style="font-weight:600">已通知卖方</div>
+        <div style="font-size:13px;color:var(--sub);margin-top:6px;line-height:1.5">
+          若倒计时结束卖方仍未放币，你可发起申诉，由后台审核处理。
+        </div>
+      </div>
+      <div class="timeline" style="margin:8px 0 16px;padding:0 8px">
+        <div class="item"><div class="dot green"></div><div><div class="t">订单创建</div><div class="d">09:41</div></div></div>
+        <div class="item"><div class="dot green"></div><div><div class="t">你已确认付款</div><div class="d">09:44</div></div></div>
+        <div class="item"><div class="dot orange"></div><div><div class="t">等待卖方「我已收到」</div><div class="d">进行中</div></div></div>
+      </div>
+      <a class="btn soft" href="gt_07_seller_detail.html" style="display:grid;place-items:center;text-decoration:none;margin-bottom:10px">查看卖方视角</a>
+      <a class="btn ghost" href="gt_11_appeal_entry.html" style="display:grid;place-items:center;text-decoration:none">模拟超时 → 进入申诉入口</a>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

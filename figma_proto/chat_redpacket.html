@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>发红包</title>
+  <style>
+    :root {
+      --bg: #edeef3;
+      --card: #fff;
+      --theme: #178aff;
+      --danger: #e8401e;
+      --text: #000;
+      --muted: #c4c7cf;
+      --sub: #979797;
+      --phone-w: 414px;
+      --phone-h: 896px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+    }
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100vh - 40px);
+      border-radius: 48px;
+      overflow: hidden;
+      background: var(--bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 0 10px #111, 0 0 0 12px #2a2a2a, 0 30px 80px rgba(0,0,0,.55);
+    }
+    .status {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      font-size: 17px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .island { width: 124px; height: 36px; background: #000; border-radius: 33px; }
+    .header {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .header .side { width: 120px; display: flex; align-items: center; }
+    .header .side.right { justify-content: flex-end; }
+    .back, .more-btn {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .back { width: 24px; height: 24px; }
+    .back img { width: 10px; height: 18px; transform: scaleX(-1); }
+    .more-btn {
+      width: 62px;
+      height: 36px;
+      border-radius: 43px;
+      background: rgba(255,255,255,.35);
+    }
+    .more-btn img { width: 30px; height: 30px; }
+    .title { font-size: 18px; font-weight: 500; }
+    .body {
+      flex: 1;
+      padding: 12px 16px 0;
+      overflow: auto;
+    }
+    .row { display: flex; gap: 16px; margin-bottom: 12px; }
+    .field {
+      background: var(--card);
+      border-radius: 8px;
+      height: 54px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .field.grow { flex: 1; }
+    .field.coin {
+      width: 81px;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .label { color: var(--muted); font-size: 16px; white-space: nowrap; }
+    .value { font-size: 16px; opacity: .7; }
+    .value.theme { color: var(--theme); opacity: 1; }
+    .field input {
+      flex: 1;
+      border: 0;
+      outline: none;
+      background: transparent;
+      font: inherit;
+      font-size: 16px;
+      text-align: right;
+      min-width: 0;
+    }
+    .field input::placeholder { color: var(--muted); text-align: left; }
+    .field.msg input { text-align: left; }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin: 0 0 12px;
+      color: var(--sub);
+    }
+    .meta b { color: var(--theme); font-weight: 400; }
+    .meta span.unit { color: #000; }
+    .ico { width: 12px; height: 12px; display: block; }
+    .ico.lg { width: 30px; height: 30px; }
+    .total {
+      text-align: center;
+      margin: 40px 0 24px;
+    }
+    .total .amt {
+      font-size: 46px;
+      line-height: 1.5;
+      font-family: DINPro, "Helvetica Neue", sans-serif;
+      font-weight: 500;
+    }
+    .total .amt small { font-size: 16px; letter-spacing: 0; }
+    .total .cny { color: #81818d; font-size: 16px; }
+    .btn {
+      display: block;
+      width: 194px;
+      height: 48px;
+      margin: 0 auto;
+      border: 0;
+      border-radius: 8px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .btn:disabled { opacity: .45; }
+    .home {
+      height: 34px;
+      position: relative;
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+    .home::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      border-radius: 100px;
+      background: #000;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display: none;
+      z-index: 20;
+      align-items: flex-end;
+    }
+    .overlay.show { display: flex; }
+    .sheet {
+      width: 100%;
+      background: #f2f2f7;
+      border-radius: 16px 16px 0 0;
+      padding: 12px 16px 20px;
+      animation: up .22s ease;
+    }
+    @keyframes up {
+      from { transform: translateY(24px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .sheet h3 {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .pwd {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .pwd i {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+    }
+    .pwd i.on::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #000;
+    }
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .keys button {
+      height: 48px;
+      border: 0;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 22px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .keys button.ghost { background: transparent; color: #666; font-size: 14px; }
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 120px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.78);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      opacity: 0;
+      transition: .2s;
+      pointer-events: none;
+      z-index: 30;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+    .menu {
+      position: absolute;
+      right: 16px;
+      top: 90px;
+      width: 140px;
+      background: rgba(255,255,255,.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      overflow: hidden;
+      display: none;
+      z-index: 15;
+    }
+    .menu.show { display: block; }
+    .menu button {
+      width: 100%;
+      height: 44px;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 15px;
+      text-align: left;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+    .menu button:active { background: #f5f5f5; }
+    @media (max-width: 480px) {
+      body { background: var(--bg); }
+      .phone { width: 100vw; height: 100dvh; max-height: none; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" id="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><span style="font-size:12px">100%</span></div>
+    <div class="header">
+      <div class="side">
+        <button class="back" onclick="location.href='chat_message_all.html'" aria-label="返回">
+          <img src="assets/icons/back.svg" alt="">
+        </button>
+      </div>
+      <div class="title">发红包</div>
+      <div class="side right">
+        <button class="more-btn" id="btnMore" aria-label="更多">
+          <img src="assets/icons/more.svg" alt="">
+        </button>
+      </div>
+    </div>
+
+    <div class="menu" id="moreMenu">
+      <button data-go="record">红包记录</button>
+      <button data-go="cover">红包封面</button>
+    </div>
+
+    <div class="body">
+      <div class="row">
+        <div class="field grow">
+          <span class="label">数量</span>
+          <input id="amount" type="number" value="20" inputmode="decimal">
+        </div>
+        <button class="field coin" id="btnCoin" type="button">
+          <span class="value" id="coin">C</span>
+          <img class="ico" src="assets/icons/arrow_down.svg" alt="">
+        </button>
+      </div>
+      <div class="meta">
+        <div>网络费用 <b id="fee">2.00</b> <span class="unit">C</span></div>
+        <div>可用余额 <b>9759.29</b> <span class="unit">C</span></div>
+      </div>
+      <div class="field msg" style="margin-bottom:12px">
+        <input id="wish" placeholder="恭喜发财，大吉大利">
+        <img class="ico lg" src="assets/icons/rp_emoji.svg" alt="">
+      </div>
+      <button class="field" type="button" id="btnCover" style="width:100%;margin-bottom:12px;cursor:pointer">
+        <span class="label">红包封面</span>
+        <img class="ico" src="assets/icons/arrow_right.svg" alt="" style="transform:rotate(-90deg)">
+      </button>
+      <div class="total">
+        <div class="amt"><span id="total">22.00</span><small>C</small></div>
+        <div class="cny">≈￥<span id="cny">22.00</span></div>
+      </div>
+      <button class="btn" id="btnSubmit">塞钱进红包</button>
+    </div>
+    <div class="home"></div>
+
+    <div class="overlay" id="pwdOverlay">
+      <div class="sheet">
+        <h3>请输入安全密码</h3>
+        <div class="pwd" id="pwdDots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="keys" id="keys">
+          <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+          <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+          <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+          <button class="ghost" data-k="cancel">取消</button>
+          <button data-k="0">0</button>
+          <button class="ghost" data-k="del">删除</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="coinOverlay">
+      <div class="sheet">
+        <h3>选择币种</h3>
+        <button class="field" style="width:100%;margin-bottom:8px;cursor:pointer" data-coin="C">
+          <span>C</span><span class="value theme">可用 9759.29</span>
+        </button>
+        <button class="field" style="width:100%;margin-bottom:8px;cursor:pointer" data-coin="USDT">
+          <span>USDT</span><span class="value theme">可用 120.50</span>
+        </button>
+        <button class="field" style="width:100%;cursor:pointer" data-coin="BTC">
+          <span>BTC</span><span class="value theme">可用 0.82</span>
+        </button>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <script>
+    const amount = document.getElementById("amount");
+    const total = document.getElementById("total");
+    const cny = document.getElementById("cny");
+    const fee = document.getElementById("fee");
+    const coin = document.getElementById("coin");
+    const pwdOverlay = document.getElementById("pwdOverlay");
+    const coinOverlay = document.getElementById("coinOverlay");
+    const dots = [...document.querySelectorAll("#pwdDots i")];
+    let pin = "";
+
+    function toast(t) {
+      const el = document.getElementById("toast");
+      el.textContent = t;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 1400);
+    }
+
+    function syncTotal() {
+      const n = Number(amount.value || 0);
+      const f = 2;
+      fee.textContent = f.toFixed(2);
+      const sum = n + f;
+      total.textContent = sum.toFixed(2);
+      cny.textContent = sum.toFixed(2);
+    }
+    amount.addEventListener("input", syncTotal);
+    syncTotal();
+
+    document.getElementById("btnMore").onclick = () => {
+      document.getElementById("moreMenu").classList.toggle("show");
+    };
+    document.getElementById("moreMenu").onclick = (e) => {
+      const b = e.target.closest("[data-go]");
+      if (!b) return;
+      document.getElementById("moreMenu").classList.remove("show");
+      if (b.dataset.go === "record") location.href = "chat_redpacket_history.html";
+      else toast("红包封面设置");
+    };
+    document.getElementById("btnCover").onclick = () => toast("红包封面设置");
+    document.getElementById("btnCoin").onclick = () => coinOverlay.classList.add("show");
+    coinOverlay.onclick = (e) => {
+      if (e.target === coinOverlay) coinOverlay.classList.remove("show");
+      const b = e.target.closest("[data-coin]");
+      if (b) {
+        coin.textContent = b.dataset.coin;
+        coinOverlay.classList.remove("show");
+      }
+    };
+
+    document.getElementById("btnSubmit").onclick = () => {
+      pin = "";
+      renderPin();
+      pwdOverlay.classList.add("show");
+    };
+
+    function renderPin() {
+      dots.forEach((d, i) => d.classList.toggle("on", i < pin.length));
+    }
+
+    document.getElementById("keys").onclick = (e) => {
+      const b = e.target.closest("[data-k]");
+      if (!b) return;
+      const k = b.dataset.k;
+      if (k === "cancel") {
+        pwdOverlay.classList.remove("show");
+        pin = "";
+        renderPin();
+        return;
+      }
+      if (k === "del") {
+        pin = pin.slice(0, -1);
+        renderPin();
+        return;
+      }
+      if (pin.length >= 6) return;
+      pin += k;
+      renderPin();
+      if (pin.length === 6) {
+        setTimeout(() => {
+          pwdOverlay.classList.remove("show");
+          toast("红包已发出");
+          setTimeout(() => (location.href = "chat_message_all.html"), 900);
+        }, 200);
+      }
+    };
+  </script>
+</body>
+</html>

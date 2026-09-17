@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直播数据统计 · 指标口径与计算公式说明</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f0f3f7;
+            --panel: #ffffff;
+            --ink: #1a2332;
+            --muted: #6b7a90;
+            --line: #e4eaf2;
+            --brand: #1a6fd4;
+            --brand-soft: #e8f2fc;
+            --code-bg: #f4f6fa;
+            --shadow: 0 1px 3px rgba(26, 35, 50, 0.06), 0 8px 24px rgba(26, 35, 50, 0.04);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 56px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .topbar-brand .mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--brand);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .topbar-brand .sub {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--muted);
+            margin-left: 4px;
+        }
+
+        .topbar-actions { display: flex; gap: 8px; }
+
+        .btn {
+            height: 34px;
+            padding: 0 14px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            font-size: 13px;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .btn:hover { border-color: #c5d0de; background: #f8fafc; }
+
+        .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+        .btn.primary:hover { background: #155db5; }
+
+        .layout {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 24px 28px 60px;
+            display: grid;
+            grid-template-columns: 232px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .toc {
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 16px 8px 16px 16px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+
+        .toc h3 {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            display: block;
+            font-size: 13px;
+            color: var(--ink);
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            line-height: 1.4;
+        }
+
+        .toc a:hover { background: var(--brand-soft); color: var(--brand); }
+        .toc a.lv3 { padding-left: 20px; font-size: 12px; color: var(--muted); }
+
+        .doc {
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 36px 44px 48px;
+            min-width: 0;
+        }
+
+        /* ------- Markdown 渲染样式 ------- */
+        .doc h1 {
+            font-size: 26px;
+            font-weight: 700;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 18px;
+        }
+
+        .doc h2 {
+            font-size: 20px;
+            font-weight: 650;
+            margin: 34px 0 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line);
+            scroll-margin-top: 80px;
+        }
+
+        .doc h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 10px;
+            scroll-margin-top: 80px;
+        }
+
+        .doc p {
+            font-size: 14px;
+            line-height: 1.85;
+            margin: 10px 0;
+            color: #2c3a4d;
+        }
+
+        .doc ul, .doc ol {
+            margin: 10px 0 10px 22px;
+            font-size: 14px;
+            line-height: 1.9;
+            color: #2c3a4d;
+        }
+
+        .doc li { margin-bottom: 3px; }
+
+        .doc code {
+            background: var(--code-bg);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-family: 'SFMono-Regular', Consolas, 'Courier New', monospace;
+            font-size: 12.5px;
+            color: #b0357a;
+            white-space: nowrap;
+        }
+
+        .doc pre {
+            background: var(--code-bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px 16px;
+            overflow-x: auto;
+            margin: 14px 0;
+        }
+
+        .doc pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #2c3a4d;
+            font-size: 12.5px;
+            line-height: 1.7;
+            white-space: pre;
+        }
+
+        .doc table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0 18px;
+            font-size: 13px;
+        }
+
+        .doc th {
+            background: #fafbfc;
+            text-align: left;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .doc td {
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            color: #2c3a4d;
+            line-height: 1.7;
+            vertical-align: top;
+        }
+
+        .doc tbody tr:nth-child(even) { background: #fcfdfe; }
+
+        .doc blockquote {
+            border-left: 3px solid var(--brand);
+            background: var(--brand-soft);
+            padding: 12px 16px;
+            margin: 14px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: #2c3a4d;
+        }
+
+        .doc hr { border: none; border-top: 1px solid var(--line); margin: 26px 0; }
+
+        .doc a { color: var(--brand); }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.25s;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 960px) {
+            .layout { grid-template-columns: 1fr; padding: 16px; }
+            .toc { position: static; max-height: none; }
+            .doc { padding: 24px 20px 32px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="mark"><i class="fas fa-book"></i></div>
+            <span>指标口径与计算公式说明</span>
+            <span class="sub">直播数据统计 · 后台管理</span>
+        </div>
+        <div class="topbar-actions">
+            <button class="btn" id="copyBtn"><i class="fas fa-copy"></i> 复制 Markdown 原文</button>
+            <button class="btn" id="downloadBtn"><i class="fas fa-download"></i> 下载 .md</button>
+            <a class="btn primary" href="live_admin_stats.html"><i class="fas fa-chart-line"></i> 返回数据看板</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="toc">
+            <h3>目录</h3>
+            <div id="tocList"></div>
+        </aside>
+        <article class="doc" id="doc"></article>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="text/markdown" id="mdSource">
+# 直播数据统计 · 指标口径说明
+
+看板上每个字段的含义与算法。占比统一保留 1 位小数。
+
+- 适用页面：`live_admin_stats.html`
+- 版本：v2.0 · 2026-07-31
+
+---
+
+## 一、单场指标
+
+一次开播到关播算一场。同一观众在一场内多次进出只算 1 人，观看时长累加。
+
+| 字段 | 说明 | 公式 |
+| --- | --- | --- |
+| 进入人数 | 本场所有占比的分母。不是「峰值同时在线」 | 该场进入过的观众去重计数 |
+| 直播时长 | 直播本身的长度，不是观看时长 | 关播时间 − 开播时间 |
+| 不足 1 分钟退出人数 | 进来不到 1 分钟就走的观众 | 观看时长 < 1 分钟的人数 |
+| 不足 1 分钟退出占比 | 开场留人能力，越低越好 | 不足 1 分钟退出人数 ÷ 进入人数 × 100% |
+| 观看 ≥5 分钟人数 | 真正看进去的观众 | 观看时长 ≥ 5 分钟的人数 |
+| 观看 ≥10 分钟人数 | 有粘性的观众 | 观看时长 ≥ 10 分钟的人数 |
+| 观看 ≥30 分钟人数 | 即「长时间观看用户」 | 观看时长 ≥ 30 分钟的人数 |
+| 长时间观看占比 | 内容深度，越高越好 | 观看 ≥30 分钟人数 ÷ 进入人数 × 100% |
+| 平均观看时长 | 分母含快速流失的人，会被开场流失拉低 | 全部观众观看时长之和 ÷ 进入人数 |
+
+> ≥5、≥10、≥30 是累积口径，互相包含。一个看了 40 分钟的人这三项都会计入，所以三者占比相加没有业务含义。
+
+---
+
+## 二、时长分布五段
+
+明细列表「时长结构」列的迷你条用的是互斥区间，五段人数相加正好等于进入人数；导出报表里也是这五列。
+
+| 字段 | 说明 | 公式 |
+| --- | --- | --- |
+| 不足 1 分钟 | 开场即走 | 观看时长 < 1 分钟的人数 |
+| 1–5 分钟 | 短暂停留 | 1 分钟 ≤ 观看时长 < 5 分钟的人数 |
+| 5–10 分钟 | 有效观看 | 5 分钟 ≤ 观看时长 < 10 分钟的人数 |
+| 10–30 分钟 | 深度观看 | 10 分钟 ≤ 观看时长 < 30 分钟的人数 |
+| 30 分钟以上 | 长时间观看 | 观看时长 ≥ 30 分钟的人数 |
+| 各段占比 | 五段相加等于 100% | 该段人数 ÷ 进入人数 × 100% |
+
+---
+
+## 三、多场汇总
+
+筛选出多场时，顶部卡片按人数加权汇总，不是把各场的百分比取平均。
+
+| 字段 | 说明 | 公式 |
+| --- | --- | --- |
+| 直播场次 | 当前筛选命中的场数 | 场次计数 |
+| 进入总人次 | 跨场不去重，同一人看两场算两次 | 各场进入人数之和 |
+| 场均进入人数 | 取整显示 | 进入总人次 ÷ 直播场次 |
+| 不足 1 分钟退出占比 | 整体开场流失水平 | 各场不足 1 分钟人数之和 ÷ 各场进入人数之和 × 100% |
+| 长时间观看占比 | 整体深度观看水平 | 各场 ≥30 分钟人数之和 ÷ 各场进入人数之和 × 100% |
+| 平均观看时长 | 按人数加权的整体均值 | 各场（平均时长 × 该场进入人数）之和 ÷ 各场进入人数之和 |
+
+> 为什么加权：A 场 1000 人流失 20%、B 场 50 人流失 60%，直接平均是 40%，被小场次带偏了；加权后是 21.9%，才是真实水平。
+
+---
+
+## 四、环比
+
+| 字段 | 说明 | 公式 |
+| --- | --- | --- |
+| 上一周期 | 紧邻当前区间的等长时间段。选近 7 天（7/24–7/30），上一周期就是 7/17–7/23 | 起始时间往前推一个等长区间 |
+| 环比涨跌 | 汇总卡片上的涨跌幅 | (本周期值 − 上一周期值) ÷ 上一周期值绝对值 × 100% |
+| 持平 | 变化太小时不显示具体数字 | 涨跌幅绝对值 < 0.5% |
+
+> 上一周期没有数据时不显示环比。涨跌颜色按指标好坏定：流失率下降标绿，进入人数、长时间观看占比、平均时长则是上升标绿。
+
+---
+
+## 五、颜色阈值
+
+| 字段 | 说明 | 公式 |
+| --- | --- | --- |
+| 不足 1 分钟退出占比 | 绿色良好 / 橙色关注 / 红色预警 | < 22% / 22%–30% / ≥ 30% |
+| 长时间观看占比 | 绿色良好 / 橙色关注 / 红色预警 | ≥ 20% / 12%–20% / < 12% |
+| 时长结构条 | 固定配色，不随数值变化 | 红 = 不足 1 分钟，灰 = 1–5 分钟，橙 = 5–10 分钟，蓝 = 10–30 分钟，深青 = 30 分钟以上 |
+
+---
+
+## 六、筛选条件
+
+| 字段 | 说明 | 公式 |
+| --- | --- | --- |
+| 时间范围 | 预设按钮与日期框双向同步，手动改日期即切为自定义 | 开播时间落在所选区间内 |
+| 群组UID | 填 UID 或群名称都能命中 | 对群组 UID 或群名称模糊匹配，不区分大小写 |
+| 主播68号 | 可以只输数字，输 68 命中主播68号 | 对主播编号模糊匹配 |
+| 群主68号 | 规则同主播 | 对群主编号模糊匹配 |
+| 高流失 | 快捷筛选 | 不足 1 分钟退出占比 ≥ 30% |
+| 优质场次 | 快捷筛选 | 长时间观看占比 ≥ 20% |
+| 大场次 | 快捷筛选 | 进入人数 ≥ 250 |
+| 平均时长偏低 | 快捷筛选 | 平均观看时长 < 8 分钟 |
+    </script>
+
+    <script>
+    (function () {
+        'use strict';
+
+        function escapeHtml(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function inline(s) {
+            return escapeHtml(s)
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+        }
+
+        function renderMarkdown(md) {
+            const lines = md.replace(/\r/g, '').split('\n');
+            let html = '', i = 0, para = [];
+
+            function closePara() {
+                if (para.length) { html += '<p>' + inline(para.join(' ')) + '</p>'; para = []; }
+            }
+
+            while (i < lines.length) {
+                const line = lines[i];
+
+                if (/^```/.test(line)) {
+                    closePara();
+                    i++;
+                    const code = [];
+                    while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
+                    i++;
+                    html += '<pre><code>' + escapeHtml(code.join('\n')) + '</code></pre>';
+                    continue;
+                }
+
+                if (/^\s*$/.test(line)) { closePara(); i++; continue; }
+
+                if (/^#{1,6}\s/.test(line)) {
+                    closePara();
+                    const m = line.match(/^(#{1,6})\s+(.*)$/);
+                    const lv = m[1].length;
+                    html += '<h' + lv + '>' + inline(m[2]) + '</h' + lv + '>';
+                    i++;
+                    continue;
+                }
+
+                if (/^---+\s*$/.test(line)) { closePara(); html += '<hr>'; i++; continue; }
+
+                if (/^\|/.test(line) && i + 1 < lines.length && /^\|[\s:|-]+\|?\s*$/.test(lines[i + 1])) {
+                    closePara();
+                    const cells = function (l) {
+                        return l.replace(/^\|/, '').replace(/\|\s*$/, '').split('|').map(function (c) { return c.trim(); });
+                    };
+                    let t = '<table><thead><tr>' +
+                        cells(line).map(function (h) { return '<th>' + inline(h) + '</th>'; }).join('') +
+                        '</tr></thead><tbody>';
+                    i += 2;
+                    while (i < lines.length && /^\|/.test(lines[i])) {
+                        t += '<tr>' + cells(lines[i]).map(function (c) { return '<td>' + inline(c) + '</td>'; }).join('') + '</tr>';
+                        i++;
+                    }
+                    html += t + '</tbody></table>';
+                    continue;
+                }
+
+                if (/^\s*[-*]\s+/.test(line)) {
+                    closePara();
+                    let ul = '<ul>';
+                    while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+                        ul += '<li>' + inline(lines[i].replace(/^\s*[-*]\s+/, '')) + '</li>';
+                        i++;
+                    }
+                    html += ul + '</ul>';
+                    continue;
+                }
+
+                if (/^\s*\d+\.\s+/.test(line)) {
+                    closePara();
+                    let ol = '<ol>';
+                    while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+                        ol += '<li>' + inline(lines[i].replace(/^\s*\d+\.\s+/, '')) + '</li>';
+                        i++;
+                    }
+                    html += ol + '</ol>';
+                    continue;
+                }
+
+                if (/^>\s?/.test(line)) {
+                    closePara();
+                    const q = [];
+                    while (i < lines.length && /^>\s?/.test(lines[i])) { q.push(lines[i].replace(/^>\s?/, '')); i++; }
+                    html += '<blockquote>' + inline(q.join(' ')) + '</blockquote>';
+                    continue;
+                }
+
+                para.push(line.trim());
+                i++;
+            }
+            closePara();
+            return html;
+        }
+
+        const raw = document.getElementById('mdSource').textContent.replace(/^\n/, '');
+        const docEl = document.getElementById('doc');
+        docEl.innerHTML = renderMarkdown(raw);
+
+        // 目录
+        const toc = document.getElementById('tocList');
+        let n = 0;
+        docEl.querySelectorAll('h2, h3').forEach(function (h) {
+            h.id = 'sec-' + (++n);
+            const a = document.createElement('a');
+            a.href = '#' + h.id;
+            a.textContent = h.textContent;
+            if (h.tagName === 'H3') a.className = 'lv3';
+            toc.appendChild(a);
+        });
+
+        function toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(function () { el.classList.remove('show'); }, 1800);
+        }
+
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(raw).then(function () { toast('Markdown 原文已复制到剪贴板'); },
+                    function () { toast('复制失败，请手动选择内容复制'); });
+            } else {
+                toast('当前浏览器不支持自动复制');
+            }
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            const blob = new Blob(['\uFEFF' + raw], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '直播数据统计_指标口径与计算公式说明.md';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        });
+    })();
+    </script>
+</body>
+</html>

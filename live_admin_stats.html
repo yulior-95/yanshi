@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直播数据统计 · 后台管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+    <style>
+        :root {
+            --bg: #f0f3f7;
+            --panel: #ffffff;
+            --ink: #1a2332;
+            --muted: #6b7a90;
+            --line: #e4eaf2;
+            --brand: #1a6fd4;
+            --brand-soft: #e8f2fc;
+            --ok: #0d9f6e;
+            --ok-soft: #e6f7f1;
+            --warn: #d97706;
+            --warn-soft: #fef3e6;
+            --danger: #dc4a3d;
+            --danger-soft: #fdeceb;
+            --long: #0b7ea4;
+            --long-soft: #e6f5fa;
+            --grey: #94a3b8;
+            --shadow: 0 1px 3px rgba(26, 35, 50, 0.06), 0 8px 24px rgba(26, 35, 50, 0.04);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            padding-bottom: 72px;
+        }
+
+        /* ========== 顶栏 ========== */
+        .topbar {
+            height: 56px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            position: sticky;
+            top: 0;
+            z-index: 120;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .topbar-brand .mark {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--brand);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .topbar-brand .sub {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--muted);
+            margin-left: 4px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .role-tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--brand-soft);
+            color: var(--brand);
+            font-weight: 500;
+        }
+
+        /* ========== 筛选栏 ========== */
+        .filterbar {
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+            padding: 12px 28px;
+            position: sticky;
+            top: 56px;
+            z-index: 110;
+        }
+
+        .filter-row {
+            max-width: 1560px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row + .filter-row {
+            margin-top: 10px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .chip-group {
+            display: inline-flex;
+            background: #f2f5f9;
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .chip {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--muted);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .chip:hover { color: var(--ink); }
+
+        .chip.active {
+            background: #fff;
+            color: var(--brand);
+            font-weight: 560;
+            box-shadow: 0 1px 3px rgba(26, 35, 50, 0.1);
+        }
+
+        .quick-chip {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: #fff;
+            font-size: 12px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .quick-chip:hover { border-color: #c5d0de; }
+
+        .quick-chip.active {
+            border-color: var(--brand);
+            background: var(--brand-soft);
+            color: var(--brand);
+            font-weight: 560;
+        }
+
+        .field {
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            font-size: 13px;
+            background: #fff;
+            color: var(--ink);
+            outline: none;
+        }
+
+        .field:focus { border-color: var(--brand); }
+
+        .id-field {
+            width: 190px;
+            padding-left: 32px;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236b7a90' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E") 10px center no-repeat;
+        }
+
+        a.btn { text-decoration: none; }
+
+        .spacer { flex: 1; }
+
+        .btn {
+            height: 34px;
+            padding: 0 14px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            font-size: 13px;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn:hover { border-color: #c5d0de; background: #f8fafc; }
+
+        .btn.primary {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+        }
+
+        .btn.primary:hover { background: #155db5; }
+
+        .btn.ghost {
+            border-color: transparent;
+            color: var(--muted);
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+
+        /* ========== 页面主体 ========== */
+        .page {
+            max-width: 1560px;
+            margin: 0 auto;
+            padding: 18px 28px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .panel-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        /* ========== KPI ========== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+
+        .kpi-card {
+            background: var(--panel);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+        }
+
+        .kpi-card.sessions::before { background: var(--grey); }
+        .kpi-card.enter::before { background: var(--brand); }
+        .kpi-card.bounce::before { background: var(--danger); }
+        .kpi-card.long::before { background: var(--long); }
+        .kpi-card.avg::before { background: var(--ok); }
+
+        .kpi-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .kpi-value .unit {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            margin-left: 4px;
+        }
+
+        .kpi-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .delta {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .delta.up { background: var(--ok-soft); color: var(--ok); }
+        .delta.down { background: var(--danger-soft); color: var(--danger); }
+        .delta.flat { background: #f1f4f8; color: var(--muted); }
+
+        /* ========== 趋势图 ========== */
+        .chart-box {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+        .legend-swatch {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .legend-swatch.line {
+            width: 16px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .trend-bar:hover { opacity: 0.75; }
+
+        /* ========== 表格 ========== */
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+            background: #fafbfc;
+        }
+
+        th.sortable { cursor: pointer; user-select: none; }
+        th.sortable:hover { color: var(--brand); }
+
+        th .sort-icon {
+            margin-left: 4px;
+            font-size: 10px;
+            opacity: 0.35;
+        }
+
+        th.sorted { color: var(--brand); font-weight: 600; }
+        th.sorted .sort-icon { opacity: 1; }
+
+        td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f8fafc; }
+
+        .cell-name {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 170px;
+        }
+
+        .cell-name .n {
+            font-weight: 560;
+            color: var(--ink);
+        }
+
+        .cell-name .g {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .pct-pill {
+            display: inline-block;
+            padding: 1px 7px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .pct-pill.bad { background: var(--danger-soft); color: var(--danger); }
+        .pct-pill.mid { background: var(--warn-soft); color: var(--warn); }
+        .pct-pill.good { background: var(--ok-soft); color: var(--ok); }
+        .pct-pill.info { background: var(--brand-soft); color: var(--brand); }
+        .pct-pill.long { background: var(--long-soft); color: var(--long); }
+
+        .mini-stack {
+            display: flex;
+            width: 132px;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #eef2f7;
+        }
+
+        .mini-stack span { display: block; height: 100%; }
+        .mini-stack .s-lt1 { background: var(--danger); }
+        .mini-stack .s-m1_5 { background: var(--grey); }
+        .mini-stack .s-m5_10 { background: var(--warn); }
+        .mini-stack .s-m10_30 { background: var(--brand); }
+        .mini-stack .s-ge30 { background: var(--long); }
+
+        input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            accent-color: var(--brand);
+            cursor: pointer;
+        }
+
+        /* ========== 分页 ========== */
+        .pager {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-top: 14px;
+            margin-top: 4px;
+            border-top: 1px solid var(--line);
+            flex-wrap: wrap;
+        }
+
+        .pager-info { font-size: 12px; color: var(--muted); }
+
+        .pager-ctrl { display: flex; align-items: center; gap: 6px; }
+
+        .page-btn {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 8px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: #fff;
+            font-size: 12px;
+            color: var(--ink);
+            cursor: pointer;
+        }
+
+        .page-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .page-btn.active {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .footnote {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 14px;
+            line-height: 1.7;
+            padding-top: 12px;
+            border-top: 1px dashed var(--line);
+        }
+
+        .footnote strong { color: var(--ink); font-weight: 560; }
+
+        .empty {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .empty i { font-size: 40px; opacity: 0.35; display: block; margin-bottom: 12px; }
+
+        [hidden] { display: none !important; }
+
+        @media (max-width: 1280px) {
+            .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .topbar, .filterbar, .page { padding-left: 14px; padding-right: 14px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-field { width: 160px; }
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+            .topbar-right span:not(.role-tag) { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-brand">
+            <div class="mark"><i class="fas fa-chart-line"></i></div>
+            <span>直播数据中心</span>
+            <span class="sub">后台管理 · 市场 / 管理层</span>
+        </div>
+        <div class="topbar-right">
+            <span class="role-tag"><i class="fas fa-user-tie"></i> 市场部</span>
+            <span>数据更新于 2026-07-30 10:15</span>
+        </div>
+    </header>
+
+    <!-- ============ 全局筛选栏 ============ -->
+    <div class="filterbar">
+        <div class="filter-row">
+            <span class="filter-label">时间范围</span>
+            <div class="chip-group" id="rangeChips">
+                <button class="chip" data-range="today">今天</button>
+                <button class="chip" data-range="7d">近 7 天</button>
+                <button class="chip active" data-range="30d">近 30 天</button>
+            </div>
+
+            <span class="filter-label" style="margin-left:8px;">直播时间范围</span>
+            <input type="date" class="field" id="dateFrom" value="2026-07-01">
+            <span class="filter-label">至</span>
+            <input type="date" class="field" id="dateTo" value="2026-07-30">
+
+            <span class="spacer"></span>
+            <button class="btn ghost" id="resetBtn"><i class="fas fa-rotate-left"></i> 重置</button>
+            <a class="btn" href="live_admin_stats_metrics.html" target="_blank"><i class="fas fa-book"></i> 指标口径说明</a>
+            <button class="btn" id="exportBtn"><i class="fas fa-file-excel"></i> 导出报表</button>
+            <button class="btn primary" onclick="alert('原型：刷新最新数据')"><i class="fas fa-sync-alt"></i> 刷新</button>
+        </div>
+        <div class="filter-row">
+            <span class="filter-label">群组UID</span>
+            <input type="text" class="field id-field" id="groupFilter" placeholder="如：G100238">
+
+            <span class="filter-label" style="margin-left:8px;">主播68号</span>
+            <input type="text" class="field id-field" id="anchorFilter" placeholder="如：主播68号 / 68">
+
+            <span class="filter-label" style="margin-left:8px;">群主68号</span>
+            <input type="text" class="field id-field" id="ownerFilter" placeholder="如：群主68号 / 68">
+        </div>
+        <div class="filter-row">
+            <span class="filter-label">快捷筛选</span>
+            <button class="quick-chip active" data-quick="all">全部场次</button>
+            <button class="quick-chip" data-quick="highBounce"><i class="fas fa-triangle-exclamation"></i> 高流失（&lt;1分钟 ≥30%）</button>
+            <button class="quick-chip" data-quick="quality"><i class="fas fa-crown"></i> 优质场次（≥30分钟 ≥20%）</button>
+            <button class="quick-chip" data-quick="big"><i class="fas fa-fire"></i> 大场次（进入 ≥250 人）</button>
+            <button class="quick-chip" data-quick="shortAvg"><i class="fas fa-clock"></i> 平均时长偏低（&lt;8 分钟）</button>
+        </div>
+    </div>
+
+    <main class="page">
+        <section id="viewCompare" style="display:flex;flex-direction:column;gap:16px;">
+            <div class="kpi-grid" id="summaryKpi"></div>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <span>各场次趋势对比</span>
+                    <div class="chip-group" id="metricChips">
+                        <button class="chip active" data-metric="avg">平均观看时长</button>
+                        <button class="chip" data-metric="bounce">&lt;1 分钟流失率</button>
+                        <button class="chip" data-metric="long">≥30 分钟占比</button>
+                    </div>
+                </div>
+                <p class="panel-sub">柱形为每场进入人数，折线为所选指标；悬停可查看该场的场次名称、开播时间与指标值。</p>
+                <div class="chart-box" id="trendChart"></div>
+                <div class="chart-legend">
+                    <span class="legend-item"><i class="legend-swatch" style="background:#a9c9ee"></i> 进入人数</span>
+                    <span class="legend-item"><i class="legend-swatch line" id="legendLineColor" style="background:#0d9f6e"></i> <span id="legendLineName">平均观看时长</span></span>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <span>场次明细列表</span>
+                    <span style="font-size:12px;color:var(--muted);font-weight:400;">点击表头可排序</span>
+                </div>
+                <p class="panel-sub">按当前筛选条件展示每一场直播的留存与观看深度，解决多场次横向比较问题。</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-key="name">场次 / 群组<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="ts">开播时间<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="durationMin">直播时长<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="enter">进入人数<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="bounceRate">&lt;1 分钟退出<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="over5">≥5 分钟<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="over10">≥10 分钟<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="longRate">≥30 分钟<i class="fas fa-sort sort-icon"></i></th>
+                                <th class="sortable" data-key="avgSec">平均观看时长<i class="fas fa-sort sort-icon"></i></th>
+                                <th>时长结构</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div id="tableEmpty" class="empty" hidden>
+                    <i class="fas fa-inbox"></i>
+                    当前筛选条件下没有直播场次，请调整时间范围或筛选条件
+                </div>
+                <div class="pager">
+                    <div class="pager-info" id="pagerInfo"></div>
+                    <div class="pager-ctrl">
+                        <span class="pager-info">每页</span>
+                        <select class="field" id="pageSize" style="height:30px;">
+                            <option value="10">10 条</option>
+                            <option value="20">20 条</option>
+                            <option value="30">30 条</option>
+                            <option value="50">50 条</option>
+                        </select>
+                        <span id="pageBtns" style="display:inline-flex;gap:6px;"></span>
+                    </div>
+                </div>
+                <p class="footnote">
+                    <strong>时长结构条颜色：</strong>
+                    <span style="color:var(--danger)">■</span> 不足 1 分钟 ·
+                    <span style="color:var(--grey)">■</span> 1–5 分钟 ·
+                    <span style="color:var(--warn)">■</span> 5–10 分钟 ·
+                    <span style="color:var(--brand)">■</span> 10–30 分钟 ·
+                    <span style="color:var(--long)">■</span> 30 分钟以上
+                </p>
+            </section>
+        </section>
+
+    </main>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ---------------- 演示数据生成（固定种子，保证每次一致） ---------------- */
+        function seeded(seed) {
+            return function () {
+                seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+                let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+                t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+                return ((t ^ t >>> 14) >>> 0) / 4294967296;
+            };
+        }
+
+        const rnd = seeded(20260730);
+        const TOPICS = ['游戏技巧分享', '加密技术讲解', '新手入门指导', '技术答疑专场', '产品版本发布会',
+            '安全防护公开课', '行情解读直播', '社群运营分享', '用户共创会', '钱包功能实操',
+            '风控案例复盘', '周末闲聊场', '合作伙伴专访', '新功能内测答疑', '月度战报直播'];
+        const GROUPS = [
+            { name: '加密技术交流群', uid: 'G100238' },
+            { name: '安全产品用户群', uid: 'G100415' },
+            { name: '新手答疑群', uid: 'G100672' },
+            { name: 'VIP 服务群', uid: 'G100889' },
+            { name: '市场活动群', uid: 'G101024' }
+        ];
+        const ANCHOR_NOS = [68, 12, 35, 7, 91, 24];
+        const OWNER_NOS = [68, 15, 33, 46, 82];
+
+        // 以 2026-07-30 为「今天」，覆盖最近 30 天。同一天可能开很多场：
+        // 今天固定 10 场用于演示单日多场，另外两天为 6 场和 5 场，其余每天 1~3 场。
+        const TODAY = new Date(2026, 6, 30);
+        const DENSE_DAYS = { 0: 10, 3: 6, 11: 5 };
+        const sessions = [];
+        let uid = 1;
+
+        for (let back = 29; back >= 0; back--) {
+            const perDay = DENSE_DAYS[back] || 1 + Math.floor(rnd() * 3);
+            // 场次多的一天从上午 10:00 开始铺，场次少的集中在晚间；每场留足档期避免同一天时间重叠
+            const winStart = perDay >= 5 ? 600 : 1140 - (perDay - 1) * 90;
+            const slot = Math.floor((1350 - winStart) / perDay);
+            const maxDur = Math.min(140, Math.max(45, slot - 55));
+            const minDur = Math.max(35, Math.min(40, maxDur - 12));
+            const jitterMax = Math.max(0, Math.floor((slot - maxDur) / 5));
+            // 一天场次越多，单场规模越小，避免出现「一天 10 场、每场都是大场」的失真数据
+            const densityScale = perDay >= 5 ? 0.4 : (perDay >= 3 ? 0.7 : 1);
+
+            for (let k = 0; k < perDay; k++) {
+                const startMin = winStart + k * slot + Math.floor(rnd() * (jitterMax + 1)) * 5;
+                const d = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() - back,
+                    Math.floor(startMin / 60), startMin % 60);
+
+                const enter = Math.max(30, Math.round((90 + rnd() * 280) * densityScale));
+                // 场次质量因子：越高则流失越低、深度观看越多，使各场之间拉开差距
+                const q = Math.min(1, Math.max(0, rnd() + (rnd() - 0.5) * 0.2));
+                const lt1 = Math.round(enter * (0.38 - q * 0.24));
+                const rest = enter - lt1;
+                const m1_5 = Math.round(rest * (0.30 - q * 0.06));
+                const m5_10 = Math.round(rest * (0.31 - q * 0.07));
+                const m10_30 = Math.round(rest * (0.27 - q * 0.07));
+                const ge30 = rest - m1_5 - m5_10 - m10_30;
+
+                // 各区间取代表值折算总观看秒数，保证平均时长与分布自洽
+                const totalSec = lt1 * 32 + m1_5 * 160 + m5_10 * 420 + m10_30 * 900 + ge30 * 1900;
+                const g = GROUPS[Math.floor(rnd() * GROUPS.length)];
+
+                sessions.push({
+                    id: uid++,
+                    name: TOPICS[Math.floor(rnd() * TOPICS.length)],
+                    group: g.name,
+                    groupUid: g.uid,
+                    anchor: '主播' + ANCHOR_NOS[Math.floor(rnd() * ANCHOR_NOS.length)] + '号',
+                    owner: '群主' + OWNER_NOS[Math.floor(rnd() * OWNER_NOS.length)] + '号',
+                    ts: d.getTime(),
+                    durationMin: minDur + Math.round(rnd() * (maxDur - minDur)),
+                    enter: enter,
+                    buckets: { lt1: lt1, m1_5: m1_5, m5_10: m5_10, m10_30: m10_30, ge30: ge30 },
+                    bounce: lt1,
+                    over5: m5_10 + m10_30 + ge30,
+                    over10: m10_30 + ge30,
+                    over30: ge30,
+                    avgSec: Math.round(totalSec / enter)
+                });
+            }
+        }
+        sessions.sort((a, b) => b.ts - a.ts);
+        sessions.forEach(function (s) {
+            s.bounceRate = s.bounce / s.enter;
+            s.longRate = s.over30 / s.enter;
+        });
+
+        /* ---------------- 工具函数 ---------------- */
+        const $ = function (id) { return document.getElementById(id); };
+        const DAY = 86400000;
+
+        function pct(part, total) {
+            if (!total) return '0.0%';
+            return (part / total * 100).toFixed(1) + '%';
+        }
+
+        function pctNum(v) { return (v * 100).toFixed(1) + '%'; }
+
+        function fmtDur(sec) {
+            const m = Math.floor(sec / 60);
+            const s = Math.round(sec % 60);
+            return m + '分' + String(s).padStart(2, '0') + '秒';
+        }
+
+        function fmtLiveDur(min) {
+            const h = Math.floor(min / 60);
+            const m = min % 60;
+            return (h ? h + '小时' : '') + m + '分钟';
+        }
+
+        function fmtDate(ts, withTime) {
+            const d = new Date(ts);
+            const p = function (n) { return String(n).padStart(2, '0'); };
+            const base = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+            return withTime ? base + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) : base;
+        }
+
+        function fmtMD(ts) {
+            const d = new Date(ts);
+            return (d.getMonth() + 1) + '/' + d.getDate();
+        }
+
+        function num(n) { return n.toLocaleString('zh-CN'); }
+
+        function bounceClass(rate) {
+            if (rate >= 0.30) return 'bad';
+            if (rate >= 0.22) return 'mid';
+            return 'good';
+        }
+
+        function longClass(rate) {
+            if (rate >= 0.20) return 'good';
+            if (rate >= 0.12) return 'mid';
+            return 'bad';
+        }
+
+        function esc(str) {
+            return String(str).replace(/[&<>"]/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+        }
+
+        /* ---------------- 状态 ---------------- */
+        const state = {
+            range: '30d',
+            group: '',
+            anchor: '',
+            owner: '',
+            quick: 'all',
+            sortKey: 'ts',
+            sortDir: 'desc',
+            page: 1,
+            pageSize: 10,
+            metric: 'avg'
+        };
+
+        function rangeBounds(which) {
+            const end = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate(), 23, 59, 59).getTime();
+            if (which === 'today') return { start: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()).getTime(), end: end };
+            if (which === '7d') return { start: end - 7 * DAY + 1, end: end };
+            if (which === '30d') return { start: end - 30 * DAY + 1, end: end };
+            const f = $('dateFrom').value ? new Date($('dateFrom').value + 'T00:00:00').getTime() : end - 30 * DAY;
+            const t = $('dateTo').value ? new Date($('dateTo').value + 'T23:59:59').getTime() : end;
+            return { start: f, end: t };
+        }
+
+        function isoDate(ts) {
+            const d = new Date(ts);
+            const p = function (n) { return String(n).padStart(2, '0'); };
+            return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+        }
+
+        // 预设时间范围与「直播时间范围」日期框保持同步
+        function syncDateInputs() {
+            const b = rangeBounds(state.range);
+            $('dateFrom').value = isoDate(b.start);
+            $('dateTo').value = isoDate(b.end);
+        }
+
+        function rangeLabel() {
+            if (state.range === 'custom') return $('dateFrom').value + ' 至 ' + $('dateTo').value;
+            return { today: '今天', '7d': '近 7 天', '30d': '近 30 天' }[state.range];
+        }
+
+        function like(value, keyword) {
+            if (!keyword) return true;
+            return String(value).toLowerCase().indexOf(keyword.toLowerCase()) >= 0;
+        }
+
+        function matchFilters(s) {
+            // 群组支持按 UID 或群名称模糊匹配；主播 / 群主支持输入完整编号或纯数字
+            if (state.group && !(like(s.groupUid, state.group) || like(s.group, state.group))) return false;
+            if (state.anchor && !like(s.anchor, state.anchor)) return false;
+            if (state.owner && !like(s.owner, state.owner)) return false;
+            if (state.quick === 'highBounce' && s.bounceRate < 0.30) return false;
+            if (state.quick === 'quality' && s.longRate < 0.20) return false;
+            if (state.quick === 'big' && s.enter < 250) return false;
+            if (state.quick === 'shortAvg' && s.avgSec >= 480) return false;
+            return true;
+        }
+
+        function currentSessions() {
+            const b = rangeBounds(state.range);
+            return sessions.filter(function (s) {
+                return s.ts >= b.start && s.ts <= b.end && matchFilters(s);
+            });
+        }
+
+        function prevPeriodSessions() {
+            const b = rangeBounds(state.range);
+            const len = b.end - b.start;
+            return sessions.filter(function (s) {
+                return s.ts >= b.start - len && s.ts < b.start && matchFilters(s);
+            });
+        }
+
+        function aggregate(list) {
+            const agg = {
+                count: list.length, enter: 0, bounce: 0, over5: 0, over10: 0, over30: 0, totalSec: 0
+            };
+            list.forEach(function (s) {
+                agg.enter += s.enter;
+                agg.bounce += s.bounce;
+                agg.over5 += s.over5;
+                agg.over10 += s.over10;
+                agg.over30 += s.over30;
+                agg.totalSec += s.avgSec * s.enter;
+            });
+            agg.avgSec = agg.enter ? Math.round(agg.totalSec / agg.enter) : 0;
+            agg.bounceRate = agg.enter ? agg.bounce / agg.enter : 0;
+            agg.longRate = agg.enter ? agg.over30 / agg.enter : 0;
+            return agg;
+        }
+
+        /* ---------------- 汇总 KPI ---------------- */
+        function deltaHtml(cur, base, opts) {
+            opts = opts || {};
+            // 没有可比的上一周期时不占位，直接不显示环比
+            if (!base) return '';
+            const diff = (cur - base) / Math.abs(base);
+            if (Math.abs(diff) < 0.005) return '<span class="delta flat">持平</span>';
+            const better = opts.lowerIsBetter ? diff < 0 : diff > 0;
+            const arrow = diff > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+            return '<span class="delta ' + (better ? 'up' : 'down') + '"><i class="fas ' + arrow + '"></i>' +
+                Math.abs(diff * 100).toFixed(1) + '%</span>';
+        }
+
+        function renderSummary(list) {
+            const cur = aggregate(list);
+            const prev = aggregate(prevPeriodSessions());
+            const rangeName = rangeLabel();
+
+            const cards = [
+                {
+                    cls: 'sessions', icon: 'fa-video', label: '直播场次',
+                    value: num(cur.count), unit: '场',
+                    hint: deltaHtml(cur.count, prev.count) +
+                        (prev.count ? '<span>较上一周期</span>' : '<span>' + rangeName + '累计</span>')
+                },
+                {
+                    cls: 'enter', icon: 'fa-users', label: '进入总人次',
+                    value: num(cur.enter), unit: '人次',
+                    hint: deltaHtml(cur.enter, prev.enter) + '<span>场均 ' + (cur.count ? Math.round(cur.enter / cur.count) : 0) + ' 人</span>'
+                },
+                {
+                    cls: 'bounce', icon: 'fa-door-open', label: '不足 1 分钟退出',
+                    value: pctNum(cur.bounceRate), unit: '',
+                    hint: deltaHtml(cur.bounceRate, prev.bounceRate, { lowerIsBetter: true }) + '<span>共 ' + num(cur.bounce) + ' 人</span>'
+                },
+                {
+                    cls: 'long', icon: 'fa-heart', label: '长时间观看占比',
+                    value: pctNum(cur.longRate), unit: '',
+                    hint: deltaHtml(cur.longRate, prev.longRate) + '<span>≥30 分钟 ' + num(cur.over30) + ' 人</span>'
+                },
+                {
+                    cls: 'avg', icon: 'fa-clock', label: '平均观看时长',
+                    value: fmtDur(cur.avgSec), unit: '',
+                    hint: deltaHtml(cur.avgSec, prev.avgSec) + '<span>' + rangeName + '加权平均</span>'
+                }
+            ];
+
+            $('summaryKpi').innerHTML = cards.map(function (c) {
+                return '<div class="kpi-card ' + c.cls + '">' +
+                    '<div class="kpi-label"><i class="fas ' + c.icon + '"></i> ' + c.label + '</div>' +
+                    '<div class="kpi-value">' + c.value + (c.unit ? '<span class="unit">' + c.unit + '</span>' : '') + '</div>' +
+                    '<div class="kpi-hint">' + c.hint + '</div></div>';
+            }).join('');
+        }
+
+        /* ---------------- 趋势图 ---------------- */
+        const METRIC_DEF = {
+            avg: { name: '平均观看时长', color: '#0d9f6e', get: function (s) { return s.avgSec / 60; }, fmt: function (v) { return v.toFixed(1) + ' 分'; } },
+            bounce: { name: '<1 分钟流失率', color: '#dc4a3d', get: function (s) { return s.bounceRate * 100; }, fmt: function (v) { return v.toFixed(1) + '%'; } },
+            long: { name: '≥30 分钟占比', color: '#0b7ea4', get: function (s) { return s.longRate * 100; }, fmt: function (v) { return v.toFixed(1) + '%'; } }
+        };
+
+        function renderTrend(list) {
+            const box = $('trendChart');
+            const def = METRIC_DEF[state.metric];
+            $('legendLineColor').style.background = def.color;
+            $('legendLineName').textContent = def.name;
+
+            if (!list.length) {
+                box.innerHTML = '<div class="empty"><i class="fas fa-chart-column"></i>当前筛选条件下暂无数据</div>';
+                return;
+            }
+
+            const data = list.slice().sort(function (a, b) { return a.ts - b.ts; });
+            const padL = 46, padR = 52, padT = 14, padB = 42;
+            const innerMin = Math.max(data.length * 34, 520);
+            const width = Math.max(box.clientWidth || 900, innerMin);
+            const height = 260;
+            const plotW = width - padL - padR;
+            const plotH = height - padT - padB;
+
+            const maxEnter = Math.max.apply(null, data.map(function (s) { return s.enter; })) * 1.15;
+            const lineVals = data.map(def.get);
+            const maxLine = Math.max.apply(null, lineVals) * 1.25 || 1;
+
+            const slot = plotW / data.length;
+            const barW = Math.min(slot * 0.55, 30);
+            const x = function (i) { return padL + slot * i + slot / 2; };
+            const yBar = function (v) { return padT + plotH - (v / maxEnter) * plotH; };
+            const yLine = function (v) { return padT + plotH - (v / maxLine) * plotH; };
+
+            // 一天可能有多场，按天把连续的场次归组，X 轴每天只标一次日期
+            const days = [];
+            data.forEach(function (s, i) {
+                const key = isoDate(s.ts);
+                const last = days[days.length - 1];
+                if (last && last.key === key) last.to = i;
+                else days.push({ key: key, ts: s.ts, from: i, to: i });
+            });
+
+            let svg = '<svg width="' + width + '" height="' + height + '" role="img">';
+
+            // 网格 + 左轴（人数）
+            for (let g = 0; g <= 4; g++) {
+                const yy = padT + plotH - (plotH / 4) * g;
+                const val = Math.round(maxEnter / 4 * g);
+                svg += '<line x1="' + padL + '" y1="' + yy + '" x2="' + (width - padR) + '" y2="' + yy + '" stroke="#eef2f7" stroke-width="1"/>';
+                svg += '<text x="' + (padL - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="11" fill="#6b7a90">' + val + '</text>';
+                const rv = maxLine / 4 * g;
+                svg += '<text x="' + (width - padR + 8) + '" y="' + (yy + 4) + '" font-size="11" fill="' + def.color + '">' +
+                    (state.metric === 'avg' ? rv.toFixed(0) : rv.toFixed(0) + '%') + '</text>';
+            }
+
+            // 天与天之间的分隔线，让同一天的多场在视觉上聚成一组
+            days.forEach(function (d, di) {
+                if (!di) return;
+                const sx = padL + slot * d.from;
+                svg += '<line x1="' + sx + '" y1="' + padT + '" x2="' + sx + '" y2="' + (padT + plotH) +
+                    '" stroke="#dfe6f0" stroke-width="1" stroke-dasharray="3 3"/>';
+            });
+
+            // 柱形
+            data.forEach(function (s, i) {
+                const bx = x(i) - barW / 2;
+                const by = yBar(s.enter);
+                svg += '<g class="trend-bar">' +
+                    '<rect x="' + bx + '" y="' + by + '" width="' + barW + '" height="' + (padT + plotH - by) + '" rx="3" fill="#a9c9ee"/>' +
+                    '<title>' + esc(s.name) + '\n' + fmtDate(s.ts, true) + '\n进入 ' + s.enter + ' 人\n' +
+                    esc(def.name) + '：' + def.fmt(def.get(s)) + '</title></g>';
+            });
+
+            // 折线
+            const pts = data.map(function (s, i) { return x(i) + ',' + yLine(def.get(s)); }).join(' ');
+            svg += '<polyline points="' + pts + '" fill="none" stroke="' + def.color + '" stroke-width="2" stroke-linejoin="round"/>';
+            data.forEach(function (s, i) {
+                svg += '<circle cx="' + x(i) + '" cy="' + yLine(def.get(s)) + '" r="3.5" fill="#fff" stroke="' + def.color + '" stroke-width="2">' +
+                    '<title>' + esc(s.name) + ' · ' + esc(def.name) + '：' + def.fmt(def.get(s)) + '</title></circle>';
+            });
+
+            // X 轴标签：一天一个日期，标在该天所有场次的中间；当天多场时补上场次数
+            const dayStep = Math.ceil(days.length / 14);
+            days.forEach(function (d, di) {
+                if (di % dayStep !== 0) return;
+                const cx = (x(d.from) + x(d.to)) / 2;
+                const cnt = d.to - d.from + 1;
+                svg += '<text x="' + cx + '" y="' + (height - 22) + '" text-anchor="middle" font-size="11" fill="#6b7a90">' +
+                    fmtMD(d.ts) + (cnt > 1 ? '<tspan fill="#9aa8bb"> · ' + cnt + '场</tspan>' : '') + '</text>';
+            });
+            svg += '<text x="' + padL + '" y="' + (height - 6) + '" font-size="11" fill="#9aa8bb">共 ' + data.length +
+                ' 场 / ' + days.length + ' 天（按开播时间从早到晚，同一天多场依次排列）</text>';
+            svg += '</svg>';
+
+            box.innerHTML = svg;
+        }
+
+        /* ---------------- 明细表 ---------------- */
+        function sortList(list) {
+            const k = state.sortKey, dir = state.sortDir === 'asc' ? 1 : -1;
+            return list.slice().sort(function (a, b) {
+                let va = a[k], vb = b[k];
+                if (k === 'name') return va.localeCompare(vb, 'zh-CN') * dir;
+                return (va - vb) * dir;
+            });
+        }
+
+        function miniStack(s) {
+            const b = s.buckets, t = s.enter;
+            const seg = function (cls, v, label) {
+                return '<span class="' + cls + '" style="width:' + (v / t * 100) + '%" title="' + label + ' ' + v + ' 人（' + pct(v, t) + '）"></span>';
+            };
+            return '<div class="mini-stack">' +
+                seg('s-lt1', b.lt1, '<1分钟') + seg('s-m1_5', b.m1_5, '1-5分钟') +
+                seg('s-m5_10', b.m5_10, '5-10分钟') + seg('s-m10_30', b.m10_30, '10-30分钟') +
+                seg('s-ge30', b.ge30, '≥30分钟') + '</div>';
+        }
+
+        function renderTable(list) {
+            const sorted = sortList(list);
+            const totalPages = Math.max(1, Math.ceil(sorted.length / state.pageSize));
+            if (state.page > totalPages) state.page = totalPages;
+            const start = (state.page - 1) * state.pageSize;
+            const pageRows = sorted.slice(start, start + state.pageSize);
+
+            $('tableEmpty').hidden = sorted.length > 0;
+
+            $('tableBody').innerHTML = pageRows.map(function (s) {
+                return '<tr>' +
+                    '<td><div class="cell-name"><span class="n">' + esc(s.name) + '</span>' +
+                        '<span class="g">' + esc(s.group) + '（' + esc(s.groupUid) + '）</span>' +
+                        '<span class="g">' + esc(s.anchor) + ' · ' + esc(s.owner) + '</span></div></td>' +
+                    '<td>' + fmtDate(s.ts, true) + '</td>' +
+                    '<td>' + fmtLiveDur(s.durationMin) + '</td>' +
+                    '<td><strong>' + num(s.enter) + '</strong> 人</td>' +
+                    '<td>' + s.bounce + ' 人<span class="pct-pill ' + bounceClass(s.bounceRate) + '">' + pctNum(s.bounceRate) + '</span></td>' +
+                    '<td>' + s.over5 + ' 人<span class="pct-pill info">' + pct(s.over5, s.enter) + '</span></td>' +
+                    '<td>' + s.over10 + ' 人<span class="pct-pill info">' + pct(s.over10, s.enter) + '</span></td>' +
+                    '<td>' + s.over30 + ' 人<span class="pct-pill ' + longClass(s.longRate) + '">' + pctNum(s.longRate) + '</span></td>' +
+                    '<td>' + fmtDur(s.avgSec) + '</td>' +
+                    '<td>' + miniStack(s) + '</td>' +
+                    '</tr>';
+            }).join('');
+
+            $('pagerInfo').textContent = '共 ' + sorted.length + ' 场直播，当前显示第 ' +
+                (sorted.length ? start + 1 : 0) + '–' + Math.min(start + state.pageSize, sorted.length) + ' 条';
+
+            let btns = '<button class="page-btn" data-page="prev" ' + (state.page === 1 ? 'disabled' : '') + '>上一页</button>';
+            const win = [];
+            for (let p = 1; p <= totalPages; p++) {
+                if (totalPages <= 7 || p === 1 || p === totalPages || Math.abs(p - state.page) <= 1) win.push(p);
+            }
+            let last = 0;
+            win.forEach(function (p) {
+                if (last && p - last > 1) btns += '<span class="pager-info">…</span>';
+                btns += '<button class="page-btn ' + (p === state.page ? 'active' : '') + '" data-page="' + p + '">' + p + '</button>';
+                last = p;
+            });
+            btns += '<button class="page-btn" data-page="next" ' + (state.page === totalPages ? 'disabled' : '') + '>下一页</button>';
+            $('pageBtns').innerHTML = btns;
+
+            // 排序表头样式
+            document.querySelectorAll('th.sortable').forEach(function (th) {
+                const isCur = th.dataset.key === state.sortKey;
+                th.classList.toggle('sorted', isCur);
+                const icon = th.querySelector('.sort-icon');
+                icon.className = 'fas sort-icon ' + (isCur ? (state.sortDir === 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-sort');
+            });
+        }
+
+        /* ---------------- 渲染入口 ---------------- */
+        function render() {
+            const list = currentSessions();
+            renderSummary(list);
+            renderTrend(list);
+            renderTable(list);
+        }
+
+        /* ---------------- 导出真实 Excel（.xlsx，无第三方依赖） ---------------- */
+        let crcTable = null;
+        function crc32(buf) {
+            if (!crcTable) {
+                crcTable = new Uint32Array(256);
+                for (let i = 0; i < 256; i++) {
+                    let c = i;
+                    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+                    crcTable[i] = c >>> 0;
+                }
+            }
+            let crc = 0xFFFFFFFF;
+            for (let i = 0; i < buf.length; i++) crc = (crc >>> 8) ^ crcTable[(crc ^ buf[i]) & 0xFF];
+            return (crc ^ 0xFFFFFFFF) >>> 0;
+        }
+
+        // 以「存储」方式打包 ZIP（xlsx 本质就是一个 zip）
+        function zipStore(files) {
+            const enc = new TextEncoder();
+            const now = new Date();
+            const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+            const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+            const body = [], central = [];
+            let offset = 0;
+
+            files.forEach(function (f) {
+                const nameBytes = enc.encode(f.name);
+                const data = typeof f.data === 'string' ? enc.encode(f.data) : f.data;
+                const crc = crc32(data);
+                const local = new Uint8Array(30 + nameBytes.length);
+                const dv = new DataView(local.buffer);
+                dv.setUint32(0, 0x04034b50, true);
+                dv.setUint16(4, 20, true);
+                dv.setUint16(6, 0x0800, true);   // UTF-8 文件名
+                dv.setUint16(8, 0, true);        // 压缩方式：存储
+                dv.setUint16(10, dosTime, true);
+                dv.setUint16(12, dosDate, true);
+                dv.setUint32(14, crc, true);
+                dv.setUint32(18, data.length, true);
+                dv.setUint32(22, data.length, true);
+                dv.setUint16(26, nameBytes.length, true);
+                local.set(nameBytes, 30);
+                body.push(local, data);
+                central.push({ nameBytes: nameBytes, crc: crc, size: data.length, offset: offset });
+                offset += local.length + data.length;
+            });
+
+            const cd = [];
+            let cdSize = 0;
+            central.forEach(function (e) {
+                const rec = new Uint8Array(46 + e.nameBytes.length);
+                const dv = new DataView(rec.buffer);
+                dv.setUint32(0, 0x02014b50, true);
+                dv.setUint16(4, 20, true);
+                dv.setUint16(6, 20, true);
+                dv.setUint16(8, 0x0800, true);
+                dv.setUint16(10, 0, true);
+                dv.setUint16(12, dosTime, true);
+                dv.setUint16(14, dosDate, true);
+                dv.setUint32(16, e.crc, true);
+                dv.setUint32(20, e.size, true);
+                dv.setUint32(24, e.size, true);
+                dv.setUint16(28, e.nameBytes.length, true);
+                dv.setUint32(42, e.offset, true);
+                rec.set(e.nameBytes, 46);
+                cd.push(rec);
+                cdSize += rec.length;
+            });
+
+            const eocd = new Uint8Array(22);
+            const edv = new DataView(eocd.buffer);
+            edv.setUint32(0, 0x06054b50, true);
+            edv.setUint16(8, central.length, true);
+            edv.setUint16(10, central.length, true);
+            edv.setUint32(12, cdSize, true);
+            edv.setUint32(16, offset, true);
+
+            const all = body.concat(cd, [eocd]);
+            const out = new Uint8Array(all.reduce(function (n, c) { return n + c.length; }, 0));
+            let p = 0;
+            all.forEach(function (c) { out.set(c, p); p += c.length; });
+            return out;
+        }
+
+        function colName(i) {
+            let s = '';
+            i += 1;
+            while (i > 0) {
+                const r = (i - 1) % 26;
+                s = String.fromCharCode(65 + r) + s;
+                i = (i - 1 - r) / 26;
+            }
+            return s;
+        }
+
+        function sheetXml(rows, widths) {
+            let xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+                '<sheetViews><sheetView workbookViewId="0">' +
+                '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>' +
+                '</sheetView></sheetViews>';
+            if (widths && widths.length) {
+                xml += '<cols>' + widths.map(function (w, i) {
+                    return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>';
+                }).join('') + '</cols>';
+            }
+            xml += '<sheetData>';
+            rows.forEach(function (row, r) {
+                xml += '<row r="' + (r + 1) + '">';
+                row.forEach(function (val, c) {
+                    const ref = colName(c) + (r + 1);
+                    const st = r === 0 ? ' s="1"' : '';
+                    if (typeof val === 'number' && isFinite(val)) {
+                        xml += '<c r="' + ref + '"' + st + '><v>' + val + '</v></c>';
+                    } else if (val === null || val === undefined || val === '') {
+                        xml += '<c r="' + ref + '"' + st + '/>';
+                    } else {
+                        xml += '<c r="' + ref + '"' + st + ' t="inlineStr"><is><t xml:space="preserve">' +
+                            esc(String(val)) + '</t></is></c>';
+                    }
+                });
+                xml += '</row>';
+            });
+            xml += '</sheetData></worksheet>';
+            return xml;
+        }
+
+        function buildXlsx(sheets) {
+            const REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+            const files = [
+                {
+                    name: '[Content_Types].xml',
+                    data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+                        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+                        '<Default Extension="xml" ContentType="application/xml"/>' +
+                        '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+                        sheets.map(function (s, i) {
+                            return '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+                        }).join('') +
+                        '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+                        '</Types>'
+                },
+                {
+                    name: '_rels/.rels',
+                    data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+                        '<Relationship Id="rId1" Type="' + REL + '/officeDocument" Target="xl/workbook.xml"/>' +
+                        '</Relationships>'
+                },
+                {
+                    name: 'xl/workbook.xml',
+                    data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="' + REL + '"><sheets>' +
+                        sheets.map(function (s, i) {
+                            return '<sheet name="' + esc(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>';
+                        }).join('') + '</sheets></workbook>'
+                },
+                {
+                    name: 'xl/_rels/workbook.xml.rels',
+                    data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+                        sheets.map(function (s, i) {
+                            return '<Relationship Id="rId' + (i + 1) + '" Type="' + REL + '/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>';
+                        }).join('') +
+                        '<Relationship Id="rId' + (sheets.length + 1) + '" Type="' + REL + '/styles" Target="styles.xml"/>' +
+                        '</Relationships>'
+                },
+                {
+                    name: 'xl/styles.xml',
+                    data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                        '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+                        '<fonts count="2"><font><sz val="11"/><name val="\u5FAE\u8F6F\u96C5\u9ED1"/></font>' +
+                        '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="\u5FAE\u8F6F\u96C5\u9ED1"/></font></fonts>' +
+                        '<fills count="3"><fill><patternFill patternType="none"/></fill>' +
+                        '<fill><patternFill patternType="gray125"/></fill>' +
+                        '<fill><patternFill patternType="solid"><fgColor rgb="FF1A6FD4"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+                        '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+                        '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+                        '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+                        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>' +
+                        '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' +
+                        '</styleSheet>'
+                }
+            ];
+            sheets.forEach(function (s, i) {
+                files.push({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', data: sheetXml(s.rows, s.widths) });
+            });
+            return zipStore(files);
+        }
+
+        const QUICK_LABEL = {
+            all: '全部场次',
+            highBounce: '高流失（<1分钟 ≥30%）',
+            quality: '优质场次（≥30分钟 ≥20%）',
+            big: '大场次（进入 ≥250 人）',
+            shortAvg: '平均时长偏低（<8 分钟）'
+        };
+
+        function r1(v) { return Math.round(v * 1000) / 10; }
+
+        function exportExcel() {
+            const list = sortList(currentSessions());
+            if (!list.length) { alert('当前筛选条件下没有数据可导出，请调整筛选条件'); return; }
+
+            const cur = aggregate(list);
+            const prev = aggregate(prevPeriodSessions());
+            const chg = function (a, b) { return b ? r1((a - b) / Math.abs(b)) + '%' : '无对比数据'; };
+
+            const detailRows = [[
+                '序号', '场次名称', '群组名称', '群组UID', '主播', '群主', '开播时间', '直播时长(分钟)',
+                '进入人数', '不足1分钟退出人数', '不足1分钟退出占比(%)',
+                '1-5分钟人数', '5-10分钟人数', '10-30分钟人数', '30分钟以上人数',
+                '观看≥5分钟人数', '观看≥5分钟占比(%)',
+                '观看≥10分钟人数', '观看≥10分钟占比(%)',
+                '观看≥30分钟人数', '观看≥30分钟占比(%)',
+                '平均观看时长(秒)', '平均观看时长(分钟)'
+            ]];
+            list.forEach(function (s, i) {
+                detailRows.push([
+                    i + 1, s.name, s.group, s.groupUid, s.anchor, s.owner, fmtDate(s.ts, true), s.durationMin,
+                    s.enter, s.bounce, r1(s.bounceRate),
+                    s.buckets.m1_5, s.buckets.m5_10, s.buckets.m10_30, s.buckets.ge30,
+                    s.over5, r1(s.over5 / s.enter),
+                    s.over10, r1(s.over10 / s.enter),
+                    s.over30, r1(s.longRate),
+                    s.avgSec, Math.round(s.avgSec / 60 * 10) / 10
+                ]);
+            });
+
+            const summaryRows = [
+                ['统计项', '数值', '环比上一周期'],
+                ['导出时间', fmtDate(Date.now(), true), ''],
+                ['时间范围', rangeLabel() + '（' + $('dateFrom').value + ' 至 ' + $('dateTo').value + '）', ''],
+                ['群组UID筛选', state.group || '全部', ''],
+                ['主播筛选', state.anchor || '全部', ''],
+                ['群主筛选', state.owner || '全部', ''],
+                ['快捷筛选', QUICK_LABEL[state.quick], ''],
+                ['', '', ''],
+                ['直播场次(场)', cur.count, chg(cur.count, prev.count)],
+                ['进入总人次(人)', cur.enter, chg(cur.enter, prev.enter)],
+                ['场均进入人数(人)', cur.count ? Math.round(cur.enter / cur.count) : 0, ''],
+                ['不足1分钟退出人数(人)', cur.bounce, chg(cur.bounce, prev.bounce)],
+                ['不足1分钟退出占比(%)', r1(cur.bounceRate), chg(cur.bounceRate, prev.bounceRate)],
+                ['观看≥5分钟人数(人)', cur.over5, chg(cur.over5, prev.over5)],
+                ['观看≥5分钟占比(%)', cur.enter ? r1(cur.over5 / cur.enter) : 0, ''],
+                ['观看≥10分钟人数(人)', cur.over10, chg(cur.over10, prev.over10)],
+                ['观看≥10分钟占比(%)', cur.enter ? r1(cur.over10 / cur.enter) : 0, ''],
+                ['长时间观看人数(≥30分钟, 人)', cur.over30, chg(cur.over30, prev.over30)],
+                ['长时间观看占比(%)', r1(cur.longRate), chg(cur.longRate, prev.longRate)],
+                ['平均观看时长(秒)', cur.avgSec, chg(cur.avgSec, prev.avgSec)],
+                ['平均观看时长(分钟)', Math.round(cur.avgSec / 60 * 10) / 10, '']
+            ];
+
+            const ruleRows = [
+                ['字段', '说明', '公式'],
+                ['进入人数', '所有占比的分母，同一用户多次进出只计 1 人', '该场进入过的观众去重计数'],
+                ['不足1分钟退出人数', '进来不到 1 分钟就走的观众', '观看时长 < 1 分钟的人数'],
+                ['不足1分钟退出占比', '开场留人能力，越低越好', '不足1分钟退出人数 ÷ 进入人数 × 100%'],
+                ['观看≥5分钟人数', '与 ≥10、≥30 分钟互相包含，占比不可相加', '观看时长 ≥ 5 分钟的人数'],
+                ['观看≥5分钟占比', '', '观看≥5分钟人数 ÷ 进入人数 × 100%'],
+                ['观看≥10分钟人数', '', '观看时长 ≥ 10 分钟的人数'],
+                ['观看≥10分钟占比', '', '观看≥10分钟人数 ÷ 进入人数 × 100%'],
+                ['长时间观看人数', '默认把 ≥30 分钟定义为长时间观看', '观看时长 ≥ 30 分钟的人数'],
+                ['长时间观看占比', '内容深度，越高越好', '长时间观看人数 ÷ 进入人数 × 100%'],
+                ['平均观看时长', '分母是进入人数而非峰值在线，会被开场流失拉低', '全部观众观看时长之和 ÷ 进入人数'],
+                ['时长分布五段', '互斥区间，五段之和等于进入人数', '<1 / 1-5 / 5-10 / 10-30 / ≥30 分钟'],
+                ['多场汇总占比', '按人数加权，不是各场占比的算术平均', '各场人数之和 ÷ 各场进入人数之和 × 100%'],
+                ['环比', '上一周期为紧邻的等长时间区间，无数据时不显示', '(本周期值 − 上一周期值) ÷ 上一周期值绝对值 × 100%']
+            ];
+
+            const bytes = buildXlsx([
+                { name: '场次明细', rows: detailRows, widths: [6, 18, 18, 12, 12, 12, 18, 14, 11, 18, 20, 13, 14, 15, 16, 16, 18, 17, 19, 17, 19, 16, 18] },
+                { name: '汇总指标', rows: summaryRows, widths: [28, 34, 18] },
+                { name: '指标口径说明', rows: ruleRows, widths: [22, 42, 44] }
+            ]);
+
+            const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '直播数据统计_' + rangeLabel().replace(/[\s:：]/g, '') + '_' + isoDate(Date.now()).replace(/-/g, '') + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        }
+
+        /* ---------------- 事件绑定 ---------------- */
+        $('exportBtn').addEventListener('click', exportExcel);
+
+        $('rangeChips').addEventListener('click', function (e) {
+            const btn = e.target.closest('.chip');
+            if (!btn) return;
+            state.range = btn.dataset.range;
+            state.page = 1;
+            document.querySelectorAll('#rangeChips .chip').forEach(function (c) { c.classList.toggle('active', c === btn); });
+            syncDateInputs();
+            render();
+        });
+
+        $('metricChips').addEventListener('click', function (e) {
+            const btn = e.target.closest('.chip');
+            if (!btn) return;
+            state.metric = btn.dataset.metric;
+            document.querySelectorAll('#metricChips .chip').forEach(function (c) { c.classList.toggle('active', c === btn); });
+            renderTrend(currentSessions());
+        });
+
+        document.querySelectorAll('.quick-chip').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                state.quick = btn.dataset.quick;
+                state.page = 1;
+                document.querySelectorAll('.quick-chip').forEach(function (c) { c.classList.toggle('active', c === btn); });
+                render();
+            });
+        });
+
+        // 手动修改日期即切换为自定义区间，预设按钮取消高亮
+        ['dateFrom', 'dateTo'].forEach(function (id) {
+            $(id).addEventListener('change', function () {
+                state.range = 'custom';
+                state.page = 1;
+                document.querySelectorAll('#rangeChips .chip').forEach(function (c) { c.classList.remove('active'); });
+                render();
+            });
+        });
+
+        const idTimers = {};
+        [['groupFilter', 'group'], ['anchorFilter', 'anchor'], ['ownerFilter', 'owner']].forEach(function (pair) {
+            $(pair[0]).addEventListener('input', function (e) {
+                clearTimeout(idTimers[pair[1]]);
+                idTimers[pair[1]] = setTimeout(function () {
+                    state[pair[1]] = e.target.value.trim();
+                    state.page = 1;
+                    render();
+                }, 200);
+            });
+        });
+
+        $('resetBtn').addEventListener('click', function () {
+            state.range = '30d'; state.group = ''; state.anchor = ''; state.owner = '';
+            state.quick = 'all'; state.page = 1;
+            $('groupFilter').value = ''; $('anchorFilter').value = ''; $('ownerFilter').value = '';
+            document.querySelectorAll('#rangeChips .chip').forEach(function (c) { c.classList.toggle('active', c.dataset.range === '30d'); });
+            document.querySelectorAll('.quick-chip').forEach(function (c) { c.classList.toggle('active', c.dataset.quick === 'all'); });
+            syncDateInputs();
+            render();
+        });
+
+        document.querySelectorAll('th.sortable').forEach(function (th) {
+            th.addEventListener('click', function () {
+                const key = th.dataset.key;
+                if (state.sortKey === key) {
+                    state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.sortKey = key;
+                    state.sortDir = key === 'name' ? 'asc' : 'desc';
+                }
+                render();
+            });
+        });
+
+        $('pageBtns').addEventListener('click', function (e) {
+            const btn = e.target.closest('[data-page]');
+            if (!btn || btn.disabled) return;
+            const v = btn.dataset.page;
+            const total = Math.max(1, Math.ceil(currentSessions().length / state.pageSize));
+            if (v === 'prev') state.page = Math.max(1, state.page - 1);
+            else if (v === 'next') state.page = Math.min(total, state.page + 1);
+            else state.page = Number(v);
+            render();
+        });
+
+        $('pageSize').addEventListener('change', function (e) {
+            state.pageSize = Number(e.target.value);
+            state.page = 1;
+            render();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                renderTrend(currentSessions());
+            }, 180);
+        });
+
+        syncDateInputs();
+        render();
+    })();
+    </script>
+</body>
+</html>

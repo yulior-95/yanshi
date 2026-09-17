@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>直播间排序</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            min-height: 100vh;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-bar .time {
+            font-weight: 600;
+        }
+        
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* 导航栏 */
+        .nav-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+        }
+        
+        .nav-bar .back-btn {
+            color: #007AFF;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .nav-bar .right-btn {
+            color: #007AFF;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        
+        /* 主内容区 */
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        /* 提示信息 */
+        .tip-section {
+            background-color: #fff3cd;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #856404;
+            font-size: 13px;
+        }
+        
+        .tip-section i {
+            font-size: 16px;
+        }
+        
+        /* 排序列表 */
+        .sort-list {
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .sort-item {
+            padding: 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: move;
+            position: relative;
+        }
+        
+        .sort-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sort-handle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8e8e93;
+            cursor: grab;
+        }
+        
+        .sort-handle:active {
+            cursor: grabbing;
+        }
+        
+        .sort-thumbnail {
+            width: 60px;
+            height: 45px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sort-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .sort-status {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: #ff3b30;
+            color: #fff;
+            font-size: 9px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .sort-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .sort-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+        
+        .sort-meta {
+            font-size: 13px;
+            color: #8e8e93;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .sort-order {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #007AFF;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* 保存按钮 */
+        .save-section {
+            position: fixed;
+            bottom: 83px;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background-color: #fff;
+            border-top: 0.5px solid #e5e5ea;
+        }
+        
+        .save-btn {
+            width: 100%;
+            height: 50px;
+            background-color: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .save-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 底部Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background-color: #fff;
+            border-top: 0.5px solid #e5e5ea;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            padding-bottom: 34px;
+            z-index: 100;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: #8e8e93;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #007AFF;
+        }
+        
+        .tab-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        /* 拖拽样式 */
+        .sort-item.dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <div class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="title">直播间排序</div>
+        <div class="right-btn" onclick="resetSort()">
+            重置
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="content">
+        <!-- 提示信息 -->
+        <div class="tip-section">
+            <i class="fas fa-info-circle"></i>
+            <span>长按拖动可调整直播间显示顺序，群成员将按此顺序查看直播间</span>
+        </div>
+        
+        <!-- 排序列表 -->
+        <div class="sort-list" id="sortList">
+            <div class="sort-item" data-id="1">
+                <div class="sort-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="sort-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="sort-status">
+                        <i class="fas fa-circle" style="font-size: 5px;"></i>
+                        <span>直播中</span>
+                    </div>
+                </div>
+                <div class="sort-info">
+                    <div class="sort-name">游戏技巧分享</div>
+                    <div class="sort-meta">
+                        <span><i class="fas fa-users"></i> 128人</span>
+                        <span><i class="fas fa-clock"></i> 05:32</span>
+                    </div>
+                </div>
+                <div class="sort-order">1</div>
+            </div>
+            
+            <div class="sort-item" data-id="2">
+                <div class="sort-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="sort-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="sort-status">
+                        <i class="fas fa-circle" style="font-size: 5px;"></i>
+                        <span>直播中</span>
+                    </div>
+                </div>
+                <div class="sort-info">
+                    <div class="sort-name">加密技术讲解</div>
+                    <div class="sort-meta">
+                        <span><i class="fas fa-users"></i> 89人</span>
+                        <span><i class="fas fa-clock"></i> 12:15</span>
+                    </div>
+                </div>
+                <div class="sort-order">2</div>
+            </div>
+            
+            <div class="sort-item" data-id="3">
+                <div class="sort-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="sort-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="sort-status">
+                        <i class="fas fa-circle" style="font-size: 5px;"></i>
+                        <span>直播中</span>
+                    </div>
+                </div>
+                <div class="sort-info">
+                    <div class="sort-name">新手入门指导</div>
+                    <div class="sort-meta">
+                        <span><i class="fas fa-users"></i> 56人</span>
+                        <span><i class="fas fa-clock"></i> 02:45</span>
+                    </div>
+                </div>
+                <div class="sort-order">3</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 保存按钮 -->
+    <div class="save-section">
+        <button class="save-btn" onclick="saveSort()">
+            保存排序
+        </button>
+    </div>
+    
+    <!-- 底部Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-address-book"></i>
+            <span>联系人</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-users"></i>
+            <span>群聊</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+    
+    <script>
+        let draggedElement = null;
+        let sortList = document.getElementById('sortList');
+        
+        // 初始化拖拽功能
+        document.querySelectorAll('.sort-item').forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragend', handleDragEnd);
+            item.setAttribute('draggable', 'true');
+        });
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+        
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+        
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (draggedElement !== this) {
+                sortList.insertBefore(draggedElement, this.nextSibling);
+                updateOrderNumbers();
+            }
+            
+            return false;
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.sort-item').forEach(item => {
+                item.classList.remove('dragging');
+            });
+        }
+        
+        function updateOrderNumbers() {
+            document.querySelectorAll('.sort-item').forEach((item, index) => {
+                item.querySelector('.sort-order').textContent = index + 1;
+            });
+        }
+        
+        function saveSort() {
+            const order = Array.from(document.querySelectorAll('.sort-item')).map(item => item.dataset.id);
+            alert('排序已保存！\n新顺序：' + order.join(' → '));
+        }
+        
+        function resetSort() {
+            if (confirm('确定要重置为默认顺序吗？')) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

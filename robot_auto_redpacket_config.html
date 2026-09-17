@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>机器人自动发包配置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #e0e0e0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-btn {
+            font-size: 18px;
+            color: #333;
+            margin-right: 16px;
+        }
+        
+        .status-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            margin-top: 44px;
+            margin-bottom: 100px;
+            padding: 16px;
+        }
+        
+        /* 配置项 */
+        .config-item {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .config-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .config-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .config-input-label {
+            font-size: 14px;
+            color: #666;
+            width: 80px;
+        }
+        
+        .config-input {
+            flex: 1;
+            height: 40px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .config-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .range-separator {
+            margin: 0 8px;
+            color: #999;
+        }
+        
+        /* 雷号选择 */
+        .mine-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .mine-number-item {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mine-number-item.selected {
+            background-color: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+        
+        /* 开启/关闭按钮 */
+        .toggle-section {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .toggle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .toggle-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .toggle-desc {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+        
+        .toggle-btn {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 32px;
+        }
+        
+        .toggle-btn input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #d9d9d9;
+            transition: .4s;
+            border-radius: 32px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #1890ff;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* 保存按钮 */
+        .save-btn {
+            position: fixed;
+            bottom: 70px;
+            left: 16px;
+            right: 16px;
+            height: 48px;
+            background-color: #1890ff;
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        .save-btn:active {
+            background-color: #096dd9;
+        }
+        
+        /* 提示信息 */
+        .tip-info {
+            font-size: 12px;
+            color: #1890ff;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #e6f7ff;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <i class="fas fa-arrow-left back-btn" onclick="window.location.href='mine_rule_config.html'"></i>
+            <div class="status-bar-title">机器人自动发包配置</div>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 金额范围配置 -->
+        <div class="config-item">
+            <div class="config-item-title">红包金额范围</div>
+            <div class="config-input-group">
+                <div class="config-input-label">金额</div>
+                <input type="number" class="config-input" placeholder="最小值" min="100" max="1000">
+                <span class="range-separator">-</span>
+                <input type="number" class="config-input" placeholder="最大值" min="100" max="1000">
+                <span style="margin-left: 8px; font-size: 14px; color: #666;">C</span>
+            </div>
+            <div class="tip-info">
+                <i class="fas fa-info-circle"></i> 请输入开启的埋雷规则范围内的金额
+            </div>
+        </div>
+        
+        <!-- 雷号配置 -->
+        <div class="config-item">
+            <div class="config-item-title">雷号</div>
+            <div class="mine-numbers">
+                <div class="mine-number-item selected">1</div>
+                <div class="mine-number-item">2</div>
+                <div class="mine-number-item">3</div>
+                <div class="mine-number-item">4</div>
+                <div class="mine-number-item">5</div>
+                <div class="mine-number-item">6</div>
+                <div class="mine-number-item">7</div>
+                <div class="mine-number-item">8</div>
+                <div class="mine-number-item">9</div>
+            </div>
+            <div class="tip-info">
+                <i class="fas fa-info-circle"></i> 请选择开启的埋雷规则范围内的雷号
+            </div>
+        </div>
+        
+        <!-- 发包个数配置 -->
+        <div class="config-item">
+            <div class="config-item-title">发包个数</div>
+            <div class="config-input-group">
+                <div class="config-input-label">个数</div>
+                <input type="number" class="config-input" placeholder="请输入发包个数" min="5" max="10">
+                <span style="margin-left: 8px; font-size: 14px; color: #666;">个</span>
+            </div>
+            <div class="tip-info">
+                <i class="fas fa-info-circle"></i> 请输入开启的埋雷规则范围内的发包个数
+            </div>
+        </div>
+        
+        <!-- 开启/关闭配置 -->
+        <div class="toggle-section">
+            <div class="toggle-header">
+                <div class="toggle-title">开启自动发包</div>
+                <label class="toggle-btn">
+                    <input type="checkbox" id="autoSendToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-desc">
+                开启后，机器人将在规则开启过程中，且账号余额充足的情况下，随机进行发包
+            </div>
+        </div>
+    </div>
+    
+    <!-- 保存按钮 -->
+    <button class="save-btn">保存配置</button>
+    
+    <script>
+        // 雷号选择
+        document.querySelectorAll('.mine-number-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('selected');
+            });
+        });
+        
+        // 开启自动发包确认弹窗
+        document.getElementById('autoSendToggle').addEventListener('change', function() {
+            if (this.checked) {
+                if (!confirm('开启后机器人将自动发包')) {
+                    this.checked = false;
+                }
+            }
+        });
+        
+        // 保存配置
+        document.querySelector('.save-btn').addEventListener('click', function() {
+            // 这里可以添加保存配置的逻辑
+            alert('配置保存成功');
+        });
+    </script>
+</body>
+</html>

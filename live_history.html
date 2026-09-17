@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>历史直播数据</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            min-height: 100vh;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-bar .time {
+            font-weight: 600;
+        }
+        
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* 导航栏 */
+        .nav-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+        }
+        
+        .nav-bar .back-btn {
+            color: #007AFF;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .nav-bar .right-btn {
+            color: #007AFF;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        /* 主内容区 */
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        /* 时间筛选 */
+        .filter-section {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-title {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-bottom: 12px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .filter-tab {
+            flex: 1;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid #e5e5ea;
+            background-color: #f5f5f7;
+            color: #000;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab.active {
+            background-color: #007AFF;
+            color: #fff;
+            border-color: #007AFF;
+        }
+        
+        /* 总览卡片 */
+        .overview-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .overview-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        
+        .overview-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .overview-stat {
+            text-align: center;
+        }
+        
+        .overview-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .overview-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .overview-unit {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        /* 历史记录列表 */
+        .history-list {
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .history-item {
+            padding: 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-item:active {
+            background-color: #f5f5f7;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .history-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .history-date {
+            font-size: 13px;
+            color: #8e8e93;
+        }
+        
+        .history-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .history-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .history-stat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .history-stat-icon.viewers {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .history-stat-icon.traffic {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .history-stat-info {
+            flex: 1;
+        }
+        
+        .history-stat-label {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 2px;
+        }
+        
+        .history-stat-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .history-duration {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* 底部Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background-color: #fff;
+            border-top: 0.5px solid #e5e5ea;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            padding-bottom: 34px;
+            z-index: 100;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: #8e8e93;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #007AFF;
+        }
+        
+        .tab-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8e8e93;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state-text {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <div class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="title">历史直播数据</div>
+        <div class="right-btn" onclick="exportData()">
+            导出
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="content">
+        <!-- 时间筛选 -->
+        <div class="filter-section">
+            <div class="filter-title">时间范围</div>
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="switchFilter('today')">今天</div>
+                <div class="filter-tab" onclick="switchFilter('week')">本周</div>
+                <div class="filter-tab" onclick="switchFilter('month')">本月</div>
+                <div class="filter-tab" onclick="switchFilter('all')">全部</div>
+            </div>
+        </div>
+        
+        <!-- 总览卡片 -->
+        <div class="overview-card">
+            <div class="overview-title">累计数据</div>
+            <div class="overview-stats">
+                <div class="overview-stat">
+                    <div class="overview-value">
+                        1,256<span class="overview-unit">人</span>
+                    </div>
+                    <div class="overview-label">观看总人数</div>
+                </div>
+                <div class="overview-stat">
+                    <div class="overview-value">
+                        45.8<span class="overview-unit">GB</span>
+                    </div>
+                    <div class="overview-label">使用总流量</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 历史记录列表 -->
+        <div class="history-list">
+            <div class="history-item" onclick="viewDetail(1)">
+                <div class="history-header">
+                    <div class="history-name">游戏技巧分享</div>
+                    <div class="history-date">2024-01-15 20:30</div>
+                </div>
+                <div class="history-stats">
+                    <div class="history-stat">
+                        <div class="history-stat-icon viewers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">观看人数</div>
+                            <div class="history-stat-value">256人</div>
+                        </div>
+                    </div>
+                    <div class="history-stat">
+                        <div class="history-stat-icon traffic">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">使用流量</div>
+                            <div class="history-stat-value">12.5 GB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-duration">
+                    <i class="fas fa-clock"></i>
+                    <span>直播时长：1小时32分钟</span>
+                </div>
+            </div>
+            
+            <div class="history-item" onclick="viewDetail(2)">
+                <div class="history-header">
+                    <div class="history-name">加密技术讲解</div>
+                    <div class="history-date">2024-01-14 19:15</div>
+                </div>
+                <div class="history-stats">
+                    <div class="history-stat">
+                        <div class="history-stat-icon viewers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">观看人数</div>
+                            <div class="history-stat-value">189人</div>
+                        </div>
+                    </div>
+                    <div class="history-stat">
+                        <div class="history-stat-icon traffic">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">使用流量</div>
+                            <div class="history-stat-value">8.3 GB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-duration">
+                    <i class="fas fa-clock"></i>
+                    <span>直播时长：1小时05分钟</span>
+                </div>
+            </div>
+            
+            <div class="history-item" onclick="viewDetail(3)">
+                <div class="history-header">
+                    <div class="history-name">新手入门指导</div>
+                    <div class="history-date">2024-01-13 18:00</div>
+                </div>
+                <div class="history-stats">
+                    <div class="history-stat">
+                        <div class="history-stat-icon viewers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">观看人数</div>
+                            <div class="history-stat-value">312人</div>
+                        </div>
+                    </div>
+                    <div class="history-stat">
+                        <div class="history-stat-icon traffic">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">使用流量</div>
+                            <div class="history-stat-value">15.2 GB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-duration">
+                    <i class="fas fa-clock"></i>
+                    <span>直播时长：2小时15分钟</span>
+                </div>
+            </div>
+            
+            <div class="history-item" onclick="viewDetail(4)">
+                <div class="history-header">
+                    <div class="history-name">技术答疑专场</div>
+                    <div class="history-date">2024-01-12 20:00</div>
+                </div>
+                <div class="history-stats">
+                    <div class="history-stat">
+                        <div class="history-stat-icon viewers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">观看人数</div>
+                            <div class="history-stat-value">178人</div>
+                        </div>
+                    </div>
+                    <div class="history-stat">
+                        <div class="history-stat-icon traffic">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="history-stat-info">
+                            <div class="history-stat-label">使用流量</div>
+                            <div class="history-stat-value">9.8 GB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-duration">
+                    <i class="fas fa-clock"></i>
+                    <span>直播时长：1小时20分钟</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-address-book"></i>
+            <span>联系人</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-users"></i>
+            <span>群聊</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+    
+    <script>
+        function switchFilter(type) {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 这里可以根据type更新数据
+            console.log('切换到：' + type);
+        }
+        
+        function viewDetail(id) {
+            alert('查看详情 #' + id);
+        }
+        
+        function exportData() {
+            alert('数据导出功能');
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

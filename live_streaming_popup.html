@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>直播弹窗</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        /* 弹窗容器 */
+        .popup-container {
+            width: 100%;
+            background-color: #fff;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            max-height: 50vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        /* 弹窗标题 */
+        .popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .popup-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .popup-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+        
+        /* 直播介绍 */
+        .live-intro {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .live-intro-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #389e0d;
+            margin-bottom: 8px;
+        }
+        
+        .live-intro-content {
+            font-size: 13px;
+            color: #52c41a;
+            line-height: 1.4;
+        }
+        
+        /* 配置项 */
+        .config-item {
+            margin-bottom: 16px;
+        }
+        
+        .config-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .config-value {
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+        
+        .config-value.encrypted {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+        
+        .copy-btn {
+            background-color: #1890ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        
+        /* 积分信息 */
+        .points-info {
+            background-color: #fff7e6;
+            border: 1px solid #ffd591;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .points-info-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fa8c16;
+            margin-bottom: 8px;
+        }
+        
+        .points-info-content {
+            font-size: 13px;
+            color: #fa8c16;
+            line-height: 1.4;
+        }
+        
+        /* 开始直播按钮 */
+        .start-live-btn {
+            width: 100%;
+            height: 48px;
+            background-color: #ff4d4f;
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .start-live-btn:hover {
+            background-color: #ff7875;
+        }
+        
+        /* 底部阴影 */
+        .popup-shadow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), transparent);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container">
+        <div class="popup-shadow"></div>
+        
+        <!-- 弹窗头部 -->
+        <div class="popup-header">
+            <div class="popup-title">开启直播</div>
+            <div class="popup-close" onclick="window.history.back()">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        
+        <!-- 直播介绍 -->
+        <div class="live-intro">
+            <div class="live-intro-title">
+                <i class="fas fa-info-circle"></i> 直播说明
+            </div>
+            <div class="live-intro-content">
+                1. 直播将在当前群聊中进行
+                <br>
+                2. 请确保网络稳定以获得最佳直播效果
+                <br>
+                3. 直播内容需遵守平台规定
+            </div>
+        </div>
+        
+        <!-- 服务器地址 -->
+        <div class="config-item">
+            <div class="config-label">服务器地址</div>
+            <div class="config-value">rtmp://live.example.com/live</div>
+        </div>
+        
+        <!-- 推流码 -->
+        <div class="config-item">
+            <div class="config-label">推流码 <button class="copy-btn">复制</button></div>
+            <div class="config-value encrypted">stream_1234567890_abcdefghij</div>
+        </div>
+        
+        <!-- 积分信息 -->
+        <div class="points-info">
+            <div class="points-info-title">
+                <i class="fas fa-coins"></i> 积分消耗
+            </div>
+            <div class="points-info-content">
+                直播消耗积分：100积分/小时
+                <br>
+                当前剩余积分：500积分
+                <br>
+                预计可直播时长：5小时
+            </div>
+        </div>
+        
+        <!-- 开始直播按钮 -->
+        <button class="start-live-btn" onclick="window.location.href='live_streaming_active.html'">
+            开始直播
+        </button>
+    </div>
+    
+    <script>
+        // 复制按钮功能
+        document.querySelector('.copy-btn').addEventListener('click', function() {
+            const streamKey = document.querySelector('.config-value.encrypted').textContent;
+            navigator.clipboard.writeText(streamKey).then(function() {
+                alert('推流码已复制到剪贴板');
+            });
+        });
+        
+        // 关闭按钮功能
+        document.querySelector('.popup-close').addEventListener('click', function() {
+            // 这里可以添加关闭弹窗的逻辑
+            alert('弹窗已关闭');
+        });
+    </script>
+</body>
+</html>

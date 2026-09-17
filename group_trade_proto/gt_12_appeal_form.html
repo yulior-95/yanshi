@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>提交申诉</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+  <style>
+    textarea {
+      width: 100%; min-height: 96px; border: 0; outline: none; resize: none;
+      font: inherit; font-size: 14px; background: transparent; line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:52</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_11_appeal_entry.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">发起申诉</div></div>
+      <div class="side"></div>
+    </div>
+    <div class="body pad">
+      <div class="pay-box">
+        <div class="row"><span class="k">关联订单</span><span class="v">GT202608210941882</span></div>
+        <div class="row"><span class="k">金额</span><span class="v">200.00 USDT</span></div>
+        <div class="row"><span class="k">对方</span><span class="v">卖方 · Me</span></div>
+      </div>
+
+      <div class="section-title">申诉原因</div>
+      <div class="chip-group" style="margin-bottom:12px" id="reasons">
+        <button class="chip on" type="button">已付款未放币</button>
+        <button class="chip" type="button">对方失联</button>
+        <button class="chip" type="button">其他</button>
+      </div>
+
+      <div class="section-title">补充说明</div>
+      <div class="card" style="padding:12px 14px">
+        <textarea placeholder="请描述付款时间、渠道、对方反馈等情况…">我已于 09:44 通过支付宝向对方转账 200 USDT 等值人民币，截图已上传，对方超时未放币。</textarea>
+      </div>
+
+      <div class="section-title">上传凭证</div>
+      <div class="upload">
+        <i class="fa-solid fa-image"></i>
+        <div>转账截图 / 聊天记录 / 到账凭证</div>
+        <img src="https://images.unsplash.com/photo-1563013544-824ae9b50202?w=600&q=80" alt="转账凭证">
+      </div>
+
+      <a class="btn" href="gt_13_appealing.html" style="display:grid;place-items:center;text-decoration:none;margin-top:20px">提交申诉</a>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+  <script>
+    document.querySelectorAll('#reasons .chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('#reasons .chip').forEach(x => x.classList.remove('on'));
+        c.classList.add('on');
+      });
+    });
+  </script>
+</body>
+</html>

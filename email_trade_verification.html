@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱交易验证</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .content {
+            padding-top: 12px;
+        }
+
+        .hero {
+            min-height: 166px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            background-image:
+                linear-gradient(135deg, rgba(15, 23, 42, 0.64), rgba(236, 72, 153, 0.72)),
+                url('https://images.unsplash.com/photo-1521790797524-b2497295b8a0?auto=format&fit=crop&w=900&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 18px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .hero h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .card {
+            padding: 16px;
+        }
+
+        .list-item {
+            padding: 14px 0;
+        }
+
+        .state-text {
+            color: #8e8e93;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .state-text.active {
+            color: #34c759;
+        }
+
+        .tip {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            padding: 20px;
+        }
+
+        .modal-mask.show {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 330px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            line-height: 1.55;
+            color: #4b5563;
+            margin-bottom: 18px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            border: none;
+            border-radius: 10px;
+            height: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .modal-btn.confirm {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 106px;
+            background: rgba(17, 24, 39, 0.88);
+            color: #fff;
+            font-size: 13px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            display: none;
+            z-index: 21;
+        }
+
+        .toast.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="back" onclick="window.location.href='security_settings.html'" style="cursor:pointer;"><i class="fas fa-chevron-left"></i> 安全设置</div>
+            <div class="title">邮箱交易验证</div>
+            <div style="width:42px;"></div>
+        </div>
+
+        <div class="content">
+            <div class="hero">
+                <h2>邮箱验证码交易保护</h2>
+                <p>交易请求触发后，将验证码发送到安全邮箱完成二次确认。</p>
+            </div>
+
+            <div class="card">
+                <div class="list-item" style="padding-top:0;">
+                    <div class="title">安全邮箱</div>
+                    <div class="value">security@company.com <i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="list-item">
+                    <div>
+                        <div class="title">开启邮箱交易验证</div>
+                        <div class="tip">与谷歌/手机交易验证互斥，仅允许一种开启。</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="emailTradeSwitch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="list-item" style="padding-bottom:0;">
+                    <div class="title">当前状态</div>
+                    <div class="state-text" id="emailTradeState">未开启</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-bell"></i>
+                <span>通知</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-mask" id="confirmModal">
+        <div class="modal-card">
+            <div class="modal-title" id="confirmTitle">切换交易验证方式</div>
+            <div class="modal-desc" id="confirmMessage">确认切换？</div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelSwitchBtn">取消</button>
+                <button class="modal-btn confirm" id="confirmSwitchBtn">确认</button>
+            </div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="trade_verification_logic.js"></script>
+    <script>
+        TradeVerification.bindToggle({
+            method: 'email',
+            toggleId: 'emailTradeSwitch',
+            statusId: 'emailTradeState'
+        });
+    </script>
+</body>
+</html>

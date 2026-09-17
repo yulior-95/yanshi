@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>观看直播</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #000;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .status-bar .time {
+            font-weight: 600;
+        }
+        
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* 直播视频区域 */
+        .live-video-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .live-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .live-video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .live-video-placeholder i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .live-video-placeholder-text {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        /* 顶部信息栏 */
+        .live-top-info {
+            position: absolute;
+            top: 44px;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+            z-index: 100;
+        }
+        
+        .live-title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .live-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+        }
+        
+        .live-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .live-meta-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .live-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .live-status-badge {
+            background-color: #ff3b30;
+            color: #fff;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+        
+        .live-status-badge i {
+            font-size: 6px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* 底部控制栏 */
+        .live-bottom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            z-index: 100;
+        }
+        
+        .live-controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .live-viewers-count {
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .live-control-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .live-control-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .live-control-btn:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .live-control-btn.liked {
+            color: #ff3b30;
+        }
+        
+        .live-chat-toggle {
+            position: absolute;
+            bottom: 80px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: rgba(0, 122, 255, 0.9);
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+            z-index: 101;
+        }
+        
+        .live-chat-toggle.has-unread::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ff3b30;
+        }
+        
+        /* 聊天面板 */
+        .live-chat-panel {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            height: 400px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-top-left-radius: 16px;
+            display: none;
+            flex-direction: column;
+            z-index: 200;
+        }
+        
+        .live-chat-panel.show {
+            display: flex;
+        }
+        
+        .live-chat-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .live-chat-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .live-chat-close {
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .live-chat-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+        }
+        
+        .live-chat-message {
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #fff;
+        }
+        
+        .live-chat-input-area {
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 8px;
+        }
+        
+        .live-chat-input {
+            flex: 1;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 18px;
+            padding: 0 16px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .live-chat-send {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #007AFF;
+            color: #fff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 直播视频区域 -->
+    <div class="live-video-container">
+        <div class="live-video-placeholder">
+            <i class="fas fa-video"></i>
+            <div class="live-video-placeholder-text">直播画面</div>
+        </div>
+        
+        <!-- 顶部信息栏 -->
+        <div class="live-top-info">
+            <div class="live-title-bar">
+                <div class="live-title">游戏技巧分享</div>
+                <div class="live-close-btn" onclick="exitLive()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="live-meta-bar">
+                <div class="live-status-badge">
+                    <i class="fas fa-circle"></i>
+                    <span>直播中</span>
+                </div>
+                <div class="live-meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="liveDuration">00:05:32</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部控制栏 -->
+        <div class="live-bottom-controls">
+            <div class="live-controls-row">
+                <div class="live-viewers-count">
+                    <i class="fas fa-users"></i>
+                    <span id="viewersCount">128</span>
+                    <span>人观看</span>
+                </div>
+                <div class="live-control-buttons">
+                    <button class="live-control-btn" onclick="toggleLike()">
+                        <i class="fas fa-heart" id="likeIcon"></i>
+                    </button>
+                    <button class="live-control-btn" onclick="shareLive()">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="live-control-btn" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 聊天切换按钮 -->
+        <button class="live-chat-toggle has-unread" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>
+        </button>
+        
+        <!-- 聊天面板 -->
+        <div class="live-chat-panel" id="chatPanel">
+            <div class="live-chat-header">
+                <div class="live-chat-title">聊天 (128)</div>
+                <div class="live-chat-close" onclick="toggleChat()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="live-chat-messages" id="chatMessages">
+                <div class="live-chat-message">
+                    <strong>用户A:</strong> 讲得真好！
+                </div>
+                <div class="live-chat-message">
+                    <strong>用户B:</strong> 学到了
+                </div>
+                <div class="live-chat-message">
+                    <strong>用户C:</strong> 666
+                </div>
+            </div>
+            <div class="live-chat-input-area">
+                <input type="text" class="live-chat-input" placeholder="说点什么..." id="chatInput">
+                <button class="live-chat-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let isLiked = false;
+        let isChatOpen = false;
+        let viewersCount = 128;
+        let liveSeconds = 332; // 5分32秒
+        
+        // 更新直播时长
+        setInterval(() => {
+            liveSeconds++;
+            const hours = Math.floor(liveSeconds / 3600);
+            const minutes = Math.floor((liveSeconds % 3600) / 60);
+            const secs = liveSeconds % 60;
+            document.getElementById('liveDuration').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        // 模拟实时更新观看人数
+        setInterval(() => {
+            const change = Math.floor(Math.random() * 5) - 2; // -2 到 +2
+            viewersCount = Math.max(0, viewersCount + change);
+            document.getElementById('viewersCount').textContent = viewersCount;
+        }, 3000);
+        
+        function toggleLike() {
+            isLiked = !isLiked;
+            const icon = document.getElementById('likeIcon');
+            const btn = icon.parentElement;
+            if (isLiked) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.classList.add('liked');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                btn.classList.remove('liked');
+            }
+        }
+        
+        function shareLive() {
+            alert('分享直播');
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        function toggleChat() {
+            isChatOpen = !isChatOpen;
+            const panel = document.getElementById('chatPanel');
+            if (isChatOpen) {
+                panel.classList.add('show');
+            } else {
+                panel.classList.remove('show');
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                const messagesDiv = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'live-chat-message';
+                messageDiv.innerHTML = `<strong>我:</strong> ${message}`;
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                input.value = '';
+            }
+        }
+        
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        function exitLive() {
+            if (confirm('确定要退出直播吗？')) {
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

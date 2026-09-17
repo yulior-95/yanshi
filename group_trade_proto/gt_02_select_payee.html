@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>选择收款人</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+  <style>
+    .search {
+      margin: 0 16px 12px; height: 40px; border-radius: 10px; background: #fff;
+      display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--sub);
+    }
+    .search input { flex: 1; border: 0; outline: none; font: inherit; font-size: 15px; background: transparent; }
+    .group-hint {
+      margin: 0 16px 8px; font-size: 13px; color: var(--sub);
+      display: flex; align-items: center; gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:41</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_01_chat_entry.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">选择收款人</div></div>
+      <div class="side"></div>
+    </div>
+
+    <div class="group-hint"><i class="fa-solid fa-users"></i> 当前群 · 币友交流群 · 仅展示群成员</div>
+    <div class="search"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="搜索昵称 / ID"></div>
+
+    <div class="body pad" style="padding-top:0">
+      <div class="card" style="padding:4px 16px">
+        <label class="list-item" style="cursor:pointer">
+          <img class="avatar" src="../figma_proto/assets/media/avatar_contact2.png" alt="">
+          <div class="meta"><div class="name">Alex Chen</div><div class="desc">ID 882910 · 近 30 日成交 36</div></div>
+          <div class="radio on"></div>
+        </label>
+        <label class="list-item" style="cursor:pointer">
+          <img class="avatar" src="../figma_proto/assets/media/avatar_contact4.png" alt="">
+          <div class="meta"><div class="name">Mina</div><div class="desc">ID 441203 · 近 30 日成交 12</div></div>
+          <div class="radio"></div>
+        </label>
+        <label class="list-item" style="cursor:pointer">
+          <img class="avatar" src="../figma_proto/assets/media/avatar_contact5.png" alt="">
+          <div class="meta"><div class="name">老王 OTC</div><div class="desc">ID 100288 · 近 30 日成交 89</div></div>
+          <div class="radio"></div>
+        </label>
+        <label class="list-item" style="cursor:pointer">
+          <img class="avatar" src="../figma_proto/assets/media/avatar_contact7.png" alt="">
+          <div class="meta"><div class="name">Sophie</div><div class="desc">ID 773001 · 近 30 日成交 5</div></div>
+          <div class="radio"></div>
+        </label>
+      </div>
+      <a class="btn" href="gt_03_create.html" style="display:grid;place-items:center;text-decoration:none;margin-top:8px">下一步</a>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+  <script>
+    document.querySelectorAll('.list-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.radio').forEach(r => r.classList.remove('on'));
+        item.querySelector('.radio').classList.add('on');
+      });
+    });
+  </script>
+</body>
+</html>

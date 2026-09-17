@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>谷歌验证码设置</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .content {
+            padding-top: 12px;
+        }
+
+        .setup-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            margin-bottom: 14px;
+        }
+
+        .banner {
+            min-height: 170px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            background-image:
+                linear-gradient(145deg, rgba(37, 99, 235, 0.88), rgba(99, 102, 241, 0.82)),
+                url('https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=900&q=80');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .banner h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .banner p {
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0.96;
+        }
+
+        .token-box {
+            margin-top: 14px;
+            border: 1px dashed #c7d2fe;
+            border-radius: 12px;
+            padding: 14px;
+            background: #f8faff;
+        }
+
+        .token-title {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .token-value {
+            font-size: 20px;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #0f172a;
+            font-family: Consolas, Monaco, monospace;
+            word-break: break-all;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn-half {
+            flex: 1;
+            border: none;
+            border-radius: 11px;
+            height: 44px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-copy {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .btn-next {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-bottom: 10px;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        .list-item {
+            padding: 13px 0;
+        }
+
+        .status-pill {
+            font-size: 12px;
+            color: #34c759;
+            background: rgba(52, 199, 89, 0.12);
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        .status-pill.pending {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .state-text {
+            color: #8e8e93;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .state-text.active {
+            color: #34c759;
+        }
+
+        .empty-tip {
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            padding: 20px;
+        }
+
+        .modal-mask.show {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 330px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            line-height: 1.55;
+            color: #4b5563;
+            margin-bottom: 18px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            border: none;
+            border-radius: 10px;
+            height: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .modal-btn.confirm {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 106px;
+            background: rgba(17, 24, 39, 0.88);
+            color: #fff;
+            font-size: 13px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            display: none;
+            z-index: 21;
+        }
+
+        .toast.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="back" onclick="window.location.href='security_settings.html'" style="cursor:pointer;"><i class="fas fa-chevron-left"></i> 安全设置</div>
+            <div class="title">谷歌验证码</div>
+            <div style="width: 42px;"></div>
+        </div>
+
+        <div class="content">
+            <div class="banner">
+                <h2>谷歌验证码保护</h2>
+                <p>相比短信更稳定，适用于登录、注册、交易等高风险操作的二次安全确认。</p>
+            </div>
+
+            <div id="pendingSetupPanel">
+                <div class="section-label">首次设置</div>
+                <div class="setup-card">
+                    <div class="list-item" style="padding-top: 0;">
+                        <div>
+                            <div class="title">绑定状态</div>
+                            <div class="empty-tip">当前尚未完成谷歌验证器绑定，请先复制密钥并完成验证码校验。</div>
+                        </div>
+                        <span class="status-pill pending">待设置</span>
+                    </div>
+                    <div class="token-box">
+                        <div class="token-title">验证密钥令牌（请妥善保存）</div>
+                        <div class="token-value" id="secretToken">VX7N-2KAQ-LP54-8MFD</div>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn-half btn-copy" id="copyTokenBtn"><i class="fas fa-copy"></i> 复制密钥</button>
+                        <button class="btn-half btn-next" id="goVerifyBtn">下一步</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="boundManagePanel" style="display:none;">
+                <div class="section-label">已绑定管理</div>
+                <div class="setup-card">
+                    <div class="list-item" style="padding-top: 0;">
+                        <div class="title">谷歌验证器</div>
+                        <span class="status-pill">已绑定</span>
+                    </div>
+                    <div class="list-item" id="modifyGoogleAuthBtn">
+                        <div class="title">修改谷歌验证码</div>
+                        <div class="value">重新绑定 <i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="list-item">
+                        <div>
+                            <div class="title">谷歌交易验证</div>
+                            <div style="font-size:12px;color:#8e8e93;margin-top:4px;">与手机/邮箱交易验证三选一开启</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="googleTradeSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="list-item" style="padding-bottom:0;">
+                        <div class="title">当前状态</div>
+                        <div class="state-text" id="googleTradeState">未开启</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-bell"></i>
+                <span>通知</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-mask" id="confirmModal">
+        <div class="modal-card">
+            <div class="modal-title" id="confirmTitle">切换交易验证方式</div>
+            <div class="modal-desc" id="confirmMessage">确认切换？</div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelSwitchBtn">取消</button>
+                <button class="modal-btn confirm" id="confirmSwitchBtn">确认</button>
+            </div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="trade_verification_logic.js"></script>
+    <script>
+        const pendingPanel = document.getElementById('pendingSetupPanel');
+        const boundPanel = document.getElementById('boundManagePanel');
+        const copyTokenBtn = document.getElementById('copyTokenBtn');
+        const goVerifyBtn = document.getElementById('goVerifyBtn');
+        const modifyBtn = document.getElementById('modifyGoogleAuthBtn');
+        const secretText = document.getElementById('secretToken').textContent;
+
+        function renderByBindState() {
+            const isBound = localStorage.getItem('googleAuthenticatorBound') === '1';
+            pendingPanel.style.display = isBound ? 'none' : 'block';
+            boundPanel.style.display = isBound ? 'block' : 'none';
+
+            if (isBound) {
+                TradeVerification.bindToggle({
+                    method: 'google',
+                    toggleId: 'googleTradeSwitch',
+                    statusId: 'googleTradeState'
+                });
+            }
+        }
+
+        copyTokenBtn.addEventListener('click', async () => {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(secretText);
+                }
+                TradeVerification.showToast('验证密钥已复制');
+            } catch (error) {
+                TradeVerification.showToast('复制失败，请手动复制密钥');
+            }
+        });
+
+        goVerifyBtn.addEventListener('click', () => {
+            window.location.href = 'google_auth_verify.html';
+        });
+
+        modifyBtn.addEventListener('click', () => {
+            localStorage.setItem('googleAuthenticatorBound', '0');
+            TradeVerification.showToast('请重新完成绑定验证');
+            setTimeout(() => {
+                window.location.href = 'google_auth_verify.html';
+            }, 600);
+        });
+
+        renderByBindState();
+    </script>
+</body>
+</html>

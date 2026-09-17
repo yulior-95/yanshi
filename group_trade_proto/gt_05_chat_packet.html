@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>群聊 · 交易包已发出</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+  <style>
+    .toast {
+      position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.78); color: #fff; padding: 10px 16px; border-radius: 10px;
+      font-size: 13px; z-index: 20; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:41</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav" style="background:#fff">
+      <a class="back" href="gt_01_chat_entry.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap">
+        <div class="title">币友交流群</div>
+        <div class="sub">交易发起成功</div>
+      </div>
+      <div class="side"></div>
+    </div>
+
+    <div class="toast" id="toast"><i class="fa-solid fa-circle-check" style="color:#12b76a;margin-right:6px"></i>发起成功，资产已冻结</div>
+
+    <div class="body pad">
+      <div style="text-align:center;color:var(--sub);font-size:12px;margin:8px 0 16px">今天 09:41</div>
+      <div class="msg-row me">
+        <img class="avatar sm" src="../figma_proto/assets/media/avatar_albert.png" alt="">
+        <div>
+          <a class="packet" href="gt_07_seller_detail.html" style="display:block;text-decoration:none;color:#fff">
+            <div class="top"><i class="fa-solid fa-handshake"></i> 群聊交易 · 待付款</div>
+            <div class="mid">200.00 USDT</div>
+            <div style="font-size:13px;opacity:.92;margin:-4px 0 8px">买家应付 ¥1,450.00 · 汇率 7.25</div>
+            <div class="bot"><span>买家 · Alex</span><span>10:00 截止</span></div>
+          </a>
+          <div style="font-size:11px;color:var(--sub);text-align:right;margin-top:4px">你发出的交易包 · 点击查看</div>
+        </div>
+      </div>
+      <div class="msg-row">
+        <img class="avatar sm" src="../figma_proto/assets/media/avatar_contact2.png" alt="">
+        <div class="bubble">收到，我这就付</div>
+      </div>
+    </div>
+
+    <div style="padding:8px 12px;background:#f7f7f8;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-shrink:0">
+      <input style="flex:1;height:36px;border:0;border-radius:8px;padding:0 12px;font:inherit" placeholder="发消息…" readonly>
+      <a href="gt_06_buyer_detail.html" style="font-size:12px;color:var(--theme);text-decoration:none;white-space:nowrap">买方视角 →</a>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+  <script>
+    setTimeout(() => { const t = document.getElementById('toast'); if (t) t.style.display = 'none'; }, 2200);
+  </script>
+</body>
+</html>

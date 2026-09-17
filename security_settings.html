@@ -6,88 +6,181 @@
     <title>安全设置</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .section-title {
+            color: #8e8e93;
+            font-size: 13px;
+            margin: 10px 4px 10px;
+            font-weight: 600;
+        }
+
+        .list-item {
+            cursor: pointer;
+        }
+
+        .item-desc {
+            color: #8e8e93;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .item-leading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .google {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+        }
+
+        .phone {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        }
+
+        .email {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+        }
+
+        .itoken {
+            background: linear-gradient(135deg, #5856d6, #007aff);
+        }
+
+        .value-tag {
+            color: #34c759;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .hero-card {
+            border-radius: 14px;
+            overflow: hidden;
+            color: #fff;
+            margin-bottom: 16px;
+            min-height: 158px;
+            background-image:
+                linear-gradient(160deg, rgba(17, 24, 39, 0.65), rgba(37, 99, 235, 0.75)),
+                url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=900&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.22);
+        }
+
+        .hero-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-desc {
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding-top: 14px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- 状态栏 -->
         <div class="status-bar">
-            <div class="time">12:30</div>
+            <div class="time">9:41</div>
             <div class="icons">
                 <i class="fas fa-signal"></i>
                 <i class="fas fa-wifi"></i>
                 <i class="fas fa-battery-three-quarters"></i>
             </div>
         </div>
-        
-        <!-- 导航栏 -->
+
         <div class="nav-bar">
-            <div class="back"><i class="fas fa-chevron-left"></i> 返回</div>
+            <div class="back"><i class="fas fa-chevron-left"></i> 我的</div>
             <div class="title">安全设置</div>
-            <div></div>
+            <div style="width: 42px;"></div>
         </div>
-        
-        <!-- 内容区 -->
+
         <div class="content">
+            <div class="hero-card">
+                <div class="hero-title">升级交易安全验证</div>
+                <div class="hero-desc">
+                    为解决短信验证码收不到的问题，支持谷歌验证码、手机验证码、邮箱验证码三选一动态切换，确保交易可用性与安全性。
+                </div>
+            </div>
+
+            <div class="section-title">身份验证方式</div>
+            <div class="card">
+                <div class="list-item" onclick="window.location.href='google_auth_setup.html'">
+                    <div class="item-leading">
+                        <div class="icon-badge google"><i class="fab fa-google"></i></div>
+                        <div>
+                            <div class="title">谷歌验证码</div>
+                            <div class="item-desc">推荐：弱网/境外场景更稳定</div>
+                        </div>
+                    </div>
+                    <div class="value"><span class="value-tag" id="googleStateTag">未设置</span><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="list-item" onclick="window.location.href='phone_trade_verification.html'">
+                    <div class="item-leading">
+                        <div class="icon-badge phone"><i class="fas fa-mobile-screen-button"></i></div>
+                        <div>
+                            <div class="title">手机交易验证</div>
+                            <div class="item-desc">已绑定：138****5678</div>
+                        </div>
+                    </div>
+                    <div class="value"><span class="value-tag" id="phoneStateTag">已开启</span><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="list-item" onclick="window.location.href='email_trade_verification.html'">
+                    <div class="item-leading">
+                        <div class="icon-badge email"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <div class="title">邮箱交易验证</div>
+                            <div class="item-desc">已绑定：security@company.com</div>
+                        </div>
+                    </div>
+                    <div class="value"><span class="value-tag" id="emailStateTag">未开启</span><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+
+            <div class="section-title">其他安全能力</div>
             <div class="card">
                 <div class="list-item">
                     <div class="title">登录密码</div>
                     <div class="value">修改 <i class="fas fa-chevron-right"></i></div>
                 </div>
+                <div class="list-item" onclick="window.location.href='itoken_device_certification.html'">
+                    <div class="item-leading">
+                        <div class="icon-badge itoken"><i class="fas fa-shield-halved"></i></div>
+                        <div>
+                            <div class="title">iToken设备认证</div>
+                            <div class="item-desc">提升红包/转账限额 · 待认证</div>
+                        </div>
+                    </div>
+                    <div class="value"><span class="value-tag" id="itokenCertTag" style="color:#e67e00;">待认证</span><i class="fas fa-chevron-right"></i></div>
+                </div>
                 <div class="list-item">
                     <div class="title">指纹验证</div>
-                    <div class="value">已设置 <i class="fas fa-chevron-right"></i></div>
-                </div>
-                <div class="list-item">
-                    <div class="title">面容识别</div>
-                    <div class="value">未设置 <i class="fas fa-chevron-right"></i></div>
-                </div>
-                <div class="list-item" onclick="window.location.href='itoken_authorize.html'" style="cursor: pointer;">
-                    <div class="title">iToken设备绑定</div>
-                    <div class="value">未绑定 <i class="fas fa-chevron-right"></i></div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="list-item">
-                    <div class="title">应用指纹验证场景</div>
-                    <div class="value"><i class="fas fa-chevron-right"></i></div>
-                </div>
-                <div class="list-item">
-                    <div class="title">安全验证</div>
-                    <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="list-item">
-                    <div class="title">支付验证</div>
-                    <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <div class="list-item">
-                    <div class="title">登录验证</div>
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="list-item">
-                    <div class="title">安全手机</div>
-                    <div class="value">138****5678 <i class="fas fa-chevron-right"></i></div>
-                </div>
-                <div class="list-item">
-                    <div class="title">安全邮箱</div>
-                    <div class="value">未设置 <i class="fas fa-chevron-right"></i></div>
+                    <div class="value">已开启 <i class="fas fa-chevron-right"></i></div>
                 </div>
             </div>
         </div>
-        
-        <!-- 底部标签栏 -->
+
         <div class="tab-bar">
             <div class="tab-item">
                 <i class="fas fa-home"></i>
@@ -107,5 +200,19 @@
             </div>
         </div>
     </div>
+    <script>
+        const method = localStorage.getItem('tradeVerificationMethod') || 'phone';
+        const googleBound = localStorage.getItem('googleAuthenticatorBound') === '1';
+        const googleTag = document.getElementById('googleStateTag');
+        const phoneTag = document.getElementById('phoneStateTag');
+        const emailTag = document.getElementById('emailStateTag');
+
+        googleTag.textContent = googleBound ? (method === 'google' ? '已开启' : '已设置') : '未设置';
+        googleTag.style.color = googleBound ? '#34c759' : '#8e8e93';
+        phoneTag.textContent = method === 'phone' ? '已开启' : '未开启';
+        phoneTag.style.color = method === 'phone' ? '#34c759' : '#8e8e93';
+        emailTag.textContent = method === 'email' ? '已开启' : '未开启';
+        emailTag.style.color = method === 'email' ? '#34c759' : '#8e8e93';
+    </script>
 </body>
 </html>

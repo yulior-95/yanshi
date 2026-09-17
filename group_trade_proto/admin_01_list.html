@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台 · 申诉单列表</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+  <style>
+    body { background: #0b1220; }
+    .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .filters .chip { background: #fff; border: 1px solid #e5e7eb; }
+    .filters .chip.on { border-color: var(--theme); }
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .stat {
+      background: #fff; border-radius: 12px; padding: 14px 16px;
+    }
+    .stat .n { font-size: 24px; font-weight: 700; font-family: "DIN Alternate", sans-serif; }
+    .stat .l { font-size: 12px; color: var(--sub); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <div class="brand"><i class="fa-solid fa-shield-halved"></i> Live Admin</div>
+      <a href="#"><i class="fa-solid fa-chart-line"></i> 数据总览</a>
+      <a href="#"><i class="fa-solid fa-comments"></i> 群管理</a>
+      <a class="active" href="admin_01_list.html"><i class="fa-solid fa-scale-balanced"></i> 交易申诉</a>
+      <a href="#"><i class="fa-solid fa-users"></i> 用户</a>
+      <a href="#"><i class="fa-solid fa-gear"></i> 设置</a>
+    </aside>
+    <div class="admin-main">
+      <div class="admin-top">
+        <div style="font-weight:600">群聊交易 · 申诉单</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--sub)">
+          <img class="avatar sm" src="../figma_proto/assets/media/avatar_ngo.png" alt="">
+          审核员 · 运营小周
+        </div>
+      </div>
+      <div class="admin-body">
+        <div class="stat-row">
+          <div class="stat"><div class="n" style="color:var(--warn)">12</div><div class="l">待审核</div></div>
+          <div class="stat"><div class="n">3</div><div class="l">补证中</div></div>
+          <div class="stat"><div class="n" style="color:var(--ok)">86</div><div class="l">已通过</div></div>
+          <div class="stat"><div class="n" style="color:var(--danger)">21</div><div class="l">已驳回</div></div>
+        </div>
+        <div class="filters">
+          <button class="chip on" type="button">全部</button>
+          <button class="chip" type="button">待审核</button>
+          <button class="chip" type="button">补证中</button>
+          <button class="chip" type="button">已通过</button>
+          <button class="chip" type="button">已驳回</button>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>申诉单号</th>
+              <th>关联订单</th>
+              <th>群</th>
+              <th>买方 / 卖方</th>
+              <th>金额</th>
+              <th>提交时间</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AP20260821095301</td>
+              <td>GT…41882</td>
+              <td>币友交流群</td>
+              <td>Alex / Me</td>
+              <td>200 USDT</td>
+              <td>09:53</td>
+              <td><span class="tag orange">待审核</span></td>
+              <td><a class="link" href="admin_02_detail.html">审核</a></td>
+            </tr>
+            <tr>
+              <td>AP20260820110218</td>
+              <td>GT…99102</td>
+              <td>高频 OTC</td>
+              <td>Mina / 老王</td>
+              <td>500 USDT</td>
+              <td>昨天 11:02</td>
+              <td><span class="tag blue">补证中</span></td>
+              <td><a class="link" href="admin_02_detail.html">查看</a></td>
+            </tr>
+            <tr>
+              <td>AP20260819164003</td>
+              <td>GT…22011</td>
+              <td>币友交流群</td>
+              <td>Sophie / Ken</td>
+              <td>80 USDT</td>
+              <td>08-19</td>
+              <td><span class="tag green">已通过</span></td>
+              <td><a class="link" href="admin_02_detail.html">详情</a></td>
+            </tr>
+            <tr>
+              <td>AP20260818120955</td>
+              <td>GT…77441</td>
+              <td>测试交易群</td>
+              <td>Tom / Lee</td>
+              <td>1000 USDT</td>
+              <td>08-18</td>
+              <td><span class="tag red">已驳回</span></td>
+              <td><a class="link" href="admin_02_detail.html">详情</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

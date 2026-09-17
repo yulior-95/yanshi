@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>转账成功 · 对方待收款</title>
+  <style>
+    :root {
+      --bg: #edeef3;
+      --card: rgba(255,255,255,.6);
+      --sub: #81818d;
+      --muted: #323232;
+      --theme: #178aff;
+      --phone-w: 414px;
+      --phone-h: 896px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+    }
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100vh - 40px);
+      border-radius: 48px;
+      overflow: hidden;
+      background: var(--bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 0 10px #111, 0 0 0 12px #2a2a2a, 0 30px 80px rgba(0,0,0,.55);
+    }
+    .status {
+      height: 48px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 15px; font-size: 17px; font-weight: 600; flex-shrink: 0;
+    }
+    .island { width: 124px; height: 36px; background: #000; border-radius: 33px; }
+    .header {
+      height: 42px; display: flex; align-items: center; padding: 0 16px; flex-shrink: 0;
+    }
+    .back {
+      width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .back img { width: 10px; height: 18px; transform: scaleX(-1); }
+    .body {
+      flex: 1; overflow: auto; padding: 24px 16px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 48px;
+    }
+    .hero { display: flex; flex-direction: column; align-items: center; gap: 32px; width: 100%; }
+    .status-block { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .status-block img.ico { width: 96px; height: 96px; }
+    .status-block .txt {
+      font-size: 18px; font-weight: 500; line-height: 1.5; text-align: center;
+    }
+    .amount-block { display: flex; flex-direction: column; align-items: center; }
+    .coin-row {
+      display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--muted);
+    }
+    .coin-row img { width: 14px; height: 14px; }
+    .amt {
+      font-size: 54px; font-weight: 500; line-height: 1.2;
+      font-family: "DIN Alternate", "DINPro", "Helvetica Neue", sans-serif;
+    }
+    .fx { font-size: 14px; color: var(--sub); margin-top: 4px; }
+    .rate {
+      display: flex; align-items: center; gap: 4px; font-size: 14px; margin-top: 4px;
+    }
+    .rate .l { color: var(--sub); }
+    .rate .v { color: var(--muted); }
+    .rate button {
+      width: 20px; height: 20px; border: 0; background: transparent; padding: 0; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .rate button img { width: 14px; height: 12px; }
+    .card {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px -1px rgba(0,0,0,.1);
+      overflow: hidden;
+    }
+    .item {
+      display: flex; justify-content: space-between; gap: 16px;
+      padding: 16px; min-height: 64px; align-items: flex-start;
+    }
+    .item + .item { border-top: 1px solid #efefef; }
+    .item .k { font-size: 14px; font-weight: 500; white-space: nowrap; }
+    .item .v {
+      font-size: 14px; color: var(--muted); text-align: right; max-width: 220px; line-height: 22px;
+    }
+    .foot {
+      flex-shrink: 0; text-align: center; padding: 8px 16px 0;
+      font-size: 12px; color: var(--sub);
+    }
+    .home {
+      height: 34px; flex-shrink: 0; position: relative;
+    }
+    .home::after {
+      content: ""; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+      width: 134px; height: 5px; border-radius: 100px; background: #000;
+    }
+    @media (max-width: 480px) {
+      body { background: var(--bg); }
+      .phone { width: 100vw; height: 100vh; max-height: none; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span>9:41</span>
+      <div class="island"></div>
+      <span>100%</span>
+    </div>
+    <div class="header">
+      <button class="back" id="btnBack" aria-label="返回">
+        <img src="assets/icons/back.svg" alt="">
+      </button>
+    </div>
+    <div class="body">
+      <div class="hero">
+        <div class="status-block">
+          <img class="ico" src="assets/icons/tf_pending.svg" alt="">
+          <div class="txt">待 Albert Flores 收款</div>
+        </div>
+        <div class="amount-block">
+          <div class="coin-row">
+            <img src="assets/icons/coin_usdt.svg" alt="">
+            <span>USDT</span>
+          </div>
+          <div class="amt">20.00</div>
+          <div class="fx">≈￥22</div>
+          <div class="rate">
+            <span class="l">当前参考汇率：</span>
+            <span class="v">￥1.00</span>
+            <button type="button" id="btnRefresh" aria-label="刷新">
+              <img src="assets/icons/refresh_blue.svg" alt="">
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="item">
+          <div class="k">转账说明</div>
+          <div class="v">产品有什么想说的吗？想说就说，不想说就不说，你也可以多说点。具体这个有没有字数限制我也不知道</div>
+        </div>
+        <div class="item" style="align-items:center">
+          <div class="k">转账时间</div>
+          <div class="v">2023-08-08 15:00:23</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">24小时内对方未收款，将退还给你</div>
+    <div class="home"></div>
+  </div>
+  <script>
+    document.getElementById("btnBack").onclick = () =>
+      history.length > 1 ? history.back() : (location.href = "chat_message_all.html");
+    document.getElementById("btnRefresh").onclick = () => {
+      const v = document.querySelector(".rate .v");
+      v.textContent = "￥1.00";
+      v.style.color = "#178aff";
+      setTimeout(() => (v.style.color = ""), 400);
+    };
+  </script>
+</body>
+</html>

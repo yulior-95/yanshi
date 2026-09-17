@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>结束直播消息</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #e0e0e0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-btn {
+            font-size: 18px;
+            color: #333;
+            margin-right: 16px;
+        }
+        
+        .status-bar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            margin-top: 44px;
+            margin-bottom: 50px;
+            padding: 16px;
+        }
+        
+        /* 聊天消息容器 */
+        .chat-container {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 系统消息 */
+        .system-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .system-message-content {
+            background-color: #f0f0f0;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 直播结束消息 */
+        .live-end-message {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .live-end-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .live-end-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #52c41a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #fff;
+        }
+        
+        .live-end-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #389e0d;
+        }
+        
+        .live-end-content {
+            font-size: 14px;
+            color: #52c41a;
+            line-height: 1.4;
+            margin-left: 44px;
+        }
+        
+        .live-stats {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 12px;
+            border-top: 1px solid #e6f7ff;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #389e0d;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 普通聊天消息 */
+        .chat-message {
+            display: flex;
+            margin-bottom: 16px;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .message-sender {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-right: 8px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .message-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            background-color: #f5f5f5;
+            padding: 12px;
+            border-radius: 12px;
+            border-top-left-radius: 4px;
+        }
+        
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active {
+            color: #1890ff;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-left">
+            <i class="fas fa-arrow-left back-btn" onclick="window.history.back()"></i>
+            <div class="status-bar-title">加密游戏交流群</div>
+        </div>
+        <div style="font-size: 16px; color: #666;">
+            <i class="fas fa-ellipsis-v"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="chat-container">
+            <!-- 系统消息 -->
+            <div class="system-message">
+                <div class="system-message-content">今天 14:30</div>
+            </div>
+            
+            <!-- 直播结束消息 -->
+            <div class="live-end-message">
+                <div class="live-end-header">
+                    <div class="live-end-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="live-end-title">直播已结束</div>
+                </div>
+                <div class="live-end-content">
+                    群主 "加密大师" 的直播已结束
+                    <br>
+                    直播标题：加密游戏技巧分享
+                    <br>
+                    直播时长：01:25:36
+                </div>
+                <div class="live-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">256</div>
+                        <div class="stat-label">观众人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1.2k</div>
+                        <div class="stat-label">互动次数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">89</div>
+                        <div class="stat-label">分享次数</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 普通聊天消息 -->
+            <div class="chat-message">
+                <div class="message-avatar">A</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="message-sender">Alice</div>
+                        <div class="message-time">14:31</div>
+                    </div>
+                    <div class="message-text">
+                        直播很棒，学到了很多技巧！
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-message">
+                <div class="message-avatar">B</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="message-sender">Bob</div>
+                        <div class="message-time">14:32</div>
+                    </div>
+                    <div class="message-text">
+                        期待下一次直播！
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-address-book"></i>
+            <span>联系人</span>
+        </div>
+        <div class="nav-item active">
+            <i class="fas fa-users"></i>
+            <span>群聊</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html>

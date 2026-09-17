@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>视频通话 · 发送方</title>
+  <style>
+    :root {
+      --phone-w: 414px;
+      --phone-h: 896px;
+      --hangup: #fb2826;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100vh - 40px);
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+      background: #111;
+      box-shadow: 0 0 0 10px #111, 0 0 0 12px #2a2a2a, 0 30px 80px rgba(0,0,0,.55);
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 120px 0 56px;
+      color: #fff;
+    }
+    .top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+    .name {
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .status {
+      font-size: 14px;
+      opacity: .9;
+      min-height: 21px;
+    }
+    .bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .hangup {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--hangup);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+    .hangup img {
+      width: 32px;
+      height: 32px;
+      transform: rotate(135deg);
+    }
+    .label { font-size: 14px; }
+    .home {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 34px;
+    }
+    .home::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      border-radius: 100px;
+      background: #fff;
+    }
+    .toast {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      opacity: 0;
+      transition: .2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    @media (max-width: 480px) {
+      body { background: #111; }
+      .phone { width: 100vw; height: 100dvh; max-height: none; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="overlay">
+      <div class="top">
+        <img class="avatar" src="assets/media/avatar_ngo.png" alt="">
+        <div class="name">Ngo</div>
+        <div class="status" id="status">等待对方接听...</div>
+      </div>
+      <div class="bottom">
+        <button class="hangup" id="btnCancel" aria-label="取消">
+          <img src="assets/icons/hangup.svg" alt="">
+        </button>
+        <div class="label">取消</div>
+      </div>
+    </div>
+    <div class="home"></div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <script>
+    const status = document.getElementById("status");
+    const toast = document.getElementById("toast");
+    let dots = 0;
+    const timer = setInterval(() => {
+      dots = (dots + 1) % 4;
+      status.textContent = "等待对方接听" + ".".repeat(dots);
+    }, 500);
+
+    document.getElementById("btnCancel").onclick = () => {
+      clearInterval(timer);
+      status.textContent = "已取消";
+      toast.textContent = "通话已取消";
+      toast.classList.add("show");
+      setTimeout(() => (location.href = "chat_message_all.html"), 800);
+    };
+  </script>
+</body>
+</html>

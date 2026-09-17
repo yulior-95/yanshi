@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直播功能主入口</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* 页面头部 */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .app-info {
+            text-align: right;
+        }
+        
+        .app-version {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 标题 */
+        .section-title {
+            font-size: 22px;
+            color: #333;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f2f5;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: #1890ff;
+        }
+        
+        /* 原型容器 */
+        .prototype-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .prototype-item {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 812px; /* iPhone X height */
+            width: 375px; /* iPhone X width */
+            position: relative;
+        }
+        
+        .prototype-title {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+            text-align: center;
+            position: relative;
+            z-index: 50;
+        }
+        
+        .frame-container {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 47px);
+            overflow: hidden;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* 功能描述 */
+        .feature-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-description ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .feature-description li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="logo">
+            <i class="fas fa-video"></i> 直播功能主入口
+        </div>
+        <div class="app-info">
+            <div>高保真原型展示</div>
+            <div class="app-version">版本 2.0.0</div>
+        </div>
+    </div>
+    
+    <div class="feature-description">
+        <strong>直播功能概述：</strong>
+        <p>本功能为加密聊天APP添加了直播功能，主要面向25-50岁的WEB3玩家和需要加密聊天的用户。</p>
+        <br>
+        <strong>核心功能：</strong>
+        <ol>
+            <li>群聊详情页面增加直播入口</li>
+            <li>底部弹出直播配置弹窗，包含直播介绍、服务器地址、推流码</li>
+            <li>直播中页面，支持切换悬浮屏、横屏、分享等功能</li>
+            <li>结束直播后发送系统消息，包含直播时长等信息</li>
+            <li>积分消耗机制：按小时消耗积分，积分不足时停止直播</li>
+        </ol>
+    </div>
+    
+    <div class="section-title">
+        <i class="fas fa-video"></i>直播功能原型展示
+    </div>
+    
+    <div class="prototype-container">
+        <!-- 群聊详情页面（包含直播入口） -->
+        <div class="prototype-item">
+            <div class="prototype-title">群聊详情页面（包含直播入口）</div>
+            <div class="frame-container">
+                <iframe src="group_detail_live.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 直播弹窗页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">直播弹窗页面</div>
+            <div class="frame-container">
+                <iframe src="live_streaming_popup.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 直播中页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">直播中页面</div>
+            <div class="frame-container">
+                <iframe src="live_streaming_active.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 结束直播消息页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">结束直播消息页面</div>
+            <div class="frame-container">
+                <iframe src="live_streaming_end.html"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

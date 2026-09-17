@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>开包弹窗</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        /* 弹窗容器 */
+        .popup-container {
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        /* 弹窗样式 */
+        .popup {
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+        
+        .popup-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .popup-icon.success {
+            color: #52c41a;
+        }
+        
+        .popup-icon.warning {
+            color: #faad14;
+        }
+        
+        .popup-icon.info {
+            color: #1890ff;
+        }
+        
+        .popup-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .popup-message {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .popup-btn {
+            width: 100%;
+            height: 40px;
+            background-color: #1890ff;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        .popup-btn:active {
+            background-color: #096dd9;
+        }
+        
+        /* 弹窗标题 */
+        .popup-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container">
+        <!-- 存在赔付弹窗 -->
+        <div class="popup-section-title">1. 存在赔付弹窗</div>
+        <div class="popup">
+            <i class="fas fa-exclamation-triangle popup-icon warning"></i>
+            <div class="popup-title">埋雷红包赔付</div>
+            <div class="popup-message">您的埋雷红包 500C/9包/雷123 有9人中雷</div>
+            <button class="popup-btn">确定</button>
+        </div>
+        
+        <!-- 不存在赔付弹窗 -->
+        <div class="popup-section-title">2. 不存在赔付弹窗</div>
+        <div class="popup">
+            <i class="fas fa-check-circle popup-icon success"></i>
+            <div class="popup-title">埋雷红包结果</div>
+            <div class="popup-message">您的埋雷红包 500C/9包/雷123 未命中</div>
+            <button class="popup-btn">确定</button>
+        </div>
+        
+        <!-- 机器人抢包弹窗 -->
+        <div class="popup-section-title">3. 机器人抢包弹窗</div>
+        <div class="popup">
+            <i class="fas fa-gift popup-icon info"></i>
+            <div class="popup-title">抢包成功</div>
+            <div class="popup-message">您参与的埋雷红包 500C/9包/雷123 抢到了 2C</div>
+            <button class="popup-btn">确定</button>
+        </div>
+    </div>
+    
+    <script>
+        // 点击确定按钮关闭弹窗（模拟）
+        document.querySelectorAll('.popup-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('弹窗已关闭');
+            });
+        });
+    </script>
+</body>
+</html>

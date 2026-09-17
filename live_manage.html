@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>直播间管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            min-height: 100vh;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-bar .time {
+            font-weight: 600;
+        }
+        
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* 导航栏 */
+        .nav-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+        }
+        
+        .nav-bar .back-btn {
+            color: #007AFF;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .nav-bar .right-btn {
+            color: #007AFF;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        
+        /* 主内容区 */
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        /* 统计卡片 */
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stats-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* 操作按钮区 */
+        .action-section {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .action-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+        }
+        
+        .create-btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .create-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 直播间列表 */
+        .live-list {
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .list-header {
+            padding: 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .list-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .list-count {
+            font-size: 14px;
+            color: #8e8e93;
+        }
+        
+        .live-item {
+            padding: 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .live-item:last-child {
+            border-bottom: none;
+        }
+        
+        .live-item:active {
+            background-color: #f5f5f7;
+        }
+        
+        .live-thumbnail {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .live-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .live-status-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: #ff3b30;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .live-status-badge.live {
+            background-color: #ff3b30;
+        }
+        
+        .live-status-badge.offline {
+            background-color: #8e8e93;
+        }
+        
+        .live-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .live-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .live-meta {
+            font-size: 13px;
+            color: #8e8e93;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .live-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .live-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: #f5f5f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007AFF;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .action-icon:active {
+            background-color: #e5e5ea;
+        }
+        
+        /* 底部Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background-color: #fff;
+            border-top: 0.5px solid #e5e5ea;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            padding-bottom: 34px;
+            z-index: 100;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: #8e8e93;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #007AFF;
+        }
+        
+        .tab-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8e8e93;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state-text {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <div class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="title">直播间管理</div>
+        <div class="right-btn" onclick="showSortDialog()">
+            <i class="fas fa-sort"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="content">
+        <!-- 统计卡片 -->
+        <div class="stats-card">
+            <div class="stats-title">直播数据总览</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">进行中</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">总直播间</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮区 -->
+        <div class="action-section">
+            <div class="action-title">创建新直播间</div>
+            <button class="create-btn" onclick="createLiveRoom()">
+                <i class="fas fa-plus-circle"></i>
+                <span>创建推流码</span>
+            </button>
+        </div>
+        
+        <!-- 直播间列表 -->
+        <div class="live-list">
+            <div class="list-header">
+                <div class="list-title">我的直播间</div>
+                <div class="list-count">3个进行中</div>
+            </div>
+            
+            <div class="live-item" onclick="viewLiveRoom(1)">
+                <div class="live-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="live-status-badge live">
+                        <i class="fas fa-circle" style="font-size: 6px;"></i>
+                        <span>直播中</span>
+                    </div>
+                </div>
+                <div class="live-info">
+                    <div class="live-name">游戏技巧分享</div>
+                    <div class="live-meta">
+                        <div class="live-meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>128人观看</span>
+                        </div>
+                        <div class="live-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>已播 05:32</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="live-actions">
+                    <div class="action-icon" onclick="event.stopPropagation(); editLiveRoom(1)">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="action-icon" onclick="event.stopPropagation(); deleteLiveRoom(1)">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="live-item" onclick="viewLiveRoom(2)">
+                <div class="live-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="live-status-badge live">
+                        <i class="fas fa-circle" style="font-size: 6px;"></i>
+                        <span>直播中</span>
+                    </div>
+                </div>
+                <div class="live-info">
+                    <div class="live-name">加密技术讲解</div>
+                    <div class="live-meta">
+                        <div class="live-meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>89人观看</span>
+                        </div>
+                        <div class="live-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>已播 12:15</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="live-actions">
+                    <div class="action-icon" onclick="event.stopPropagation(); editLiveRoom(2)">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="action-icon" onclick="event.stopPropagation(); deleteLiveRoom(2)">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="live-item" onclick="viewLiveRoom(3)">
+                <div class="live-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="live-status-badge live">
+                        <i class="fas fa-circle" style="font-size: 6px;"></i>
+                        <span>直播中</span>
+                    </div>
+                </div>
+                <div class="live-info">
+                    <div class="live-name">新手入门指导</div>
+                    <div class="live-meta">
+                        <div class="live-meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>56人观看</span>
+                        </div>
+                        <div class="live-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>已播 02:45</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="live-actions">
+                    <div class="action-icon" onclick="event.stopPropagation(); editLiveRoom(3)">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="action-icon" onclick="event.stopPropagation(); deleteLiveRoom(3)">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="live-item" onclick="viewLiveRoom(4)">
+                <div class="live-thumbnail">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop" alt="直播封面">
+                    <div class="live-status-badge offline">
+                        <span>已结束</span>
+                    </div>
+                </div>
+                <div class="live-info">
+                    <div class="live-name">昨日回顾</div>
+                    <div class="live-meta">
+                        <div class="live-meta-item">
+                            <i class="fas fa-eye"></i>
+                            <span>累计 256人</span>
+                        </div>
+                        <div class="live-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>昨天 20:30</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="live-actions">
+                    <div class="action-icon" onclick="event.stopPropagation(); viewHistory(4)">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-address-book"></i>
+            <span>联系人</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-users"></i>
+            <span>群聊</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+    
+    <script>
+        function createLiveRoom() {
+            const name = prompt('请输入直播间名称：');
+            if (name) {
+                alert('直播间创建成功！\n推流码：' + Math.random().toString(36).substr(2, 9).toUpperCase());
+            }
+        }
+        
+        function viewLiveRoom(id) {
+            alert('进入直播间 #' + id);
+        }
+        
+        function editLiveRoom(id) {
+            const newName = prompt('修改直播间名称：');
+            if (newName) {
+                alert('修改成功！');
+            }
+        }
+        
+        function deleteLiveRoom(id) {
+            if (confirm('确定要删除这个直播间吗？')) {
+                alert('删除成功！');
+            }
+        }
+        
+        function viewHistory(id) {
+            alert('查看历史数据 #' + id);
+        }
+        
+        function showSortDialog() {
+            alert('打开排序配置');
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

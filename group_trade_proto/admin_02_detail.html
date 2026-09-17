@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台 · 申诉单审核</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+  <style>
+    body { background: #0b1220; }
+    .grid2 { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+    .panel { background: #fff; border-radius: 12px; padding: 18px; }
+    .panel h3 { font-size: 15px; margin-bottom: 12px; }
+    .kv { display: grid; grid-template-columns: 100px 1fr; gap: 8px 12px; font-size: 13px; }
+    .kv .k { color: var(--sub); }
+    .evidence {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;
+    }
+    .evidence img {
+      width: 100%; height: 140px; object-fit: cover; border-radius: 8px; background: #f3f4f6;
+    }
+    textarea {
+      width: 100%; min-height: 88px; border: 1px solid #e5e7eb; border-radius: 8px;
+      padding: 10px 12px; font: inherit; font-size: 13px; resize: vertical;
+    }
+    .log { font-size: 12px; color: var(--sub); line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <div class="brand"><i class="fa-solid fa-shield-halved"></i> Live Admin</div>
+      <a href="#"><i class="fa-solid fa-chart-line"></i> 数据总览</a>
+      <a href="#"><i class="fa-solid fa-comments"></i> 群管理</a>
+      <a class="active" href="admin_01_list.html"><i class="fa-solid fa-scale-balanced"></i> 交易申诉</a>
+      <a href="#"><i class="fa-solid fa-users"></i> 用户</a>
+      <a href="#"><i class="fa-solid fa-gear"></i> 设置</a>
+    </aside>
+    <div class="admin-main">
+      <div class="admin-top">
+        <div style="display:flex;align-items:center;gap:10px">
+          <a href="admin_01_list.html" style="color:var(--sub);text-decoration:none"><i class="fa-solid fa-arrow-left"></i></a>
+          <strong>申诉单 AP20260821095301</strong>
+          <span class="tag orange">待审核</span>
+        </div>
+        <div style="font-size:13px;color:var(--sub)">审核员 · 运营小周</div>
+      </div>
+      <div class="admin-body">
+        <div class="grid2">
+          <div>
+            <div class="panel" style="margin-bottom:16px">
+              <h3>交易快照</h3>
+              <div class="kv">
+                <div class="k">订单号</div><div>GT202608210941882</div>
+                <div class="k">群</div><div>币友交流群（已开通群聊交易）</div>
+                <div class="k">金额 / 币种</div><div>200.00 USDT</div>
+                <div class="k">成交汇率</div><div>1 USDT = 7.25 CNY</div>
+                <div class="k">买家应付</div><div>¥1,450.00（支付宝）</div>
+                <div class="k">交易时长</div><div>10 分钟 · 09:41–09:51</div>
+                <div class="k">买方</div><div>Alex Chen · ID 882910</div>
+                <div class="k">卖方</div><div>Me · ID 100001</div>
+                <div class="k">收款方式</div><div>支付宝 · 陈* · 138****8821</div>
+                <div class="k">买方付款标记</div><div>09:44:12</div>
+                <div class="k">超时结果</div><div>卖方未点「我已收到」→ 待申诉</div>
+              </div>
+            </div>
+            <div class="panel" style="margin-bottom:16px">
+              <h3>买方申诉材料</h3>
+              <div class="kv">
+                <div class="k">原因</div><div>已付款未放币</div>
+                <div class="k">说明</div><div>我已于 09:44 通过支付宝转账，对方超时未放币。</div>
+              </div>
+              <div class="evidence">
+                <img src="https://images.unsplash.com/photo-1563013544-824ae9b50202?w=500&q=80" alt="凭证1">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500&q=80" alt="凭证2">
+              </div>
+            </div>
+            <div class="panel">
+              <h3>操作日志</h3>
+              <div class="log">
+                09:41:02 卖方发起交易，冻结 200 USDT<br>
+                09:44:12 买方确认「我已付款」<br>
+                09:51:00 超时，状态变为待申诉<br>
+                09:53:08 买方提交申诉单
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="panel">
+              <h3>审核处理</h3>
+              <div class="section-title">审核备注</div>
+              <textarea id="note" placeholder="填写审核依据…">核对支付宝流水时间与金额一致，判定买方已付款，同意放币。</textarea>
+              <div class="btn-row" style="margin-top:14px;flex-direction:column">
+                <button class="btn ok" type="button" id="btnPass">通过 · 放币给买方</button>
+                <button class="btn danger" type="button" id="btnReject">不通过 · 退回卖方</button>
+                <button class="btn ghost" type="button" id="btnMore">要求补证</button>
+              </div>
+              <div style="font-size:12px;color:var(--sub);margin-top:12px;line-height:1.5">
+                通过：托管资产放行给买方，订单成功<br>
+                不通过：托管资产退回卖方，订单关闭<br>
+                补证：状态变为补证中，通知买方补充材料
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay center" id="dlg" style="position:fixed">
+    <div class="dialog">
+      <h3 id="dlgTitle">确认审核？</h3>
+      <p id="dlgDesc">…</p>
+      <div class="acts">
+        <button class="btn ghost" type="button" id="dlgCancel">取消</button>
+        <a class="btn" id="dlgOk" href="admin_01_list.html" style="display:grid;place-items:center;text-decoration:none">确认</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    const dlg = document.getElementById('dlg');
+    const title = document.getElementById('dlgTitle');
+    const desc = document.getElementById('dlgDesc');
+    const ok = document.getElementById('dlgOk');
+    function openDlg(t, d, href, cls) {
+      title.textContent = t; desc.textContent = d; ok.href = href;
+      ok.className = 'btn ' + (cls || '');
+      ok.style.display = 'grid';
+      dlg.classList.add('show');
+    }
+    document.getElementById('btnPass').onclick = () => openDlg('确认通过并放币？', '将向买方放行 200.00 USDT，并完结申诉单。', 'gt_08_success.html', 'ok');
+    document.getElementById('btnReject').onclick = () => openDlg('确认驳回并退卖家？', '将把托管资产退回卖方，订单关闭为已退回。', 'gt_10_timeout_refund.html', 'danger');
+    document.getElementById('btnMore').onclick = () => openDlg('要求买方补证？', '申诉单将进入「补证中」，并通知买方补充材料。', 'admin_01_list.html', '');
+    document.getElementById('dlgCancel').onclick = () => dlg.classList.remove('show');
+  </script>
+</body>
+</html>

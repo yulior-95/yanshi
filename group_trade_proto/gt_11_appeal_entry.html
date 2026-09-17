@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>超时可申诉</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:51</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_06b_buyer_paid.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">交易详情</div><div class="sub">已付款 · 卖方超时未放币</div></div>
+      <div class="side"></div>
+    </div>
+    <div class="body pad">
+      <div style="display:flex;justify-content:center;margin-bottom:8px">
+        <span class="tag red"><i class="fa-solid fa-triangle-exclamation"></i> 待申诉</span>
+      </div>
+      <div class="amount-hero">
+        <div class="coin">托管冻结中</div>
+        <div class="num">200.00</div>
+      </div>
+      <div class="card" style="background:var(--danger-soft)">
+        <div style="font-weight:600;color:var(--danger);margin-bottom:6px">卖方超时未放币</div>
+        <div style="font-size:13px;color:#9b2c2c;line-height:1.55">
+          你已于 09:44 确认付款，倒计时已结束且卖方未点击「我已收到」。可发起申诉，由后台审核后决定放币或退回。
+        </div>
+      </div>
+      <div class="timeline" style="padding:4px 8px 12px">
+        <div class="item"><div class="dot green"></div><div><div class="t">买方确认付款</div><div class="d">09:44:12</div></div></div>
+        <div class="item"><div class="dot grey"></div><div><div class="t">卖方未确认收款</div><div class="d">超时</div></div></div>
+        <div class="item"><div class="dot orange"></div><div><div class="t">可发起申诉</div><div class="d">当前</div></div></div>
+      </div>
+      <a class="btn danger" href="gt_12_appeal_form.html" style="display:grid;place-items:center;text-decoration:none">发起申诉</a>
+      <div style="font-size:12px;color:var(--sub);text-align:center;margin-top:12px">请准备转账截图等凭证</div>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

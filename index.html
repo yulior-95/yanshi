@@ -160,6 +160,41 @@
         .category-link i {
             margin-right: 5px;
         }
+
+        .desktop-proto {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .desktop-proto .prototype-title {
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .desktop-proto .prototype-title a {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1890ff;
+            text-decoration: none;
+        }
+
+        .desktop-proto .desktop-frame {
+            width: 100%;
+            height: 860px;
+            border: none;
+            display: block;
+            background: #f0f3f7;
+        }
     </style>
 </head>
 <body>
@@ -179,18 +214,37 @@
         <a href="#contacts" class="category-link"><i class="fas fa-address-book"></i> 联系人管理</a>
         <a href="#calls" class="category-link"><i class="fas fa-phone-alt"></i> 通话功能</a>
         <a href="#groups" class="category-link"><i class="fas fa-users"></i> 群组管理</a>
+        <a href="#group-trade" class="category-link"><i class="fas fa-handshake"></i> 群聊交易</a>
         <a href="#user-center" class="category-link"><i class="fas fa-user-cog"></i> 用户中心</a>
         <a href="#security-verification" class="category-link"><i class="fas fa-shield-alt"></i> 安全验证</a>
+        <a href="#trade-verification-upgrade" class="category-link"><i class="fas fa-lock"></i> 交易验证升级</a>
+        <a href="#itoken-certification" class="category-link"><i class="fas fa-shield-halved"></i> iToken认证</a>
         <a href="#message-actions" class="category-link"><i class="fas fa-ellipsis-h"></i> 消息操作</a>
         <a href="#poker-emoji" class="category-link"><i class="fas fa-chess-queen"></i> 扑克牌表情</a>
         <a href="#customer-service" class="category-link"><i class="fas fa-headset"></i> 客服支持</a>
-        <a href="#itoken-binding" class="category-link"><i class="fas fa-shield-halved"></i> iToken设备绑定</a>
-        <a href="#itoken-flowchart" class="category-link"><i class="fas fa-project-diagram"></i> iToken流程图</a>
+        <a href="#robot-redpacket" class="category-link"><i class="fas fa-robot"></i> 机器人发包</a>
+        <a href="#live-streaming" class="category-link"><i class="fas fa-video"></i> 直播功能</a>
+        <a href="#live-admin-stats" class="category-link"><i class="fas fa-chart-line"></i> 直播数据后台</a>
+        <a href="#live-reward" class="category-link"><i class="fas fa-gift"></i> 直播打赏</a>
     </div>
     
     <div class="feature-description">
         <strong>应用概述：</strong>
         <p>这款加密聊天应用提供安全的通信解决方案，支持一对一聊天、群聊、语音/视频通话等功能，同时确保所有通信内容端到端加密。</p>
+        <br>
+        <strong>用户体验分析（短信异常痛点）</strong>
+        <ol>
+            <li>在弱网、海外、运营商拦截场景下，短信验证码延迟或丢失导致登录、注册、交易中断。</li>
+            <li>交易环节对时效要求高，需要脱离短信通道的稳定二次验证能力。</li>
+            <li>用户更希望可自主管理验证方式，并且在切换时有明确风险提示。</li>
+        </ol>
+        <br>
+        <strong>产品界面设计策略</strong>
+        <ol>
+            <li>在我的-安全设置新增“谷歌验证码”入口，提供独立设置流程。</li>
+            <li>设置流程拆分为“密钥复制页”和“安全验证码页”，确保首次绑定路径清晰。</li>
+            <li>手机/邮箱/谷歌三种交易验证方式按详情页管理，支持互斥切换与异常拦截。</li>
+        </ol>
         <br>
         <strong>核心功能：</strong>
         <ol>
@@ -200,6 +254,7 @@
             <li>丰富的消息类型支持（文本、图片、语音、视频、文件）</li>
             <li>个人资料和隐私设置</li>
             <li>在线客服支持</li>
+            <li>交易验证码三选一互斥策略（谷歌/手机/邮箱）</li>
         </ol>
     </div>
     
@@ -251,6 +306,62 @@
             <div class="prototype-title">聊天页面</div>
             <div class="frame-container">
                 <iframe src="chat.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">消息/全部（Figma新版）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_message_all.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">发红包（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_redpacket.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">转账（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_transfer.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">视频通话（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_video_call.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">语音通话（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_voice_call.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">名片选择（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_card_pick.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">发出的红包（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_redpacket_history.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">转账成功（Figma）</div>
+            <div class="frame-container">
+                <iframe src="figma_proto/chat_transfer_result.html"></iframe>
             </div>
         </div>
         
@@ -409,6 +520,120 @@
             </div>
         </div>
     </div>
+
+    <div id="group-trade" class="section-title">
+        <i class="fas fa-handshake"></i>群聊交易
+    </div>
+    <div class="feature-description">
+        <strong>指定群开放 · 群聊交易全流程</strong>
+        <ol style="margin-top:10px;">
+            <li><strong>发起（卖方）：</strong>选买家 → 卖出币种/数量 → <b>成交汇率</b> → 自动算出<b>买家应付人民币</b> → 支付宝/微信/银行卡收款方式 → 时长 → 密码冻结放币。</li>
+            <li><strong>买方付款：</strong>按订单人民币金额，向卖方收款账户转账；「我已付款」「取消付款」均需两步确认。</li>
+            <li><strong>卖方放币：</strong>核对人民币到账后「我已收到」两步确认，立刻放币（无需买方先点已付款）。</li>
+            <li><strong>超时：</strong>买方未付款 → 自动退卖家；买方已付款卖方未放币 → 买方可申诉。</li>
+            <li><strong>后台：</strong>申诉单列表与审核（通过放币 / 驳回退卖家 / 要求补证）。</li>
+        </ol>
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">01 群聊入口（+群聊交易）</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_01_chat_entry.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">02 选择收款人</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_02_select_payee.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">03 发起交易（汇率 / 应付人民币）</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_03_create.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">04 安全密码</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_04_password.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">05 发起成功 · 交易包</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_05_chat_packet.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">06 买方详情 · 待付款（两步确认）</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_06_buyer_detail.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">06b 买方 · 已付款待放币</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_06b_buyer_paid.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">07 卖方 · 我已收到（两步确认）</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_07_seller_detail.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">08 交易成功</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_08_success.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">09 取消付款</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_09_cancelled.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">10 未付款超时退回</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_10_timeout_refund.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">11 已付款超时 · 待申诉</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_11_appeal_entry.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">12 提交申诉</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_12_appeal_form.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">13 申诉中 · 进度</div>
+            <div class="frame-container">
+                <iframe src="group_trade_proto/gt_13_appealing.html"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="desktop-proto">
+        <div class="prototype-title">
+            <span>后台 · 申诉单列表</span>
+            <a href="group_trade_proto/admin_01_list.html" target="_blank">新窗口打开 ↗</a>
+        </div>
+        <iframe class="desktop-frame" src="group_trade_proto/admin_01_list.html" title="申诉单列表"></iframe>
+    </div>
+    <div class="desktop-proto">
+        <div class="prototype-title">
+            <span>后台 · 申诉单审核（通过放币 / 驳回退卖家 / 补证）</span>
+            <a href="group_trade_proto/admin_02_detail.html" target="_blank">新窗口打开 ↗</a>
+        </div>
+        <iframe class="desktop-frame" src="group_trade_proto/admin_02_detail.html" title="申诉单审核"></iframe>
+    </div>
     
     <div id="user-center" class="section-title">
         <i class="fas fa-user-cog"></i>用户中心
@@ -470,6 +695,72 @@
             </div>
         </div>
     </div>
+
+    <div id="trade-verification-upgrade" class="section-title">
+        <i class="fas fa-lock"></i>交易验证升级
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">安全设置（新增谷歌入口）</div>
+            <div class="frame-container">
+                <iframe src="security_settings.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">谷歌验证码设置</div>
+            <div class="frame-container">
+                <iframe src="google_auth_setup.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">安全验证码输入</div>
+            <div class="frame-container">
+                <iframe src="google_auth_verify.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">手机交易验证开关</div>
+            <div class="frame-container">
+                <iframe src="phone_trade_verification.html"></iframe>
+            </div>
+        </div>
+
+        <div class="prototype-item">
+            <div class="prototype-title">邮箱交易验证开关</div>
+            <div class="frame-container">
+                <iframe src="email_trade_verification.html"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="itoken-certification" class="section-title">
+        <i class="fas fa-shield-halved"></i>iToken 设备认证
+    </div>
+    <div class="feature-description">
+        <strong>iToken 认证 · 体验与页面优化说明</strong>
+        <ol style="margin-top:10px;">
+            <li><strong>入口：</strong>安全设置 →「iToken设备认证」，进入限额与认证方式总览页。</li>
+            <li><strong>优化点：</strong>原稿 iToken / 生物识别各带一张相同限额表，信息重复；现改为「未认证基线表」+「认证后限额」<strong>只展示一次</strong>，下方以两张方式卡片区分流程与说明。</li>
+            <li><strong>业务规则：</strong>两种认证限额相同，完成<strong>任一</strong>即可提额；iToken 强调设备绑定，生物识别强调本机快捷校验。</li>
+        </ol>
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">安全设置（含 iToken 认证入口）</div>
+            <div class="frame-container">
+                <iframe src="security_settings.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">iToken设备认证（优化后总览）</div>
+            <div class="frame-container">
+                <iframe src="itoken_device_certification.html"></iframe>
+            </div>
+        </div>
+    </div>
     
     <div id="message-actions" class="section-title">
         <i class="fas fa-ellipsis-h"></i>消息操作
@@ -505,157 +796,6 @@
                 <iframe src="customer_service.html"></iframe>
             </div>
         </div>
-    </div>
-    
-    <!-- iToken小程序功能原型展示区域 -->
-    <div id="itoken-binding" class="section-title">
-        <i class="fas fa-shield-halved"></i>iToken 小程序
-    </div>
-    <div class="feature-description">
-        <strong>功能说明：</strong>
-        <p>iToken 是独立于主应用的安全验证小程序，类似微信小程序的架构设计。即使主APP出现问题，用户的设备绑定信息和验证功能仍然安全可用。</p>
-        <br>
-        <strong>架构优势：</strong>
-        <ol>
-            <li><strong>风险隔离</strong> - 主APP被报毒/下架不影响iToken的设备绑定关系</li>
-            <li><strong>数据安全</strong> - 用户信息、设备信息、iToken关联存储在独立模块中</li>
-            <li><strong>灵活更新</strong> - iToken模块可以独立更新，不依赖主APP版本</li>
-            <li><strong>硬件级安全</strong> - 密钥存储于设备安全芯片，私钥永不离开设备</li>
-        </ol>
-        <br>
-        <strong>激活流程：</strong>
-        <ol>
-            <li>生物识别 + 手机验证码 → 发送激活申请给服务端</li>
-            <li>服务端返回激活许可 → 设备安全芯片生成密钥对</li>
-            <li>提交公钥和激活许可 → 服务端用根私钥签发证书</li>
-            <li>证书返回APP → 激活成功</li>
-        </ol>
-        <br>
-        <strong>绑定账号流程：</strong>
-        <ol>
-            <li>添加68账号（68号+密码 / 手机号+验证码 / 邮箱+验证码）</li>
-            <li>进行生物识别验证</li>
-            <li>绑定成功，显示该账号专属的 iToken 验证码</li>
-        </ol>
-    </div>
-    <div class="prototype-container">
-        <!-- iToken小程序入口 -->
-        <div class="prototype-item">
-            <div class="prototype-title">iToken 小程序入口</div>
-            <div class="frame-container">
-                <iframe src="itoken_entry.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken首页-未激活 -->
-        <div class="prototype-item">
-            <div class="prototype-title">首页（未激活状态）</div>
-            <div class="frame-container">
-                <iframe src="itoken_home.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken激活流程 -->
-        <div class="prototype-item">
-            <div class="prototype-title">激活流程（4步）</div>
-            <div class="frame-container">
-                <iframe src="itoken_activate.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken首页-已激活无账号 -->
-        <div class="prototype-item">
-            <div class="prototype-title">首页（已激活-无账号）</div>
-            <div class="frame-container">
-                <iframe src="itoken_home_activated.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- 添加账号 -->
-        <div class="prototype-item">
-            <div class="prototype-title">绑定68账号</div>
-            <div class="frame-container">
-                <iframe src="itoken_add_account.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken首页-有绑定账号 -->
-        <div class="prototype-item">
-            <div class="prototype-title">首页（已绑定账号）</div>
-            <div class="frame-container">
-                <iframe src="itoken_home_bindlist.html"></iframe>
-            </div>
-        </div>
-    </div>
-    
-    <!-- iToken 旧版页面（备用） -->
-    <div id="itoken-legacy" class="section-title">
-        <i class="fas fa-archive"></i>iToken 旧版页面（备用）
-    </div>
-    <div class="prototype-container">
-        <!-- iToken授权入口界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">旧版-首次绑定授权</div>
-            <div class="frame-container">
-                <iframe src="itoken_authorize.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken生成中界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">旧版-iToken生成中</div>
-            <div class="frame-container">
-                <iframe src="itoken_generating.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken绑定成功界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">旧版-iToken绑定成功</div>
-            <div class="frame-container">
-                <iframe src="itoken_success.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- 生物识别变更提示界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">生物识别变更提示</div>
-            <div class="frame-container">
-                <iframe src="itoken_biometric_change.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- 身份验证界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">身份验证恢复</div>
-            <div class="frame-container">
-                <iframe src="itoken_verify_identity.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- 确认生物识别界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">确认生物识别</div>
-            <div class="frame-container">
-                <iframe src="itoken_confirm_biometric.html"></iframe>
-            </div>
-        </div>
-        
-        <!-- iToken恢复成功界面 -->
-        <div class="prototype-item">
-            <div class="prototype-title">iToken恢复成功</div>
-            <div class="frame-container">
-                <iframe src="itoken_restore_success.html"></iframe>
-            </div>
-        </div>
-    </div>
-    
-    <!-- iToken流程图展示区域 -->
-    <div id="itoken-flowchart" class="section-title">
-        <i class="fas fa-project-diagram"></i>iToken绑定流程图
-    </div>
-    <div style="width: 100%; height: 700px; background: #1a1a2e; border-radius: 20px; overflow: hidden;">
-        <iframe src="itoken_flowchart.html" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
     
     <!-- 指纹验证功能原型展示区域 -->
@@ -725,6 +865,178 @@
             <div class="prototype-title">资产记录界面</div>
             <div class="frame-container">
                 <iframe src="./asset-record.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 机器人自动发包功能原型展示区域 -->
+    <div id="robot-redpacket" class="section-title">
+        <i class="fas fa-robot"></i>机器人自动发包功能
+    </div>
+    <div class="prototype-container">
+        <!-- 埋雷规则配置页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">埋雷规则配置页面</div>
+            <div class="frame-container">
+                <iframe src="mine_rule_config.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 机器人自动发包规则配置页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">机器人自动发包规则配置页面</div>
+            <div class="frame-container">
+                <iframe src="robot_auto_redpacket_config.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 开包弹窗页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">开包弹窗页面</div>
+            <div class="frame-container">
+                <iframe src="redpacket_popup.html"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 直播功能原型展示区域 -->
+    <div id="live-streaming" class="section-title">
+        <i class="fas fa-video"></i>直播功能
+    </div>
+    <div class="prototype-container">
+        <!-- 群聊详情页面（包含直播入口） -->
+        <div class="prototype-item">
+            <div class="prototype-title">群聊详情页面（包含直播入口）</div>
+            <div class="frame-container">
+                <iframe src="group_detail_live.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 直播弹窗页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">直播弹窗页面</div>
+            <div class="frame-container">
+                <iframe src="live_streaming_popup.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 直播中页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">直播中页面</div>
+            <div class="frame-container">
+                <iframe src="live_streaming_active.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 结束直播消息页面 -->
+        <div class="prototype-item">
+            <div class="prototype-title">结束直播消息页面</div>
+            <div class="frame-container">
+                <iframe src="live_streaming_end.html"></iframe>
+            </div>
+        </div>
+        
+        <!-- 直播功能主入口 -->
+        <div class="prototype-item">
+            <div class="prototype-title">直播功能主入口</div>
+            <div class="frame-container">
+                <iframe src="zhibo.html"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="live-admin-stats" class="section-title">
+        <i class="fas fa-chart-line"></i>直播数据后台
+    </div>
+    <div class="feature-description">
+        <strong>直播观看数据统计 · 后台管理（市场部 / 领导查阅）</strong>
+        <ol style="margin-top:10px;">
+            <li><strong>使用对象：</strong>市场部与管理层，用于复盘单场及多场直播的观看质量。</li>
+            <li><strong>核心指标：</strong>进入人数、不足 1 分钟退出人数及占比、长时间观看用户（≥30 分钟）、整体平均观看时长。</li>
+            <li><strong>时长分层：</strong>观看不足 1 分钟退出；超过 5 / 10 / 30 分钟的人数及占比；并提供互斥区间分布条便于结构解读。</li>
+            <li><strong>场次对比（应对场次多）：</strong>顶部时间范围 / 直播时间范围 / 群组UID / 主播编号 / 群主编号 / 快捷筛选（高流失、优质场次等）；趋势图叠加每场进入人数与所选指标；明细表可排序分页，勾选最多 4 场做并排对比并标注最佳。</li>
+            <li><strong>单场详情：</strong>每项指标同时给出与当前周期均值的差值（环比 / pt 差），可用上一场 / 下一场快速翻阅。</li>
+            <li><strong>导出报表：</strong>点击后直接生成真实 <code>.xlsx</code> 文件（场次明细 / 汇总指标 / 指标口径说明三个工作表），导出内容等于当前筛选与排序结果。</li>
+            <li><strong>口径文档：</strong><code>live_admin_stats_metrics.html</code> 以 Markdown 形式列出每个数值与百分比的计算公式、加权规则、阈值与常见误区，支持复制原文或下载 .md。</li>
+        </ol>
+    </div>
+    <div class="desktop-proto">
+        <div class="prototype-title">
+            <span>直播数据统计后台（PC 宽屏）</span>
+            <a href="live_admin_stats.html" target="_blank">新窗口打开 ↗</a>
+        </div>
+        <iframe class="desktop-frame" src="live_admin_stats.html" title="直播数据统计后台"></iframe>
+    </div>
+    <div class="desktop-proto">
+        <div class="prototype-title">
+            <span>指标口径与计算公式说明（Markdown 文档）</span>
+            <a href="live_admin_stats_metrics.html" target="_blank">新窗口打开 ↗</a>
+        </div>
+        <iframe class="desktop-frame" src="live_admin_stats_metrics.html" title="指标口径与计算公式说明"></iframe>
+    </div>
+
+    <div id="live-reward" class="section-title">
+        <i class="fas fa-gift"></i>直播打赏
+    </div>
+    <div class="feature-description">
+        <strong>直播打赏 · 体验与信息架构（浅色 / C币 / 半屏直播）</strong>
+        <ol style="margin-top:10px;">
+            <li><strong>用户需求：</strong>在半屏群直播场景下，用统一虚拟货币 <strong>C币</strong> 完成打赏；余额不足时跳转钱包充值；赠送要有明确视觉反馈与榜单荣誉。</li>
+            <li><strong>核心交互：</strong>播放器内打赏按钮 → 浅色底部 Sheet（<strong>可用余额</strong> + 礼物单价为 <strong>所需 C币</strong>）→ 校验余额 →（充足）确认数量与合计 C币；（不足）浅色「余额不足」面板 → 去钱包充值 / 更换礼物 → 成功后触发<strong>送礼动画</strong> + 弹幕 + 聊天礼物气泡。</li>
+            <li><strong>榜单：</strong><strong>主播打赏榜</strong>统计观众对当前主播的累计送礼（C币）；<strong>群成员打赏榜</strong>统计本群内成员送礼横向排名，可与前者并存。</li>
+            <li><strong>视觉规范：</strong>页面主体为白/浅灰（<code>#f8f9fa</code> / <code>#fff</code>），主色与消息模块对齐（<code>#1890ff</code>）；弹窗一律浅色；仅播放器画面区为深色沉浸。</li>
+            <li><strong>工程：</strong><code>live_reward_proto.css</code> 统一变量与组件；独立 HTML 便于 iframe 评审；送礼动画见 <code>live_reward_gift_fx_demo.html</code>（可替换 Lottie）。</li>
+        </ol>
+        <p style="margin-top:10px;"><strong>用户体验分析摘要：</strong>打赏是高频冲动消费，需降低认知成本（单一币种 C币）、失败路径短（就地提示差额）、成功路径有仪式感（动画 + 公屏露出 + 榜单）。</p>
+        <p><strong>产品界面清单：</strong>直播半屏页、礼物 Sheet、余额不足 Sheet、确认赠送 Sheet、成功反馈页、动画演示页、双排行榜页；顶栏模拟 iOS，底部保留 Tab Bar 与主 App 一致。</p>
+    </div>
+    <div class="prototype-container">
+        <div class="prototype-item">
+            <div class="prototype-title">播放页 · 打赏入口（半屏浅色）</div>
+            <div class="frame-container">
+                <iframe src="live_reward_player.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">礼物弹窗（浅色 · C币计价）</div>
+            <div class="frame-container">
+                <iframe src="live_reward_sheet_gifts.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">余额不足 · 去钱包充值</div>
+            <div class="frame-container">
+                <iframe src="live_reward_sheet_recharge.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">余额充足 · 确认赠送（C币）</div>
+            <div class="frame-container">
+                <iframe src="live_reward_sheet_quantity.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">送出后反馈 · 仅动画与公屏（无 Toast）</div>
+            <div class="frame-container">
+                <iframe src="live_reward_success_danmaku.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">送礼动画演示（可重播）</div>
+            <div class="frame-container">
+                <iframe src="live_reward_gift_fx_demo.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">主播打赏排行榜</div>
+            <div class="frame-container">
+                <iframe src="live_reward_leaderboard_anchor.html"></iframe>
+            </div>
+        </div>
+        <div class="prototype-item">
+            <div class="prototype-title">群成员打赏排行榜</div>
+            <div class="frame-container">
+                <iframe src="live_reward_leaderboard_group.html"></iframe>
             </div>
         </div>
     </div>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figma 原型 · 动态交互APP新版</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #f0f2f5;
+      padding: 32px 20px;
+      color: #222;
+    }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    p { color: #666; margin-bottom: 24px; font-size: 14px; }
+    h2 { font-size: 15px; color: #888; margin: 28px 0 12px; font-weight: 600; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    a.card {
+      display: block;
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 8px 24px rgba(0,0,0,.06);
+    }
+    a.card strong { display: block; font-size: 16px; margin-bottom: 6px; }
+    a.card span { font-size: 13px; color: #888; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <h1>Figma 原型目录</h1>
+  <p>统一目录：<code>figma_proto/</code> · 从聊天「+」可进入红包 / 转账 / 视频通话 / 名片</p>
+
+  <h2>消息</h2>
+  <div class="grid">
+    <a class="card" href="chat_message_all.html">
+      <strong>消息/全部</strong>
+      <span>主聊天 · 长按菜单 / 回复 / 删除 / 多选</span>
+    </a>
+    <a class="card" href="chat_message_all.html?mode=select">
+      <strong>多选态</strong>
+      <span>选择了 N 条 · 底栏删除/转发</span>
+    </a>
+    <a class="card" href="chat_message_all.html?mode=reply">
+      <strong>回复态</strong>
+      <span>输入框引用条 · 发送按钮</span>
+    </a>
+    <a class="card" href="chat_forward.html?count=1">
+      <strong>转发后会话</strong>
+      <span>转发条 + 功能面板</span>
+    </a>
+  </div>
+
+  <h2>+ 功能</h2>
+  <div class="grid">
+    <a class="card" href="chat_redpacket.html">
+      <strong>发红包</strong>
+      <span>数量/币种/封面 · 安全密码校验</span>
+    </a>
+    <a class="card" href="chat_redpacket_history.html">
+      <strong>发出的红包</strong>
+      <span>记录列表 · 币种/年份筛选</span>
+    </a>
+    <a class="card" href="chat_transfer.html">
+      <strong>转账</strong>
+      <span>选币种 · 全部 · 安全密码</span>
+    </a>
+    <a class="card" href="chat_transfer_result.html">
+      <strong>转账成功（待收款）</strong>
+      <span>金额详情 · 说明/时间</span>
+    </a>
+    <a class="card" href="chat_video_call.html">
+      <strong>视频通话（发送方）</strong>
+      <span>等待接听 · 取消挂断</span>
+    </a>
+    <a class="card" href="chat_voice_call.html">
+      <strong>语音通话（接收方）</strong>
+      <span>取消 / 接听</span>
+    </a>
+    <a class="card" href="chat_card_pick.html">
+      <strong>选择联系人（名片）</strong>
+      <span>搜索 · 字母索引 · 确认发送</span>
+    </a>
+  </div>
+</body>
+</html>

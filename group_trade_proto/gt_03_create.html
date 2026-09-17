@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>发起群聊交易</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+  <style>
+    .amt-input {
+      background: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    }
+    .amt-input label {
+      font-size: 13px; color: var(--sub); display: flex; justify-content: space-between; align-items: center;
+    }
+    .amt-input .row { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
+    .amt-input input {
+      flex: 1; border: 0; outline: none; font-size: 28px; font-weight: 600; width: 0;
+      font-family: "DIN Alternate", "DINPro", "Helvetica Neue", sans-serif; background: transparent;
+    }
+    .amt-input .unit { color: var(--sub); font-weight: 600; font-size: 15px; white-space: nowrap; }
+    .amt-input .hint { font-size: 12px; color: var(--sub); margin-top: 6px; }
+    .rate-box {
+      background: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    }
+    .rate-box .top {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    }
+    .rate-box .top .t { font-size: 13px; color: var(--sub); }
+    .rate-box .ref { font-size: 12px; color: var(--theme); border: 0; background: transparent; font-family: inherit; cursor: pointer; }
+    .rate-row {
+      display: flex; align-items: center; gap: 8px;
+      background: #f5f7fa; border-radius: 10px; padding: 10px 12px;
+    }
+    .rate-row span { font-size: 14px; color: var(--ink); white-space: nowrap; }
+    .rate-row input {
+      flex: 1; border: 0; outline: none; background: transparent; text-align: right;
+      font-size: 20px; font-weight: 600;
+      font-family: "DIN Alternate", "DINPro", "Helvetica Neue", sans-serif;
+    }
+    .summary {
+      background: linear-gradient(135deg, #e8f3ff, #f0f7ff);
+      border: 1px solid #cfe4ff; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+    }
+    .summary .line {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--sub); padding: 4px 0;
+    }
+    .summary .line b { color: var(--ink); font-weight: 600; font-size: 14px; }
+    .summary .pay {
+      margin-top: 8px; padding-top: 10px; border-top: 1px dashed #b7d4f7;
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .summary .pay .k { font-size: 13px; color: var(--theme); font-weight: 600; }
+    .summary .pay .v {
+      font-size: 26px; font-weight: 700; color: var(--theme);
+      font-family: "DIN Alternate", "DINPro", "Helvetica Neue", sans-serif;
+    }
+    .pay-methods { display: flex; gap: 8px; margin-bottom: 12px; }
+    .pay-method {
+      flex: 1; border: 1.5px solid var(--line); background: #fff; border-radius: 12px;
+      padding: 12px 8px; text-align: center; cursor: pointer; font: inherit; color: var(--sub);
+    }
+    .pay-method i { display: block; font-size: 22px; margin-bottom: 6px; }
+    .pay-method.on { border-color: var(--theme); background: var(--theme-soft); color: var(--theme); font-weight: 600; }
+    .pay-preview { display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+    .pay-preview img { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; }
+    .role-tip {
+      font-size: 12px; color: var(--sub); line-height: 1.55; background: #fff;
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:41</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_02_select_payee.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">发起群聊交易</div><div class="sub">你卖币 · 对方付人民币</div></div>
+      <div class="side"></div>
+    </div>
+
+    <div class="body pad">
+      <div class="role-tip">
+        <b style="color:var(--ink)">交易方向：</b>你冻结并卖出数字货币；买家按你设定的汇率，通过支付宝 / 微信 / 银行卡向你支付人民币；你确认到账后放币。
+      </div>
+
+      <div class="section-title">指定买家（收款人）</div>
+      <div class="field" style="cursor:default">
+        <span class="label">群内买家</span>
+        <span class="value">
+          <img class="avatar sm" src="../figma_proto/assets/media/avatar_contact2.png" alt="">
+          Alex Chen
+        </span>
+      </div>
+
+      <div class="section-title">卖出数量</div>
+      <button class="field" type="button">
+        <span class="label">币种</span>
+        <span class="value">
+          <img src="../figma_proto/assets/icons/coin_usdt.svg" width="22" height="22" alt="" onerror="this.style.display='none'">
+          USDT
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </span>
+      </button>
+      <div class="amt-input">
+        <label>
+          <span>卖出数量（将冻结托管）</span>
+          <button type="button" id="btnAll" style="border:0;background:transparent;color:var(--theme);font:inherit;font-size:12px;cursor:pointer">全部</button>
+        </label>
+        <div class="row">
+          <input id="cryptoAmt" value="200.00" inputmode="decimal">
+          <span class="unit">USDT</span>
+        </div>
+        <div class="hint">可用余额 <b style="color:var(--theme);font-weight:500">1,280.55 USDT</b></div>
+      </div>
+
+      <div class="section-title">汇率与应付人民币</div>
+      <div class="rate-box">
+        <div class="top">
+          <span class="t">成交汇率（可改）</span>
+          <button type="button" class="ref" id="btnRefRate">使用参考价 7.24</button>
+        </div>
+        <div class="rate-row">
+          <span>1 USDT =</span>
+          <input id="rate" value="7.25" inputmode="decimal">
+          <span>CNY</span>
+        </div>
+        <div class="hint" style="margin-top:8px;font-size:12px;color:var(--sub)">参考市价 7.24 · 当前溢价约 +0.14%</div>
+      </div>
+
+      <div class="amt-input">
+        <label>
+          <span>买家应付人民币</span>
+          <span style="font-size:11px;color:var(--muted)">可手改，自动反算汇率</span>
+        </label>
+        <div class="row">
+          <span style="font-size:22px;font-weight:600;color:var(--sub)">¥</span>
+          <input id="cnyAmt" value="1450.00" inputmode="decimal">
+          <span class="unit">CNY</span>
+        </div>
+        <div class="hint">买家付款时以该人民币金额为准</div>
+      </div>
+
+      <div class="summary">
+        <div class="line"><span>卖出</span><b id="sumCrypto">200.00 USDT</b></div>
+        <div class="line"><span>汇率</span><b id="sumRate">1 USDT = 7.25 CNY</b></div>
+        <div class="pay">
+          <span class="k">买家需支付</span>
+          <span class="v" id="sumCny">¥1,450.00</span>
+        </div>
+      </div>
+
+      <div class="section-title">你的人民币收款方式</div>
+      <div class="pay-methods" id="payMethods">
+        <button type="button" class="pay-method on" data-pay="alipay"><i class="fa-brands fa-alipay" style="color:#1677ff"></i>支付宝</button>
+        <button type="button" class="pay-method" data-pay="wechat"><i class="fa-brands fa-weixin" style="color:#07c160"></i>微信</button>
+        <button type="button" class="pay-method" data-pay="bank"><i class="fa-solid fa-building-columns" style="color:#f79009"></i>银行卡</button>
+      </div>
+      <div class="card" id="payDetail">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:15px;font-weight:500">收款账户信息</span>
+          <span class="tag blue" id="payTag"><i class="fa-brands fa-alipay"></i> 支付宝</span>
+        </div>
+        <div class="pay-preview">
+          <img src="https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=300&q=80" alt="收款码">
+          <div style="font-size:13px;color:var(--sub);line-height:1.55" id="payInfo">
+            户名：陈*<br>账号：138****8821<br>
+            <a href="#" style="color:var(--theme);text-decoration:none">更换账户</a>
+          </div>
+        </div>
+        <div class="upload" style="margin-top:12px;padding:12px">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <div style="font-size:13px">上传收款二维码 / 账户信息截图</div>
+        </div>
+      </div>
+
+      <div class="section-title">交易时长</div>
+      <div class="chip-group" style="margin-bottom:16px" id="dur">
+        <button class="chip" type="button">5 分钟</button>
+        <button class="chip on" type="button">10 分钟</button>
+        <button class="chip" type="button">15 分钟</button>
+      </div>
+
+      <div class="card" style="font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:20px">
+        <b style="color:var(--ink)">规则说明</b><br>
+        · 买家按「应付人民币」向你的收款账户转账<br>
+        · 你确认到账后点「我已收到」立刻放币<br>
+        · 买家未付款超时 → 自动解冻退回；已付款未放币超时 → 可申诉
+      </div>
+
+      <a class="btn" href="gt_04_password.html" style="display:grid;place-items:center;text-decoration:none">确认发起</a>
+    </div>
+    <div class="home-indicator"></div>
+  </div>
+  <script>
+    const cryptoEl = document.getElementById('cryptoAmt');
+    const rateEl = document.getElementById('rate');
+    const cnyEl = document.getElementById('cnyAmt');
+    const REF = 7.24;
+    let editing = null;
+
+    function fmt(n, d = 2) {
+      return (Math.round(n * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d);
+    }
+    function money(n) {
+      return Number(n).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function syncFromCryptoOrRate() {
+      const c = parseFloat(cryptoEl.value) || 0;
+      const r = parseFloat(rateEl.value) || 0;
+      const cny = c * r;
+      if (editing !== 'cny') cnyEl.value = fmt(cny);
+      renderSummary(c, r, cny);
+    }
+    function syncFromCny() {
+      const c = parseFloat(cryptoEl.value) || 0;
+      const cny = parseFloat(cnyEl.value) || 0;
+      const r = c > 0 ? cny / c : 0;
+      if (editing !== 'rate') rateEl.value = fmt(r, 4);
+      renderSummary(c, r, cny);
+    }
+    function renderSummary(c, r, cny) {
+      document.getElementById('sumCrypto').textContent = fmt(c) + ' USDT';
+      document.getElementById('sumRate').textContent = '1 USDT = ' + fmt(r, 4) + ' CNY';
+      document.getElementById('sumCny').textContent = '¥' + money(cny);
+      const tip = document.querySelector('.rate-box .hint');
+      if (tip && r) {
+        const pct = ((r - REF) / REF * 100);
+        tip.textContent = '参考市价 ' + REF.toFixed(2) + ' · 当前' + (pct >= 0 ? '溢价' : '折价') + '约 ' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+      }
+    }
+    cryptoEl.addEventListener('focus', () => editing = 'crypto');
+    rateEl.addEventListener('focus', () => editing = 'rate');
+    cnyEl.addEventListener('focus', () => editing = 'cny');
+    cryptoEl.addEventListener('input', syncFromCryptoOrRate);
+    rateEl.addEventListener('input', syncFromCryptoOrRate);
+    cnyEl.addEventListener('input', syncFromCny);
+    document.getElementById('btnAll').onclick = () => { cryptoEl.value = '1280.55'; syncFromCryptoOrRate(); };
+    document.getElementById('btnRefRate').onclick = () => { rateEl.value = REF.toFixed(2); syncFromCryptoOrRate(); };
+
+    document.querySelectorAll('#dur .chip').forEach(c => {
+      c.addEventListener('click', () => {
+        document.querySelectorAll('#dur .chip').forEach(x => x.classList.remove('on'));
+        c.classList.add('on');
+      });
+    });
+
+    const payMeta = {
+      alipay: { tag: '<i class="fa-brands fa-alipay"></i> 支付宝', info: '户名：陈*<br>账号：138****8821<br><a href="#" style="color:var(--theme);text-decoration:none">更换账户</a>' },
+      wechat: { tag: '<i class="fa-brands fa-weixin"></i> 微信', info: '实名：陈*<br>微信号：chen****88<br><a href="#" style="color:var(--theme);text-decoration:none">更换账户</a>' },
+      bank: { tag: '<i class="fa-solid fa-building-columns"></i> 银行卡', info: '户名：陈*<br>招商银行 6222 **** 8821<br><a href="#" style="color:var(--theme);text-decoration:none">更换账户</a>' }
+    };
+    document.querySelectorAll('#payMethods .pay-method').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#payMethods .pay-method').forEach(x => x.classList.remove('on'));
+        btn.classList.add('on');
+        const m = payMeta[btn.dataset.pay];
+        document.getElementById('payTag').innerHTML = m.tag;
+        document.getElementById('payInfo').innerHTML = m.info;
+      });
+    });
+
+    syncFromCryptoOrRate();
+  </script>
+</body>
+</html>

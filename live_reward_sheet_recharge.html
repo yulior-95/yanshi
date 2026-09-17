@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>打赏 · C币余额不足</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="live_reward_proto.css">
+    <style>
+        .lr-sheet { max-height: 58vh; }
+    </style>
+</head>
+<body class="lr-proto lr-live-room">
+    <header class="lr-status-bar lr-status-light">
+        <span class="lr-sb-time">9:41</span>
+        <span class="lr-dynamic-island" aria-hidden="true"></span>
+        <div class="lr-sb-icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </header>
+
+    <div class="lr-nav-header">
+        <button type="button" class="lr-nav-back"><i class="fas fa-chevron-left"></i></button>
+        <div class="lr-nav-avatar">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160&q=80&auto=format&fit=crop" alt="">
+        </div>
+        <div class="lr-nav-meta">
+            <div class="lr-nav-title">68测试群-0...(43)</div>
+            <div class="lr-nav-sub">刚刚在线</div>
+        </div>
+    </div>
+
+    <div class="lr-scroll-stack">
+        <div class="lr-half-player">
+            <img class="lr-video-img" src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=900&q=85&auto=format&fit=crop" alt="">
+            <button type="button" class="lr-pp-chevron"><i class="fas fa-chevron-down"></i></button>
+            <button type="button" class="lr-pp-mute"><i class="fas fa-volume-xmark"></i></button>
+            <div class="lr-pp-pause"><i class="fas fa-pause"></i></div>
+            <div class="lr-pp-live"><span class="dot"></span>正在直播</div>
+            <div class="lr-pp-score">ITA 0 11 · 13 0 POL</div>
+            <button type="button" class="lr-pp-fs"><i class="fas fa-expand"></i></button>
+            <button type="button" class="lr-reward-fab"><i class="fas fa-gift"></i><span class="lr-fab-label">打赏</span></button>
+        </div>
+        <div class="lr-chat-feed"></div>
+    </div>
+
+    <div class="lr-composer">
+        <div class="lr-composer-inner">
+            <button type="button" class="lr-comp-plus"><i class="fas fa-plus"></i></button>
+            <div class="lr-comp-field"><span class="at">@</span><input type="text" placeholder=""></div>
+            <button type="button" class="lr-comp-emoji"><i class="far fa-face-smile"></i></button>
+            <button type="button" class="lr-comp-send"><i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <nav class="lr-tab-bar-app">
+        <div class="lr-tab-item"><i class="far fa-comment-dots"></i><span>消息</span></div>
+        <div class="lr-tab-item"><i class="far fa-address-book"></i><span>通讯录</span></div>
+        <div class="lr-tab-item active"><i class="fas fa-tower-broadcast"></i><span>直播</span></div>
+        <div class="lr-tab-item"><i class="far fa-user"></i><span>我的</span></div>
+    </nav>
+
+    <div class="lr-sheet-backdrop"></div>
+    <div class="lr-sheet above-bottom">
+        <div class="lr-sheet-handle"></div>
+        <div class="lr-sheet-title-row">
+            <h2 class="lr-sheet-title">余额不足</h2>
+            <button type="button" class="lr-sheet-close"><i class="fas fa-arrow-left"></i></button>
+        </div>
+        <p style="font-size:14px;color:#636366;margin-bottom:14px;line-height:1.45;">
+            所选礼物需支付 <strong style="color:#1890ff;">688 C币</strong>，当前可用余额不足，请前往钱包充值后再送出。
+        </p>
+
+        <div class="lr-balance-row">
+            <span class="label">可用余额</span>
+            <span class="value"><i class="fas fa-wallet"></i> 128.00 <small style="font-size:11px;font-weight:600;">C币</small></span>
+        </div>
+
+        <div class="lr-balance-row" style="margin-bottom:12px;border-style:dashed;">
+            <span class="label">尚需补足</span>
+            <span class="value" style="color:#e85800;"><i class="fas fa-circle-exclamation"></i> 560.00 <small style="font-size:11px;font-weight:600;">C币</small></span>
+        </div>
+
+        <div class="lr-rate-card">
+            充值成功后返回当前直播间，礼物价格均为 <strong>C币</strong> 结算，不与积分混用。
+        </div>
+
+        <button type="button" class="lr-primary-btn">去钱包充值</button>
+        <button type="button" class="lr-secondary-btn">更换礼物</button>
+    </div>
+</body>
+</html>

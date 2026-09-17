@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>埋雷规则配置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #e0e0e0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .status-bar-left {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            margin-top: 44px;
+            margin-bottom: 50px;
+            padding: 16px;
+        }
+        
+        /* 规则卡片 */
+        .rule-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .rule-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .rule-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .rule-status.active {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .rule-status.inactive {
+            background-color: #f0f0f0;
+            color: #999;
+        }
+        
+        .rule-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .rule-item {
+            margin-bottom: 8px;
+        }
+        
+        /* 机器人自动发包配置项 */
+        .robot-config-item {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .robot-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .robot-config-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .robot-config-arrow {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .robot-config-desc {
+            font-size: 13px;
+            color: #999;
+            margin-top: 8px;
+        }
+        
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active {
+            color: #1890ff;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="status-bar-left">埋雷规则配置</div>
+        <div class="status-bar-right">
+            <i class="fas fa-ellipsis-v" style="color: #666;"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 现有埋雷规则 -->
+        <div class="rule-card">
+            <div class="rule-header">
+                <div class="rule-title">规则1</div>
+                <div class="rule-status active">已开启</div>
+            </div>
+            <div class="rule-content">
+                <div class="rule-item">金额范围：100-1000C</div>
+                <div class="rule-item">雷号：1、2、3</div>
+                <div class="rule-item">发包个数：5-10个</div>
+            </div>
+        </div>
+        
+        <div class="rule-card">
+            <div class="rule-header">
+                <div class="rule-title">规则2</div>
+                <div class="rule-status inactive">已关闭</div>
+            </div>
+            <div class="rule-content">
+                <div class="rule-item">金额范围：500-5000C</div>
+                <div class="rule-item">雷号：4、5、6</div>
+                <div class="rule-item">发包个数：3-8个</div>
+            </div>
+        </div>
+        
+        <div class="rule-card">
+            <div class="rule-header">
+                <div class="rule-title">规则3</div>
+                <div class="rule-status inactive">已关闭</div>
+            </div>
+            <div class="rule-content">
+                <div class="rule-item">金额范围：1000-10000C</div>
+                <div class="rule-item">雷号：7、8、9</div>
+                <div class="rule-item">发包个数：2-5个</div>
+            </div>
+        </div>
+        
+        <!-- 机器人自动发包配置入口 -->
+        <div class="robot-config-item" onclick="window.location.href='robot_auto_redpacket_config.html'">
+            <div class="robot-config-header">
+                <div class="robot-config-title">机器人自动发包</div>
+                <div class="robot-config-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="robot-config-desc">配置机器人自动发包规则，包括金额范围、雷号和发包个数</div>
+        </div>
+    </div>
+    
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-address-book"></i>
+            <span>联系人</span>
+        </div>
+        <div class="nav-item active">
+            <i class="fas fa-cog"></i>
+            <span>设置</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html>

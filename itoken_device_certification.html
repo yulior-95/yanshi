@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iToken设备认证</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="itoken_cert_proto.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .itc-page .content {
+            height: calc(100% - 88px - 83px);
+            overflow-y: auto;
+        }
+        .itc-hero-strip {
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            min-height: 72px;
+            background:
+                linear-gradient(120deg, rgba(0, 122, 255, 0.88), rgba(88, 86, 214, 0.85)),
+                url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80') center/cover;
+            padding: 14px 16px;
+            color: #fff;
+        }
+        .itc-hero-strip h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .itc-hero-strip p {
+            font-size: 12px;
+            opacity: 0.92;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container itc-page">
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="back"><i class="fas fa-chevron-left"></i> 安全设置</div>
+            <div class="title">iToken设备认证</div>
+            <div style="width: 42px;"></div>
+        </div>
+
+        <div class="content">
+            <div class="itc-hero-strip">
+                <h3><i class="fas fa-shield-halved"></i> 提升资产操作限额</h3>
+                <p>完成认证后红包、转账限额将大幅提升；两种认证方式限额相同，任选其一即可。</p>
+            </div>
+
+            <!-- 未认证：仅展示当前基线限额 -->
+            <div class="itc-card">
+                <div class="itc-card-title">未认证</div>
+                <table class="itc-limit-table itc-baseline">
+                    <thead>
+                        <tr>
+                            <th>币种</th>
+                            <th>红包限额</th>
+                            <th>转账限额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>C</td>
+                            <td>10.00</td>
+                            <td>10.00</td>
+                        </tr>
+                        <tr>
+                            <td>USDT</td>
+                            <td>5.00</td>
+                            <td>5.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 优化：认证后限额只展示一次（原稿两个认证各重复一张表） -->
+            <div class="itc-card">
+                <div class="itc-card-title">认证后限额</div>
+                <div class="itc-unified-banner">
+                    <i class="fas fa-circle-info"></i>
+                    <span>完成下方 <strong>任一</strong> 认证方式，即可解锁相同限额；iToken 与生物识别限额一致，无需重复认证两种才能提额。</span>
+                </div>
+                <table class="itc-limit-table">
+                    <thead>
+                        <tr>
+                            <th>币种</th>
+                            <th>红包限额</th>
+                            <th>转账限额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>C</td>
+                            <td>10,000</td>
+                            <td>10,000</td>
+                        </tr>
+                        <tr>
+                            <td>USDT</td>
+                            <td>5,000</td>
+                            <td>5,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="itc-limits-pills">
+                    <span class="itc-pill">C 红包 <b>10,000</b></span>
+                    <span class="itc-pill">C 转账 <b>10,000</b></span>
+                    <span class="itc-pill">USDT <b>5,000</b></span>
+                </div>
+            </div>
+
+            <div class="itc-section-label">选择认证方式</div>
+
+            <!-- iToken 设备认证：无重复限额表 -->
+            <div class="itc-method-card">
+                <div class="itc-method-head">
+                    <div class="itc-method-icon device"><i class="fas fa-mobile-screen-button"></i></div>
+                    <div class="itc-method-meta">
+                        <div class="itc-card-title-row">
+                            <div class="itc-method-name">iToken设备认证</div>
+                            <span class="itc-badge-pending"><i class="fas fa-circle-exclamation"></i> 待认证</span>
+                        </div>
+                        <p class="itc-method-desc">资产操作仅限于此认证设备，换机需重新授权。</p>
+                    </div>
+                </div>
+                <button type="button" class="itc-btn-primary" onclick="window.location.href='itoken_authorize.html'">授权并开始认证</button>
+            </div>
+
+            <!-- 生物识别认证：无重复限额表 -->
+            <div class="itc-method-card">
+                <div class="itc-method-head">
+                    <div class="itc-method-icon bio"><i class="fas fa-fingerprint"></i></div>
+                    <div class="itc-method-meta">
+                        <div class="itc-card-title-row">
+                            <div class="itc-method-name">生物识别认证</div>
+                            <span class="itc-badge-pending"><i class="fas fa-circle-exclamation"></i> 待认证</span>
+                        </div>
+                        <p class="itc-method-desc">使用面容 ID 或指纹验证，解锁与 iToken 相同的红包/转账限额。</p>
+                    </div>
+                </div>
+                <button type="button" class="itc-btn-primary" onclick="window.location.href='itoken_confirm_biometric.html'">授权并开始认证</button>
+            </div>
+
+            <p class="itc-hint" style="margin-top:4px;padding:0 4px 8px;">
+                建议优先完成 iToken 设备认证以绑定专属设备；生物识别可作为本机快捷校验补充。
+            </p>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab-item">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-compass"></i>
+                <span>发现</span>
+            </div>
+            <div class="tab-item">
+                <i class="fas fa-bell"></i>
+                <span>通知</span>
+            </div>
+            <div class="tab-item active">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

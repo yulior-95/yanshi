@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>转发后会话 · Ngo</title>
+  <style>
+    :root {
+      --bg: #f5f1eb;
+      --header: #f3f0ea;
+      --sent: #d1e8ff;
+      --theme: #178aff;
+      --sub: #81818d;
+      --phone-w: 414px;
+      --phone-h: 896px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100vh - 40px);
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+      box-shadow: 0 0 0 10px #111, 0 0 0 12px #2a2a2a, 0 30px 80px rgba(0,0,0,.55);
+      display: flex;
+      flex-direction: column;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("assets/media/pattern.png") top left / 440px 799px;
+      opacity: .12;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+    .status-bar, .header, .composer { position: relative; z-index: 2; background: var(--header); flex-shrink: 0; }
+    .status-bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      font-weight: 600;
+      font-size: 17px;
+    }
+    .island { width: 124px; height: 36px; background: #000; border-radius: 33px; }
+    .header {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: .5px solid #c8c7cb;
+    }
+    .back {
+      width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer;
+    }
+    .back img { width: 10px; height: 18px; transform: scaleX(-1); }
+    .center { text-align: center; }
+    .name { font-size: 18px; font-weight: 500; }
+    .sub { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+    .scroll { flex: 1; overflow: auto; padding: 8px 16px; position: relative; z-index: 1; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #fff; border-radius: 100px; padding: 2px 8px; font-size: 10px; margin: 0 auto 8px;
+    }
+    .chip img { width: 16px; height: 16px; }
+    .chip.date { font-size: 12px; padding: 4px 8px; display: block; width: fit-content; margin: 8px auto; }
+    .row { display: flex; margin-bottom: 8px; }
+    .row.sent { justify-content: flex-end; }
+    .row.recv { justify-content: flex-start; }
+    .bubble {
+      max-width: 287px; border-radius: 12px; padding: 8px 16px 24px 12px;
+      font-size: 16px; line-height: 22px; position: relative;
+    }
+    .bubble.sent { background: var(--sent); }
+    .bubble.recv { background: #fff; }
+    .meta {
+      position: absolute; right: 8px; bottom: 5px; font-size: 12px; color: var(--sub);
+      display: flex; align-items: center; gap: 2px;
+    }
+    .meta img { width: 8px; height: 9px; }
+    .composer { background: transparent; }
+    .forward-bar {
+      margin: 0 12px 4px; padding: 8px 12px; border-radius: 10px;
+      background: rgba(209,232,255,.9); color: var(--theme); font-size: 13px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .forward-bar button {
+      border: 0; background: transparent; width: 20px; height: 20px; cursor: pointer;
+    }
+    .forward-bar button img { width: 12px; height: 12px; transform: rotate(45deg); opacity: .6; }
+    .input-row {
+      display: flex; gap: 8px; align-items: flex-end; padding: 8px 12px;
+    }
+    .round {
+      width: 36px; height: 36px; border-radius: 50%; border: 0;
+      background: rgba(255,255,255,.44); display: grid; place-items: center; cursor: pointer;
+    }
+    .round img { width: 22px; height: 22px; }
+    .round.send { background: var(--theme); }
+    .round.send img { width: 14px; height: 16px; }
+    .box {
+      flex: 1; min-height: 36px; border-radius: 20px; background: rgba(255,255,255,.44);
+      display: flex; align-items: center; padding: 0 8px 0 16px; gap: 8px;
+    }
+    .box input {
+      flex: 1; border: 0; outline: none; background: transparent; font: inherit; font-size: 14px;
+    }
+    .box button { width: 30px; height: 30px; border: 0; background: transparent; cursor: pointer; }
+    .box button img { width: 24px; height: 24px; }
+    .plus {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 8px;
+      padding: 16px 20px 8px; background: rgba(243,240,234,.95);
+    }
+    .plus button {
+      border: 0; background: transparent; font: inherit; font-size: 12px; color: #333;
+      display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .tile {
+      width: 56px; height: 56px; border-radius: 50%; background: #fff;
+      display: grid; place-items: center; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .tile img { width: 28px; height: 28px; }
+    .home { height: 34px; position: relative; }
+    .home::after {
+      content: ""; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+      width: 134px; height: 5px; border-radius: 100px; background: #000;
+    }
+    .toast {
+      position: absolute; left: 50%; bottom: 140px; transform: translateX(-50%);
+      background: rgba(0,0,0,.78); color: #fff; padding: 10px 16px; border-radius: 10px;
+      font-size: 14px; opacity: 0; transition: .2s; pointer-events: none; z-index: 20;
+    }
+    .toast.show { opacity: 1; }
+    @media (max-width: 480px) {
+      body { background: var(--bg); }
+      .phone { width: 100vw; height: 100dvh; max-height: none; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="island"></div>
+      <span style="font-size:12px">100%</span>
+    </div>
+    <div class="header">
+      <button class="back" onclick="location.href='chat_message_all.html'" aria-label="返回">
+        <img src="assets/icons/back.svg" alt="">
+      </button>
+      <div class="center">
+        <div class="name">Ngo</div>
+        <div class="sub">近期上线</div>
+      </div>
+      <img class="avatar" src="assets/media/avatar.png" alt="">
+    </div>
+
+    <div class="scroll">
+      <div style="text-align:center">
+        <div class="chip"><img src="assets/icons/lock.svg" alt="">此对话中的信息和通话已经进行了端对端加密</div>
+        <div class="chip date">2026年1月16日</div>
+      </div>
+      <div class="row recv">
+        <div class="bubble recv">长文本展示和结尾留白；最长占屏宽的70%左右<div class="meta">12:00 PM</div></div>
+      </div>
+      <div class="row sent">
+        <div class="bubble sent">长文本展示和结尾留白；长文本展示和结尾留白
+          <div class="meta">12:00 PM
+            <img src="assets/icons/read_a.svg" alt="">
+            <img src="assets/icons/read_b.svg" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="row sent">
+        <div class="bubble sent">长文本展示和结尾不留白展示
+          <div class="meta">12:00 PM
+            <img src="assets/icons/read_a.svg" alt="">
+            <img src="assets/icons/read_b.svg" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <div class="forward-bar" id="forwardBar">
+        <span id="forwardText">转发1条消息</span>
+        <button onclick="document.getElementById('forwardBar').style.display='none'" aria-label="关闭">
+          <img src="assets/icons/add.svg" alt="">
+        </button>
+      </div>
+      <div class="input-row">
+        <button class="round" id="btnPlus"><img src="assets/icons/add.svg" alt=""></button>
+        <div class="box">
+          <input id="input" placeholder="输入消息">
+          <button><img src="assets/icons/emoji.svg" alt=""></button>
+        </div>
+        <button class="round send" onclick="toast('已发送转发消息')"><img src="assets/icons/send.svg" alt=""></button>
+      </div>
+      <div class="plus" id="plus">
+        <button data-t="图片"><span class="tile"><img src="assets/icons/fn_image.svg" alt=""></span>图片</button>
+        <button data-t="拍摄"><span class="tile"><img src="assets/icons/fn_camera.svg" alt=""></span>拍摄</button>
+        <button data-t="视频通话"><span class="tile"><img src="assets/icons/fn_video.svg" alt=""></span>视频通话</button>
+        <button data-t="名片"><span class="tile"><img src="assets/icons/fn_card.svg" alt=""></span>名片</button>
+        <button data-t="文件"><span class="tile"><img src="assets/icons/fn_file.svg" alt=""></span>文件</button>
+        <button data-t="红包"><span class="tile"><img src="assets/icons/fn_redpacket.svg" alt=""></span>红包</button>
+        <button data-t="私聊转账"><span class="tile"><img src="assets/icons/fn_transfer.svg" alt=""></span>私聊转账</button>
+      </div>
+      <div class="home"></div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <script>
+    const count = new URLSearchParams(location.search).get("count") || "1";
+    document.getElementById("forwardText").textContent = "转发" + count + "条消息";
+    const plus = document.getElementById("plus");
+    document.getElementById("btnPlus").onclick = () => {
+      plus.style.display = plus.style.display === "none" ? "grid" : (plus.style.display ? "none" : "none");
+      // toggle
+      const open = plus.dataset.open === "1";
+      plus.style.display = open ? "none" : "grid";
+      plus.dataset.open = open ? "0" : "1";
+    };
+    plus.style.display = "grid";
+    plus.dataset.open = "1";
+    plus.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-t]");
+      if (!b) return;
+      const t = b.dataset.t;
+      if (t === "红包") location.href = "chat_redpacket.html";
+      else if (t === "私聊转账") location.href = "chat_transfer.html";
+      else if (t === "视频通话") location.href = "chat_video_call.html";
+      else if (t === "名片") location.href = "chat_card_pick.html";
+      else toast(t);
+    });
+    function toast(t) {
+      const el = document.getElementById("toast");
+      el.textContent = t;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 1400);
+    }
+  </script>
+</body>
+</html>

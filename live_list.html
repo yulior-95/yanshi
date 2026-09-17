@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>直播间列表</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            min-height: 100vh;
+        }
+        
+        /* iOS状态栏 */
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-bar .time {
+            font-weight: 600;
+        }
+        
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* 导航栏 */
+        .nav-bar {
+            height: 44px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 0.5px solid #e5e5ea;
+        }
+        
+        .nav-bar .back-btn {
+            color: #007AFF;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .nav-bar .right-btn {
+            color: #007AFF;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        /* 主内容区 */
+        .content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        /* 统计横幅 */
+        .stats-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stats-banner-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .stats-banner-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        /* 直播间卡片列表 */
+        .live-card {
+            background-color: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .live-card:active {
+            transform: scale(0.98);
+        }
+        
+        .live-card-header {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .live-card-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .live-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
+        }
+        
+        .live-card-status {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background-color: #ff3b30;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        
+        .live-card-status i {
+            font-size: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .live-card-viewers {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        
+        .live-card-info {
+            padding: 16px;
+        }
+        
+        .live-card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .live-card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #8e8e93;
+        }
+        
+        .live-card-meta-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .live-card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .live-card-host {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .live-card-host-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 10px;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #8e8e93;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state-text {
+            font-size: 16px;
+        }
+        
+        /* 底部Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background-color: #fff;
+            border-top: 0.5px solid #e5e5ea;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            padding-bottom: 34px;
+            z-index: 100;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: #8e8e93;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #007AFF;
+        }
+        
+        .tab-item i {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        /* 刷新按钮 */
+        .refresh-btn {
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #007AFF;
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 99;
+            transition: transform 0.2s;
+        }
+        
+        .refresh-btn:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- iOS状态栏 -->
+    <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <div class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="title">直播间列表</div>
+        <div class="right-btn" onclick="refreshList()">
+            <i class="fas fa-sync-alt"></i>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="content">
+        <!-- 统计横幅 -->
+        <div class="stats-banner">
+            <div class="stats-banner-title">正在直播中</div>
+            <div class="stats-banner-value">3 个直播间</div>
+        </div>
+        
+        <!-- 直播间卡片列表 -->
+        <div class="live-card" onclick="enterLiveRoom(1)">
+            <div class="live-card-header">
+                <img src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=800&h=600&fit=crop" alt="直播封面" class="live-card-thumbnail">
+                <div class="live-card-overlay"></div>
+                <div class="live-card-status">
+                    <i class="fas fa-circle"></i>
+                    <span>直播中</span>
+                </div>
+                <div class="live-card-viewers">
+                    <i class="fas fa-users"></i>
+                    <span>128 人观看</span>
+                </div>
+            </div>
+            <div class="live-card-info">
+                <div class="live-card-title">游戏技巧分享</div>
+                <div class="live-card-meta">
+                    <div class="live-card-meta-left">
+                        <div class="live-card-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>已播 05:32</span>
+                        </div>
+                        <div class="live-card-host">
+                            <div class="live-card-host-avatar">群</div>
+                            <span>群主</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="live-card" onclick="enterLiveRoom(2)">
+            <div class="live-card-header">
+                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop" alt="直播封面" class="live-card-thumbnail">
+                <div class="live-card-overlay"></div>
+                <div class="live-card-status">
+                    <i class="fas fa-circle"></i>
+                    <span>直播中</span>
+                </div>
+                <div class="live-card-viewers">
+                    <i class="fas fa-users"></i>
+                    <span>89 人观看</span>
+                </div>
+            </div>
+            <div class="live-card-info">
+                <div class="live-card-title">加密技术讲解</div>
+                <div class="live-card-meta">
+                    <div class="live-card-meta-left">
+                        <div class="live-card-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>已播 12:15</span>
+                        </div>
+                        <div class="live-card-host">
+                            <div class="live-card-host-avatar">群</div>
+                            <span>群主</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="live-card" onclick="enterLiveRoom(3)">
+            <div class="live-card-header">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop" alt="直播封面" class="live-card-thumbnail">
+                <div class="live-card-overlay"></div>
+                <div class="live-card-status">
+                    <i class="fas fa-circle"></i>
+                    <span>直播中</span>
+                </div>
+                <div class="live-card-viewers">
+                    <i class="fas fa-users"></i>
+                    <span>56 人观看</span>
+                </div>
+            </div>
+            <div class="live-card-info">
+                <div class="live-card-title">新手入门指导</div>
+                <div class="live-card-meta">
+                    <div class="live-card-meta-left">
+                        <div class="live-card-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>已播 02:45</span>
+                        </div>
+                        <div class="live-card-host">
+                            <div class="live-card-host-avatar">群</div>
+                            <span>群主</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 刷新按钮 -->
+    <button class="refresh-btn" onclick="refreshList()">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+    
+    <!-- 底部Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-address-book"></i>
+            <span>联系人</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-users"></i>
+            <span>群聊</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+    
+    <script>
+        function enterLiveRoom(id) {
+            window.location.href = 'live_watch.html?id=' + id;
+        }
+        
+        function refreshList() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+                alert('列表已刷新');
+            }, 500);
+        }
+        
+        // 模拟实时更新在线人数
+        setInterval(() => {
+            const viewers = document.querySelectorAll('.live-card-viewers span');
+            viewers.forEach(viewer => {
+                const current = parseInt(viewer.textContent);
+                const change = Math.floor(Math.random() * 5) - 2; // -2 到 +2
+                const newCount = Math.max(0, current + change);
+                viewer.textContent = newCount + ' 人观看';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

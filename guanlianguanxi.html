@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关联分析 - 风险风控系统</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100%;background:#f0f3f8;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;font-size:14px}
+button,input,select{font:inherit}
+.top{height:52px;flex-shrink:0;background:#fff;border-bottom:1px solid #e8edf5;display:flex;align-items:center;padding:0 20px;gap:28px}
+.logo{font-weight:700;font-size:16px;color:#17345f;display:flex;align-items:center;gap:8px}
+.logo-mark{width:24px;height:24px;border-radius:7px;background:#246bfe;color:#fff;display:grid;place-items:center;font-size:12px}
+.nav{display:flex;height:100%;gap:22px}
+.nav span{padding:16px 2px;color:#64748b}
+.nav .active{color:#246bfe;border-bottom:2px solid #246bfe;font-weight:600}
+.user{margin-left:auto;color:#64748b;font-size:13px}
+.toolbar{padding:10px 16px 0;display:flex;flex-direction:column;gap:8px}
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.title{font-size:18px;font-weight:700;color:#182b49}
+.title small{font-size:12px;color:#94a3b8;font-weight:400;margin-left:10px}
+.mode-switch{display:flex;background:#fff;border:1px solid #e6ebf3;border-radius:8px;overflow:hidden}
+.mode-switch button{height:34px;padding:0 14px;border:0;background:transparent;color:#64748b;cursor:pointer;font-size:13px}
+.mode-switch button.active{background:#246bfe;color:#fff;font-weight:600}
+.filters{background:#fff;border:1px solid #e6ebf3;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.input{height:32px;border:1px solid #dbe3ee;border-radius:6px;padding:0 10px;outline:none}
+.input.w160{width:160px}.input.w200{width:200px}.input.w220{width:220px}
+.select,.btn{height:32px;border:1px solid #dbe3ee;border-radius:6px;padding:0 12px;background:#fff;cursor:pointer}
+.btn.primary{background:#246bfe;color:#fff;border-color:#246bfe}
+.btn.ghost{background:#fff;color:#246bfe;border-color:#c7d7fe}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.range{display:flex;gap:4px}
+.range .active{color:#246bfe;border-color:#246bfe;background:#f0f6ff}
+.flabel{font-size:12px;color:#64748b;white-space:nowrap}
+.insight{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#insightRel{grid-template-columns:repeat(3,minmax(0,1fr))}
+.insight .card{background:#fff;border:1px solid #e6ebf3;border-radius:8px;padding:8px 12px}
+.insight .k{font-size:11px;color:#94a3b8}
+.insight .v{font-size:16px;font-weight:700;margin-top:2px}
+.insight .s{font-size:11px;color:#64748b;margin-top:2px}
+
+/* 运营一览表：在调查台下方；首屏露出表头+1行，其余页面滚动 */
+.summary-panel{margin:12px 16px 0;background:#fff;border:1px solid #e6ebf3;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(15,23,42,.03)}
+.summary-head{height:44px;display:flex;align-items:center;padding:0 14px;gap:10px;border-bottom:1px solid #eef2f7}
+.summary-head strong{font-size:13px;color:#334155}
+.summary-head .hint{font-size:11px;color:#94a3b8}
+.summary-head .actions{margin-left:auto;display:flex;gap:8px}
+.table-wrap{overflow:visible;max-height:none}
+.summary-foot{padding:8px 14px 12px;font-size:11px;color:#94a3b8;border-top:1px solid #f1f5f9;text-align:center}
+table.rel{width:100%;border-collapse:collapse;font-size:12px}
+table.rel th{position:sticky;top:0;background:#f8fafc;text-align:left;padding:8px 12px;color:#64748b;font-weight:600;border-bottom:1px solid #e8edf5;white-space:nowrap}
+table.rel td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#334155;vertical-align:middle}
+table.rel tr{cursor:pointer;transition:background .12s}
+table.rel tbody tr:hover{background:#f8faff}
+table.rel tbody tr.active{background:#eff6ff}
+table.rel .mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#475569}
+.badge-pill{display:inline-block;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600}
+.badge-pill.h0{background:#fff1f2;color:#e11d48}
+.badge-pill.h1{background:#eff6ff;color:#246bfe}
+.badge-pill.h2{background:#f5f3ff;color:#7c3aed}
+.badge-pill.ok{background:#ecfdf5;color:#059669}
+.badge-pill.warn{background:#fff7ed;color:#c2410c}
+.badge-pill.risk-h{background:#fff1f2;color:#e11d48}
+.badge-pill.risk-m{background:#fffbeb;color:#d97706}
+.badge-pill.risk-l{background:#f1f5f9;color:#64748b}
+
+/* 调查台：恢复大尺寸；首屏主区域，下方留给一览表表头+一行 */
+.workbench{height:calc(100vh - 290px);min-height:520px;margin:12px 16px 0;display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:12px}
+.col{background:#fff;border:1px solid #e6ebf3;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-height:0;height:100%;box-shadow:0 2px 10px rgba(15,23,42,.03)}
+.col-head{height:44px;flex-shrink:0;border-bottom:1px solid #eef2f7;display:flex;align-items:center;padding:0 12px;gap:8px}
+.col-head strong{font-size:13px;color:#334155}
+.col-head .hint{margin-left:auto;font-size:11px;color:#94a3b8}
+.list-tabs{display:flex;gap:0;flex:1}
+.list-tabs button{flex:1;height:44px;border:0;background:transparent;color:#94a3b8;cursor:pointer;font-size:12px;border-bottom:2px solid transparent}
+.list-tabs button.active{color:#246bfe;font-weight:600;border-bottom-color:#246bfe}
+.list-body{flex:1;overflow:auto;padding:8px}
+.item{border:1px solid #eef2f7;border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.item:hover{border-color:#c7d7fe;background:#f8faff}
+.item.active{border-color:#246bfe;background:#eff6ff;box-shadow:0 0 0 1px #246bfe}
+.item .rowtop{display:flex;align-items:center;gap:8px}
+.item .av{width:28px;height:28px;border-radius:50%;background:#3b82f6;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0}
+.item .av.main{background:#ef4444}.item .av.green{background:#16a34a}.item .av.orange{background:#f97316}.item .av.purple{background:#9333ea}.item .av.gray{background:#94a3b8}.item .av.order{background:#0f766e;border-radius:8px;font-size:10px}
+.item .name{font-weight:700;font-size:13px;line-height:1.3}
+.item .uid{font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#94a3b8;letter-spacing:.04em;margin-top:1px}
+.item .sub{font-size:11px;color:#94a3b8;margin-top:2px}
+.td-user .nm{font-weight:700;color:#1f2937}
+.td-user .uid{display:block;font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#94a3b8;letter-spacing:.04em;margin-top:2px}
+.acc-uid{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#64748b;letter-spacing:.04em}
+.item .meta{font-size:11px;color:#64748b;margin-top:6px;line-height:1.5}
+.item .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pill{font-size:10px;padding:2px 6px;border-radius:999px;background:#f1f5f9;color:#64748b}
+.pill.blue{background:#eff6ff;color:#246bfe}.pill.green{background:#ecfdf5;color:#059669}
+.pill.red{background:#fff1f2;color:#e11d48}.pill.orange{background:#fff7ed;color:#c2410c}.pill.teal{background:#f0fdfa;color:#0f766e}
+.empty{padding:24px;text-align:center;color:#94a3b8;font-size:12px}
+
+.hop-group{margin-bottom:10px}
+.hop-head{display:flex;align-items:center;gap:6px;padding:6px 8px 4px;font-size:11px;font-weight:600;color:#64748b}
+.hop-head .hop-badge{min-width:42px;height:18px;padding:0 6px;border-radius:999px;display:inline-grid;place-items:center;font-size:10px;font-weight:700}
+.hop-head .hop-badge.h0{background:#fff1f2;color:#e11d48}
+.hop-head .hop-badge.h1{background:#eff6ff;color:#246bfe}
+.hop-head .hop-count{margin-left:auto;font-weight:400;color:#94a3b8}
+.tree-branch{position:relative;margin-left:10px;padding-left:14px;border-left:2px solid #93c5fd}
+.tree-branch.depth-2{margin-left:12px;border-left-color:#c4b5fd}
+.tree-node{position:relative;margin-bottom:6px}
+.tree-node::before{content:"";position:absolute;left:-14px;top:22px;width:12px;height:2px;background:#93c5fd}
+.tree-branch.depth-2 .tree-node::before{background:#c4b5fd}
+.tree-node .item{margin-bottom:0;padding:8px 10px}
+.tree-kids{margin-top:6px}
+.expand-hint{font-size:10px;color:#94a3b8;padding:2px 0 4px 2px}
+
+.order-seed{background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.order-seed .k{font-size:11px;color:#0f766e;font-weight:600}
+.order-seed .v{font-size:13px;font-weight:700;margin-top:4px;color:#134e4a}
+.order-seed .s{font-size:11px;color:#64748b;margin-top:4px;line-height:1.5}
+.rel-snap{background:#f8fafc;border:1px solid #e8edf5;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.55;margin-top:6px}
+.rel-snap .rs-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.rel-snap .rs-name{font-weight:700;color:#1f2937}
+.rel-snap .rs-line{color:#64748b;font-size:11px;margin-top:2px}
+.rel-snap .rs-concl{margin-top:6px;color:#334155}
+.party-rel-card{border:1px solid #eef2f7;border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff}
+.party-rel-card .prt{font-size:11px;color:#0f766e;font-weight:600;margin-bottom:6px}
+.party-rel-card.payee .prt{color:#c2410c}
+.tl-mark{font-size:10px;color:#94a3b8;padding:4px 2px;display:flex;align-items:center;gap:6px}
+.tl-mark::before{content:"";width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0}
+.tl-mark.seed::before{background:#0f766e}
+.tl-mark.window::before{background:#f59e0b}
+.acct-group{margin-bottom:12px}
+.acct-head{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:6px}
+.acct-head.payer{background:#eff6ff;color:#1d4ed8}
+.acct-head.payee{background:#fff7ed;color:#c2410c}
+.acct-head.order{background:#f0fdfa;color:#0f766e}
+.acct-head .cnt{margin-left:auto;font-weight:400;opacity:.75}
+.io-label{font-size:10px;color:#94a3b8;padding:4px 8px 2px;font-weight:600}
+.rel-line{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.rel-chip{font-size:10px;padding:2px 6px;border-radius:999px;font-weight:600}
+.rel-chip.yes{background:#ecfdf5;color:#059669}
+.rel-chip.mid{background:#eff6ff;color:#1d4ed8}
+.rel-chip.no{background:#f1f5f9;color:#64748b}
+.rel-chip.self{background:#f5f3ff;color:#7c3aed}
+
+.graph-wrap{flex:1;position:relative;min-height:0;overflow:hidden;cursor:grab;touch-action:none;background-image:radial-gradient(#e8edf5 1px,transparent 1px);background-size:20px 20px}
+.graph-wrap.panning{cursor:grabbing}
+.graph-stage{position:absolute;left:0;top:0;width:100%;height:100%;transform-origin:0 0;will-change:transform}
+.graph-tools{display:flex;gap:4px;margin-left:auto}
+.tool{width:28px;height:28px;border:1px solid #e5eaf2;background:#fff;border-radius:6px;display:grid;place-items:center;color:#64748b;cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#64748b}
+.legend .leg-item{cursor:pointer;padding:2px 7px;border-radius:999px;border:1px solid transparent;user-select:none;line-height:1.4;transition:background .12s,border-color .12s,color .12s}
+.legend .leg-item:hover{background:#f1f5f9;color:#334155}
+.legend .leg-item.on{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8;font-weight:600}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px}
+.danger{background:#f87171}.medium{background:#fbbf24}.normal{background:#34d399}.blue{background:#60a5fa}.purple{background:#a855f7}.orange{background:#fb923c}.teal{background:#14b8a6}
+#panelFlow.filtering .node.dim,
+#panelFlow.filtering .flow-amt.dim{opacity:.2;filter:grayscale(.35);pointer-events:none}
+#panelFlow.filtering .node.leg-hit{box-shadow:0 0 0 4px #fff,0 0 0 8px #246bfe,0 6px 16px rgba(36,107,254,.3);z-index:6}
+#panelFlow.filtering .node.leg-hit{transform:translate(-50%,-50%) scale(1.08)}
+#panelFlow.filtering .edge-svg .dim{opacity:.12}
+#panelFlow.filtering .edge-svg .leg-hit{opacity:1;filter:drop-shadow(0 0 2px rgba(36,107,254,.35))}
+.panel{display:none;position:absolute;inset:0}
+.panel.show{display:block}
+.node{position:absolute;border-radius:50%;display:grid;place-items:center;font-weight:700;z-index:3;cursor:pointer;color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.95);transition:transform .15s,box-shadow .15s}
+.node:hover{transform:scale(1.06)}
+.node.selected{transform:scale(1.1);box-shadow:0 0 0 4px #fff,0 0 0 8px #246bfe,0 6px 18px rgba(36,107,254,.35);z-index:5}
+/* 资金图：按中心点定位，避免订单矩形与圆形叠偏 */
+#panelFlow .node{transform:translate(-50%,-50%)}
+#panelFlow .node:hover{transform:translate(-50%,-50%) scale(1.06)}
+#panelFlow .node.selected{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 0 0 4px #fff,0 0 0 8px #246bfe,0 6px 18px rgba(36,107,254,.35);z-index:5}
+.node.main{width:48px;height:48px;background:#ef4444;font-size:16px}
+.node.mid{width:40px;height:40px;background:#3b82f6;font-size:14px}
+.node.order{width:56px;height:40px;border-radius:10px;background:#0f766e;font-size:11px}
+.node.green{background:#16a34a}.node.purple{background:#9333ea}.node.gray{background:#94a3b8}.node.orange{background:#f97316}.node.teal{background:#0d9488}
+.node .badge{position:absolute;top:-7px;right:-16px;background:#fff;border:1px solid #dbe3ee;color:#334155;font-size:9px;padding:1px 5px;border-radius:999px;white-space:nowrap;font-weight:600}
+.node .badge.hot{background:#fff1f2;border-color:#fecdd3;color:#e11d48}
+.node .badge.ok{background:#ecfdf5;border-color:#a7f3d0;color:#059669}
+.node .badge.warn{background:#fffbeb;border-color:#fde68a;color:#d97706}
+.edge-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.hop-label{position:absolute;z-index:2;font-size:10px;color:#64748b;background:rgba(255,255,255,.92);border:1px solid #e6ebf3;border-radius:5px;padding:2px 6px}
+.flow-amt{position:absolute;z-index:4;font-size:10px;background:#fff;border:1px solid #dbe3ee;border-radius:5px;padding:1px 6px;color:#334155;font-weight:600;transform:translate(-50%,-50%)}
+.window-band{position:absolute;left:1%;right:1%;top:1%;bottom:1%;border:2px dashed #fbbf24;border-radius:12px;background:rgba(251,191,36,.06);z-index:0;pointer-events:none}
+.window-band span{position:absolute;top:8px;left:12px;font-size:11px;color:#b45309;font-weight:600;background:rgba(255,255,255,.9);padding:2px 8px;border-radius:6px}
+
+.detail{flex:1;overflow:auto}
+.account{padding:14px;border-bottom:1px solid #edf1f6}
+.account-top{display:flex;gap:10px;align-items:center}
+.account-top > div{min-width:0;flex:1}
+.avatar{width:40px;height:40px;border-radius:50%;background:#ef4444;color:#fff;display:grid;place-items:center;font-weight:700;flex-shrink:0}
+.avatar.order{border-radius:10px;background:#0f766e;font-size:11px}
+.account-name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:nowrap}
+.account-name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.risk{flex-shrink:0;white-space:nowrap;background:#fff3dc;color:#d97706;padding:2px 6px;border-radius:8px;font-size:10px;line-height:1.4}
+.dmeta{color:#64748b;font-size:12px;line-height:1.7;margin-top:8px}
+.section{padding:12px 14px;border-bottom:1px solid #edf1f6}
+.section:last-child{border-bottom:0}
+.section h3,.sec-title{margin:0 0 8px;font-size:12px;color:#263b5b;display:flex;align-items:center;gap:4px;font-weight:700}
+.status-ok{color:#059669;font-weight:600}
+.status-ban{color:#d97706;font-weight:600}
+.status-sban{color:#e11d48;font-weight:600}
+.role-line{font-size:11px;color:#94a3b8;display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+
+/* 注释气泡：fixed 置顶，避免被侧栏 overflow 裁切 */
+.tip-wrap{position:relative;display:inline-flex;align-items:center;vertical-align:middle}
+.tip-btn{width:16px;height:16px;border:1px solid #bfdbfe;border-radius:50%;background:#eff6ff;color:#246bfe;font-size:10px;font-weight:700;cursor:pointer;padding:0;line-height:14px;flex-shrink:0;font-family:inherit}
+.tip-btn:hover{background:#dbeafe}
+.tip-bubble{display:none;position:fixed;z-index:10000;width:280px;max-height:min(360px,70vh);overflow:auto;background:#0f172a;color:#cbd5e1;padding:10px 12px;border-radius:8px;font-size:11px;line-height:1.55;font-weight:400;box-shadow:0 12px 32px rgba(15,23,42,.35);white-space:normal}
+.tip-bubble.open{display:block}
+.tip-bubble .tb-h{color:#fff;font-weight:600;margin:8px 0 2px}
+.tip-bubble .tb-h:first-child{margin-top:0}
+.tip-bubble .tb-d{color:#94a3b8;margin-bottom:2px}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{background:#eef4ff;color:#4670ad;padding:4px 7px;border-radius:5px;font-size:11px}
+.tag.green{background:#ecfdf5;color:#059669}.tag.gray{background:#f1f5f9;color:#64748b}.tag.orange{background:#fff7ed;color:#c2410c}.tag.red{background:#fff1f2;color:#e11d48}.tag.teal{background:#f0fdfa;color:#0f766e}
+.chain{font-size:12px;color:#475569;line-height:1.7}
+.chain .step{display:flex;gap:6px;margin-bottom:6px}
+.chain .n{min-width:42px;height:20px;border-radius:999px;background:#eff6ff;color:#246bfe;display:grid;place-items:center;font-size:10px;font-weight:600;flex-shrink:0}
+.attr-box{background:#f8fafc;border:1px solid #e8edf5;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.6}
+.attr-box .row{display:flex;justify-content:space-between;gap:6px;padding:3px 0;border-bottom:1px dashed #eef2f7}
+.attr-box .row:last-child{border-bottom:0}
+.attr-box .yes{color:#059669;font-weight:600}.attr-box .no{color:#e11d48;font-weight:600}.attr-box .mix{color:#d97706;font-weight:600}
+.attr-box .row-stack{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right}
+.attr-box .sub{font-size:11px;font-weight:500;color:#64748b}
+.attr-box .cur{color:#059669;font-weight:600}
+.attr-box .cases{margin-top:8px;padding-top:8px;border-top:1px dashed #e2e8f0;font-size:11px;color:#64748b;line-height:1.7}
+.attr-box .cases b{color:#334155;font-weight:600}
+.logic{background:#f6f9ff;border:1px solid #d9e7ff;padding:8px;border-radius:7px;color:#51647f;font-size:12px;line-height:1.6}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+.rules{margin:12px 16px 24px;background:#fff;border:1px solid #e6ebf3;border-radius:10px;overflow:hidden}
+.rules summary{padding:10px 14px;cursor:pointer;font-size:13px;font-weight:600;color:#334155;list-style:none;display:flex;align-items:center}
+.rules summary::-webkit-details-marker{display:none}
+.rules summary::after{content:"展开规则";margin-left:auto;font-size:12px;font-weight:400;color:#246bfe}
+.rules[open] summary::after{content:"收起"}
+.rule-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:0 14px 14px}
+.rule{background:#f8fafc;border:1px solid #edf1f6;border-radius:8px;padding:10px 12px}
+.rule h4{margin:0 0 6px;font-size:12px;color:#246bfe}
+.rule p{margin:0;font-size:11px;color:#64748b;line-height:1.6}
+
+@media(max-width:1200px){
+  .workbench{grid-template-columns:260px minmax(0,1fr) 260px}
+  .insight{grid-template-columns:1fr 1fr}
+  .rule-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  .workbench{grid-template-columns:1fr;height:auto;min-height:0}
+  .col{min-height:360px;height:auto}
+}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <div class="title-row">
+    <div class="title">关联分析 <small id="titleHint">上排查台 · 下结论表 · 首屏可见表头+一行 · 下滑看全量</small></div>
+    <div class="mode-switch">
+      <button class="active" id="modeRel" onclick="setMode('relation')">① 账户关联</button>
+      <button id="modeFlow" onclick="setMode('flow')">② 订单资金追踪</button>
+    </div>
+  </div>
+
+  <!-- 账户关联筛选 -->
+  <div class="filters" id="filtersRel">
+    <span class="flabel">账户</span>
+    <input class="input w200" id="queryInput" value="K7M2X9P4Q1" placeholder="用户ID / 昵称">
+    <button class="btn primary" onclick="runQuery()">⌕ 查询</button>
+    <select class="select"><option>递归深度：3 层</option><option>2 层</option><option>4 层</option></select>
+    <select class="select"><option>证据：设备MAC 优先</option><option>设备MAC / 设备IP</option></select>
+    <div class="range"><button class="btn active">近7天</button><button class="btn">近30天</button><button class="btn">全部</button></div>
+  </div>
+
+  <!-- 订单资金筛选：从订单出发 -->
+  <div class="filters" id="filtersFlow" style="display:none">
+    <span class="flabel">订单号</span>
+    <input class="input w220" id="orderInput" value="ORD-20260316-08241" placeholder="订单号">
+    <span class="flabel">追踪时长</span>
+    <select class="select" id="windowSelect" onchange="onWindowChange()">
+      <option value="30">下单后 30 分钟</option>
+      <option value="120" selected>下单后 2 小时</option>
+      <option value="1440">下单后 24 小时</option>
+    </select>
+    <button class="btn primary" onclick="runOrderQuery()">⌕ 追踪</button>
+  </div>
+
+  <div class="insight" id="insightRel">
+    <div class="card"><div class="k">查询账户</div><div class="v" style="font-size:15px">陈浩</div><div class="s" style="font-family:ui-monospace">K7M2X9P4Q1</div></div>
+    <div class="card"><div class="k">直接关联</div><div class="v">2 个</div><div class="s">刘芳（同MAC·疑似同人）· 赵明（同登录IP）</div></div>
+    <div class="card"><div class="k">间接扩出</div><div class="v">5 个</div><div class="s">举例 周杰、吴敏… 完整见下方表</div></div>
+  </div>
+  <div class="insight" id="insightFlow" style="display:none">
+    <div class="card"><div class="k">本笔订单</div><div class="v" style="font-size:15px" id="insOrderNo">ORD-…8241</div><div class="s" id="insOrderMeta">交易区 · 10:24:08 · 陈浩→刘芳 1,000</div></div>
+    <div class="card"><div class="k">追踪时长内流水</div><div class="v" id="insFlowCount">8</div><div class="s" id="insFlowScope">付款方收支 + 收款方收支</div></div>
+    <div class="card"><div class="k">与订单方有关联</div><div class="v" style="color:#059669" id="insRelCount">6</div><div class="s" id="insRelHint">对手与付款方或收款方有关联</div></div>
+    <div class="card"><div class="k">双方都无关</div><div class="v" style="color:#e11d48" id="insUnrelCount">2</div><div class="s" id="insUnrelHint">黄涛汇入 · 马超转出</div></div>
+  </div>
+</div>
+
+<!-- 调查台在上：恢复大尺寸，首屏主工作区 -->
+<div class="workbench">
+  <section class="col">
+    <div class="col-head" style="padding:0">
+      <div class="list-tabs" id="listTabsRel">
+        <button class="active" id="tab1" onclick="switchTab('relation')">递进树</button>
+        <button id="tab2" onclick="switchTab('relationFlat')">扁平</button>
+      </div>
+      <div class="list-tabs" id="listTabsFlow" style="display:none">
+        <button class="active" id="tabF1" onclick="switchTab('byAccount')">按账户</button>
+        <button id="tabF2" onclick="switchTab('timeline')">按时序</button>
+      </div>
+    </div>
+    <div class="list-body" id="listBody"></div>
+  </section>
+
+  <section class="col">
+    <div class="col-head">
+      <strong id="graphTitle">身份关联图谱</strong>
+      <div class="legend" id="legendRel">
+        <span><i class="dot danger"></i>起点</span>
+        <span><i class="dot blue"></i>直接</span>
+        <span><i class="dot purple"></i>间接</span>
+      </div>
+      <div class="legend" id="legendFlow" style="display:none">
+        <span class="leg-item" data-filter="order" onclick="toggleFlowLegend('order')" title="点击高亮本笔订单"><i class="dot teal"></i>本笔订单</span>
+        <span class="leg-item" data-filter="payer" onclick="toggleFlowLegend('payer')" title="点击高亮付款方"><i class="dot danger"></i>付款方陈浩</span>
+        <span class="leg-item" data-filter="payee" onclick="toggleFlowLegend('payee')" title="点击高亮收款方"><i class="dot medium"></i>收款方刘芳</span>
+        <span class="leg-item" data-filter="payeeDirect" onclick="toggleFlowLegend('payeeDirect')" title="点击高亮收款方直接关联户"><i class="dot normal"></i>收款方直接</span>
+        <span class="leg-item" data-filter="payerIn" onclick="toggleFlowLegend('payerIn')" title="点击高亮付款方收入"><i class="dot blue"></i>付款方收入</span>
+        <span class="leg-item" data-filter="unrelated" onclick="toggleFlowLegend('unrelated')" title="点击高亮无关联对手"><i class="dot orange"></i>无关联</span>
+      </div>
+      <div class="graph-tools">
+        <button class="tool" onclick="zoom(1.1)">＋</button>
+        <button class="tool" onclick="zoom(.9)">−</button>
+        <button class="tool" onclick="resetGraph()">⌂</button>
+      </div>
+    </div>
+    <div class="graph-wrap" id="graph">
+      <div class="panel show" id="panelRel">
+        <div class="graph-stage" id="stageRel">
+        <svg class="edge-svg" viewBox="0 0 1000 568" preserveAspectRatio="none">
+          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+          <line x1="500" y1="280" x2="300" y2="180" stroke="#3b82f6" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <line x1="500" y1="280" x2="700" y2="180" stroke="#3b82f6" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <line x1="300" y1="180" x2="160" y2="90" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+          <line x1="300" y1="180" x2="260" y2="70" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+          <line x1="300" y1="180" x2="380" y2="70" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+          <line x1="300" y1="180" x2="220" y2="300" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+          <line x1="700" y1="180" x2="820" y2="90" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+          <text x="380" y="220" fill="#64748b" font-size="12">同设备MAC · 疑似同人</text>
+          <text x="560" y="220" fill="#64748b" font-size="12">同登录IP</text>
+        </svg>
+        <div class="hop-label" style="left:12px;top:12px">Hop0</div>
+        <div class="hop-label" style="left:12px;top:100px">Hop1 直接</div>
+        <div class="hop-label" style="left:12px;top:36px">Hop2 间接</div>
+        <div class="node main" data-node="A" style="left:47%;top:46%" onclick="selectNode('A')" title="陈浩 · K7M2X9P4Q1">陈</div>
+        <div class="node mid" data-node="B" style="left:27%;top:27%" onclick="selectNode('B')" title="刘芳 · R3N8W1L6H2">刘<span class="badge hot">疑似同人</span></div>
+        <div class="node mid teal" data-node="C" style="left:68%;top:27%" onclick="selectNode('C')" title="赵明 · T5Q9C2V8M4">赵<span class="badge">同登录IP</span></div>
+        <div class="node mid purple" data-node="D" style="left:13%;top:10%" onclick="selectNode('D')" title="周杰 · P1H6J4Y9K3">周</div>
+        <div class="node mid purple" data-node="E" style="left:23%;top:6%" onclick="selectNode('E')" title="吴敏 · W8D3F7A2N5">吴</div>
+        <div class="node mid purple" data-node="F" style="left:35%;top:6%" onclick="selectNode('F')" title="郑强 · M4B9S1E6L0">郑</div>
+        <div class="node mid purple" data-node="X" style="left:80%;top:10%" onclick="selectNode('X')" title="林雪 · L3C8N6B1Q4">林</div>
+        <div class="node mid green" data-node="G" style="left:18%;top:48%" onclick="selectNode('G')" title="孙丽 · Q2Z7X5C9R8">孙</div>
+      
+        </div></div>
+      <div class="panel" id="panelFlow">
+        <div class="graph-stage" id="stageFlow">
+        <div class="window-band"><span id="bandLabel">追踪范围：下单后 2 小时 · 双方账户</span></div>
+        <svg class="edge-svg" viewBox="0 0 1000 568" preserveAspectRatio="none">
+          <defs>
+            <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker>
+            <marker id="arrowIn" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#0284c7"/></marker>
+          </defs>
+          <!-- 陈浩 → 订单 → 刘芳（本笔） -->
+          <line data-leg="order payer payee" x1="160" y1="300" x2="280" y2="300" stroke="#0f766e" stroke-width="3" marker-end="url(#arrow2)"/>
+          <line data-leg="order payer payee" x1="340" y1="300" x2="480" y2="300" stroke="#0f766e" stroke-width="3" marker-end="url(#arrow2)"/>
+          <!-- 黄涛 → 刘芳 -->
+          <line data-leg="unrelated payee" x1="160" y1="120" x2="500" y2="280" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow2)"/>
+          <!-- 陈浩 → 周杰（付款方支出） -->
+          <line data-leg="payer payeeDirect" x1="160" y1="330" x2="160" y2="450" stroke="#16a34a" stroke-width="2.4" marker-end="url(#arrow2)"/>
+          <!-- 刘芳 → 孙丽/吴敏/郑强 · 马超 -->
+          <line data-leg="payee payeeDirect payerIn" x1="520" y1="280" x2="780" y2="100" stroke="#16a34a" stroke-width="2.4" marker-end="url(#arrow2)"/>
+          <line data-leg="payee payeeDirect" x1="540" y1="290" x2="780" y2="220" stroke="#16a34a" stroke-width="2.4" marker-end="url(#arrow2)"/>
+          <line data-leg="payee payeeDirect" x1="540" y1="310" x2="780" y2="360" stroke="#16a34a" stroke-width="2.4" marker-end="url(#arrow2)"/>
+          <line data-leg="payee unrelated" x1="520" y1="330" x2="780" y2="470" stroke="#f97316" stroke-width="2.8" marker-end="url(#arrow2)"/>
+          <!-- 孙丽 → 陈浩（付款方收入 50） -->
+          <path data-leg="payerIn payer payeeDirect" d="M 800 115 C 520 40, 300 80, 185 285" fill="none" stroke="#0284c7" stroke-width="3" marker-end="url(#arrowIn)"/>
+        </svg>
+        <div class="flow-amt" data-leg="order payer payee" style="left:22%;top:48%">本笔 1000</div>
+        <div class="flow-amt" data-leg="unrelated payee" style="left:38%;top:28%">黄涛→刘芳</div>
+        <div class="flow-amt" data-leg="payer payeeDirect" style="left:10%;top:70%">陈→周杰</div>
+        <div class="flow-amt" data-leg="payerIn payer payeeDirect" style="left:42%;top:12%;border-color:#7dd3fc;color:#0369a1">孙丽→陈浩 50</div>
+        <div class="flow-amt" data-leg="payee payeeDirect payerIn" style="left:68%;top:14%">刘→孙丽</div>
+        <div class="flow-amt" data-leg="payee payeeDirect" style="left:68%;top:34%">刘→吴敏</div>
+        <div class="flow-amt" data-leg="payee payeeDirect" style="left:68%;top:58%">刘→郑强</div>
+        <div class="flow-amt" data-leg="payee unrelated" style="left:68%;top:78%">刘→马超</div>
+        <div class="node main" data-node="A" data-leg="payer order payerIn" style="left:16%;top:53%" onclick="selectNode('A')" title="陈浩 · 付款方">陈<span class="badge">付款方</span></div>
+        <div class="node order" data-node="ORD" data-leg="order" style="left:31%;top:53%" onclick="selectNode('ORD')">订单<span class="badge ok">本笔</span></div>
+        <div class="node mid orange" data-node="B" data-leg="payee order" style="left:52%;top:53%" onclick="selectNode('B')" title="刘芳 · 收款方">刘<span class="badge warn">收款方</span></div>
+        <div class="node mid gray" data-node="Z" data-leg="unrelated" style="left:16%;top:21%" onclick="selectNode('Z')" title="黄涛 · 与双方均无关联">黄<span class="badge warn">无关联</span></div>
+        <div class="node mid purple" data-node="D" data-leg="payeeDirect payer" style="left:16%;top:82%" onclick="selectNode('D')" title="周杰 · 对刘芳直接 · 对陈浩间接">周<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid green" data-node="G" data-leg="payeeDirect payerIn" style="left:82%;top:18%" onclick="selectNode('G')" title="孙丽 · 对刘芳直接 · 对陈浩间接（陈浩→刘芳→孙丽）">孙<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid purple" data-node="E" data-leg="payeeDirect" style="left:82%;top:39%" onclick="selectNode('E')" title="吴敏 · 对刘芳直接 · 对陈浩间接">吴<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid purple" data-node="F" data-leg="payeeDirect" style="left:82%;top:63%" onclick="selectNode('F')" title="郑强 · 对刘芳直接 · 对陈浩间接">郑<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid orange" data-node="H" data-leg="unrelated" style="left:82%;top:85%" onclick="selectNode('H')" title="马超 · 与收/付款方均无关联">马<span class="badge hot">无关联</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="col">
+    <div class="col-head"><strong id="detailTitle">节点详情</strong><span class="hint">随列表 / 表格 / 图谱选中更新</span></div>
+    <div class="detail" id="sidePanel"></div>
+  </section>
+</div>
+
+<!-- 一览表在下：首屏露出表头+一行，下滑看完整列表 -->
+<div class="summary-panel" id="summaryRel">
+  <div class="summary-head">
+    <strong>关联关系一览</strong>
+    <span class="hint">给运营 / 老板看的结论表 · 向下滚动可看完整列表</span>
+    <div class="actions">
+      <button class="btn" onclick="copyRelationTable()">复制表格</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="rel" id="relTable">
+      <thead>
+        <tr>
+          <th>用户</th>
+          <th>深度</th>
+          <th>关系类型</th>
+          <th>关键证据</th>
+          <th>发现路径</th>
+          <th>结论</th>
+          <th>风险</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody id="relTableBody"></tbody>
+    </table>
+  </div>
+  <div class="summary-foot">↕ 页面上下滑动查看全部关联行 · 支持导出</div>
+</div>
+
+<div class="summary-panel" id="summaryFlow" style="display:none">
+  <div class="summary-head">
+    <strong>订单下单后流水一览</strong>
+    <span class="hint">每笔含订单号与交易类型 · 汇兑区只追本人兑换后流水</span>
+    <div class="actions">
+      <button class="btn ghost" onclick="exportOrderCSV()">↓ 导出 CSV</button>
+      <button class="btn" onclick="copyOrderTable()">复制表格</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="rel" id="orderTable">
+      <thead>
+        <tr>
+          <th>时间</th>
+          <th>距下单多久</th>
+          <th>订单号</th>
+          <th>交易类型</th>
+          <th>账户 · 收支</th>
+          <th>方向</th>
+          <th>金额</th>
+          <th>对手</th>
+          <th>与付款方 / 收款方</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody id="orderTableBody"></tbody>
+    </table>
+  </div>
+  <div class="summary-foot">↕ 页面上下滑动查看全部流水 · 支持导出</div>
+</div>
+
+<details class="rules" id="ruleRel">
+  <summary>账户关联规则说明</summary>
+  <div class="rule-grid">
+    <div class="rule"><h4>1. 直接关联（Hop1）</h4><p><strong>设备MAC 相同</strong> → 结论「疑似同人（高置信）」，仅供参考、非最终认定。<strong>同登录 IP / 登录环境</strong>直接命中、无中间户 → 结论「同环境关联」，一般不视为疑似同人。</p></div>
+    <div class="rule"><h4>2. 按时段看流水</h4><p>在追踪时长内，分别列出<strong>付款方的收入/支出</strong>和<strong>收款方的收入/支出</strong>。每笔写清对手；再标明该对手与订单付款方、收款方<strong>有没有关联</strong>。</p></div>
+    <div class="rule"><h4>3. 混合入账</h4><p>收款方除订单本金外还有无关来源汇入时，标一下即可，不硬拆比例。</p></div>
+    <div class="rule"><h4>4. 与身份关联配合</h4><p>关联结论来自①账户关联。资金页只回答：这笔对手跟付款方有没有关联、跟收款方有没有关联。</p></div>
+  </div>
+</details>
+<details class="rules" id="ruleFlow" style="display:none">
+  <summary>订单资金追踪规则说明</summary>
+  <div class="rule-grid">
+    <div class="rule"><h4>1. 从订单出发</h4><p>输入<strong>订单号</strong>→拿到下单时间与<strong>交易类型</strong>→设定<strong>追踪时长</strong>。每笔流水都保留自己的订单号与类型。</p></div>
+    <div class="rule"><h4>2. 交易类型</h4><p>私聊红包、群聊红包、私聊转账、群聊转账、埋雷红包、接龙红包、交易区、汇兑区、地址转账。普通类型看付款方/收款方两侧后续流水。</p></div>
+    <div class="rule"><h4>3. 汇兑区（特殊）</h4><p>汇兑区是<strong>自己跟自己</strong>的交易（如 USDT 兑换成 C币）。查询后不再分收付款双方，只追踪<strong>兑换账户本人</strong>在追踪时长内的其他交易。</p></div>
+    <div class="rule"><h4>4. 关联判断</h4><p>关联结论来自①账户关联。资金页标对手与查询相关方（付款方/收款方，或汇兑区本人）有没有关联。</p></div>
+  </div>
+</details>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let mode = 'relation', currentTab = 'relation', selectedId = 'A';
+
+const nodes = {
+  A: { uid:'K7M2X9P4Q1', uname:'陈浩', risk:'高', role:'查询起点', roleKey:'seed', status:'正常', rel:'与 刘芳 共享设备MAC ⇒ 疑似同人（参考）；与 赵明 同登录IP。', flow:'本笔订单付款方' },
+  B: { uid:'R3N8W1L6H2', uname:'刘芳', risk:'中', role:'直接关联 · 疑似同人', roleKey:'direct_same', status:'普通禁用', rel:'与 陈浩 同设备MAC。再扩得周杰/吴敏/郑强/孙丽。', flow:'订单收款中转；下单后秒进秒出' },
+  C: { uid:'T5Q9C2V8M4', uname:'赵明', risk:'中', role:'直接关联 · 同环境', roleKey:'direct_env', status:'正常', rel:'与 陈浩 同登录IP。', flow:'下单后收到 刘芳→赵明 300' },
+  D: { uid:'P1H6J4Y9K3', uname:'周杰', risk:'中', role:'间接关联', roleKey:'indirect', status:'正常', rel:'路径 陈浩→刘芳→周杰 · 对刘芳直接，对陈浩间接', flow:'付款方支出 · 情况②间接关联户 · 陈浩→周杰 300（经刘芳）' },
+  E: { uid:'W8D3F7A2N5', uname:'吴敏', risk:'中', role:'间接关联', roleKey:'indirect', status:'特殊禁用', rel:'路径 陈浩→刘芳→吴敏 · 对刘芳直接，对陈浩间接', flow:'收款方支出给吴敏 400 · 付款方间接 · 收款方直接' },
+  F: { uid:'M4B9S1E6L0', uname:'郑强', risk:'中', role:'间接关联', roleKey:'indirect', status:'正常', rel:'路径 陈浩→刘芳→郑强 · 对刘芳直接，对陈浩间接', flow:'收款方支出给郑强 500 · 付款方间接 · 收款方直接' },
+  G: { uid:'Q2Z7X5C9R8', uname:'孙丽', risk:'高', role:'间接关联', roleKey:'indirect', status:'正常', rel:'路径 陈浩→刘芳→孙丽 · 对刘芳直接，对陈浩间接（不是与陈浩直接关联）', flow:'先收刘芳 100，再转给陈浩 50 · 付款方收入对手' },
+  H: { uid:'V6K1P8T3W2', uname:'马超', risk:'中', role:'无关对手', roleKey:'unrelated', status:'正常', rel:'与付款方、收款方均无身份关联', flow:'收款方支出给马超 100 · 付款方无 · 收款方无' },
+  Z: { uid:'Y9A4M2H7J5', uname:'黄涛', risk:'中', role:'并存来源', roleKey:'external_in', status:'正常', rel:'与 陈浩 无身份关联', flow:'下单后 +10min 汇入 刘芳，形成混合池' },
+  X: { uid:'L3C8N6B1Q4', uname:'林雪', risk:'低', role:'间接关联', roleKey:'indirect', status:'正常', rel:'陈浩→赵明→林雪', flow:'—' },
+  ORD:{ uid:'ORD-20260316-08241', uname:'本笔订单', risk:'高', role:'追踪起点', roleKey:'order_seed', status:'—', rel:'—', flow:'陈浩 付款 1,000 → 刘芳 · 2026-03-16 10:24:08' },
+  Y: { uid:'X0DEAD9Z1A', uname:'已注销用户', risk:'低', role:'已注销', roleKey:'closed', status:'注销', rel:'已注销，不参与关联展示', flow:'—' }
+};
+
+/* 展示：主显姓名，副显 10 位用户ID；头像用姓 */
+function displayName(id){
+  const n = nodes[id];
+  if (!n) return id;
+  if (id==='ORD') return '本笔订单';
+  return n.uname || id;
+}
+function displayUid(id){
+  const n = nodes[id];
+  if (!n || id==='ORD') return n && n.uid || '';
+  return n.uid || '';
+}
+function displayLabel(id){
+  if (id==='ORD') return displayName(id);
+  const uid = displayUid(id);
+  return uid ? displayName(id)+' · '+uid : displayName(id);
+}
+function displayShort(id){
+  const n = nodes[id];
+  if (!n) return '?';
+  if (id==='ORD') return '单';
+  return (n.uname||'?').slice(0,1);
+}
+function pathDisplay(path){
+  return String(path||'').split(/\s*→\s*/).map(p => {
+    const id = p.trim();
+    return nodes[id] ? displayName(id) : id;
+  }).join(' → ');
+}
+function resolveQuery(q){
+  const raw = (q||'').trim();
+  if (!raw) return 'A';
+  const up = raw.toUpperCase();
+  if (nodes[up] && up.length<=3) return up;
+  for (const id of Object.keys(nodes)) {
+    const n = nodes[id];
+    if (n.uid && n.uid.toUpperCase()===up) return id;
+    if (n.uname && n.uname===raw) return id;
+  }
+  return 'A';
+}
+
+/* 角色说明：账号关联 vs 订单资金 分开（含判断逻辑） */
+const ROLE_TIPS_REL = [
+  ['查询起点', '判断：当前输入查询的账户。不是被关联发现的，分析从此开始。'],
+  ['直接关联 · 疑似同人', '判断：与查询账户共享同一设备MAC（Hop1、无中间户）。结论仅作疑似同人参考，非最终认定。例：陈浩 与 刘芳 同MAC。'],
+  ['直接关联 · 同环境', '判断：与查询账户直接命中同登录IP / 登录环境等（Hop1），但未达设备MAC强度。须有环境关联证据才会出现；一般不视为疑似同人。例：陈浩 与 赵明 同登录IP。'],
+  ['间接关联', '判断：非与查询账户直接命中，而是经已关联账户再扩链发现（Hop2+）。中间户若是设备疑似同人 → 结论「经疑似同人扩链」；若是同登录环境户 → 结论「经 IP 支链」。']
+];
+const ROLE_TIPS_FLOW = [
+  ['本笔订单 / 追踪起点', '判断：输入订单号拿到下单时间与交易类型；每笔后续流水也记录自己的订单号与类型。'],
+  ['交易类型', '私聊红包、群聊红包、私聊转账、群聊转账、埋雷红包、接龙红包、交易区、汇兑区、地址转账。'],
+  ['汇兑区（特殊）', '自己跟自己的兑换（如 USDT→C币）。不看收付款双方，只追兑换账户本人在追踪时长内的其他交易。'],
+  ['付款方 / 收款方流水', '普通类型下，同时看付款方与收款方在时长内的收支；对手标相对双方的直接/间接/无关。'],
+  ['无关对手', '判断：对手与付款方、收款方（或汇兑区本人）都无身份关联。']
+]
+
+/* 结论说明（含判断逻辑与互斥区分） */
+const CONCLUSION_TIPS_REL = [
+  ['分析起点', '判断：账户 = 本次查询对象本身，不是关联算法扩出来的。'],
+  ['疑似同人（高置信）', '判断：关键证据 = 共享设备MAC，且为直接命中（Hop1）。仅作参考，非最终认定。若只有同登录IP无MAC，不走本结论，走「同环境关联」。'],
+  ['同环境关联', '判断：【直接 Hop1】查询账户与对方直接同登录IP / 登录环境，路径上无中间户。例：陈浩↔赵明。与「经 IP 支链」区别：同环境=直接撞上；经IP支链=隔了一层。证据弱于设备MAC，一般不视为疑似同人。'],
+  ['经疑似同人扩链', '判断三步：①先有与查询账户设备MAC相同的疑似同人（如 陈浩→刘芳）；②再查该户其他设备MAC关联时，不再把查询账户算作新发现；③其余新账户记间接。例：陈浩→刘芳→周杰。若中间户只是同登录IP，走「经 IP 支链」。'],
+  ['经 IP 支链', '判断：【间接 Hop2+】先存在「同环境关联」中间户，再从其扩出。例：陈浩与赵明同登录IP，再从赵明扩出林雪。与「同环境关联」区别：同环境是赵明本身；经IP支链是林雪。与「经疑似同人扩链」区别：中间户证据是登录环境而非设备MAC。']
+];
+const CONCLUSION_TIPS_FLOW = [
+  ['订单本金 / 类型', '判断：本笔订单付款本身；同时记录交易类型（红包/转账/交易区/汇兑区/地址转账等）。'],
+  ['每笔流水订单号', '判断：追踪时长内每笔交易都保留自己的订单号与类型，不只记种子订单。'],
+  ['汇兑区后续交易', '判断：种子单为汇兑区时，本人 USDT→C币 兑换后，只列本人账户在时长内的其他交易。'],
+  ['①付款方支出·直接', '判断：转出对手与付款方直接命中（同MAC等）。'],
+  ['②付款方支出·间接', '判断：转出对手对付款方是间接。例：陈浩→周杰，经刘芳扩出。'],
+  ['无关对手', '判断：对手与付款方、收款方（或汇兑区本人）都无关联。']
+];
+
+/* 标签说明 */
+const TAG_TIPS_REL = [
+  ['设备MAC优先', '判断优先级：设备MAC ＞ 设备IP ＞ 同 Wi‑Fi / 登录IP+时段 等。同MAC才给「疑似同人」参考；不用收款账户。本 Tab 只展示有设备或环境关联的账户，注销户不展示。'],
+  ['实名不跨户', '判断：实名信息唯一绑定，禁止用实名把不同账户打成关联。'],
+  ['生物识别不比对', '判断：生物特征无法跨设备可靠比对，不参与关联计算。'],
+  ['设备IP', '判断：设备侧上报的 IP；优先级次于 MAC，可辅助关联，单独一般不视为疑似同人。'],
+  ['同 Wi‑Fi / 登录IP+时段', '判断：同 BSSID 或同登录IP且时段接近；属环境辅助证据，单独不足以视为疑似同人，可支撑「同环境关联」。']
+];
+const TAG_TIPS_FLOW = [
+  ['订单驱动', '判断入口：订单号 → 下单时间 → 交易类型 → 追踪时长。'],
+  ['追踪时长', '判断范围：仅统计下单/兑换时刻之后 N 分钟内的流水。'],
+  ['交易类型齐全', '每笔流水标注类型：私聊/群聊红包与转账、埋雷/接龙红包、交易区、汇兑区、地址转账。']
+]
+
+function tipHtml(tipId, items, align){
+  const body = items.map(([h,d]) => `<div class="tb-h">${h}</div><div class="tb-d">${d}</div>`).join('');
+  return `<span class="tip-wrap ${align||''}">
+    <button type="button" class="tip-btn" title="查看说明" onclick="toggleTip(event,'${tipId}')">?</button>
+    <div class="tip-bubble" id="${tipId}" onclick="event.stopPropagation()">${body}</div>
+  </span>`;
+}
+
+function statusHtml(status){
+  if (status==='正常') return `<span class="status-ok">正常</span>`;
+  if (status==='普通禁用') return `<span class="status-ban">普通禁用</span>`;
+  if (status==='特殊禁用') return `<span class="status-sban">特殊禁用</span>`;
+  if (status==='注销') return `<span class="status-sban">注销</span>`;
+  return status || '—';
+}
+
+function isActiveAccount(id){
+  const n = nodes[id];
+  return n && n.status !== '注销';
+}
+
+const relationTree = {
+  id:'A', hop:0, evidence:'查询起点', path:'A', pills:[['起点','red']], risk:'高',
+  children:[
+    {
+      id:'B', hop:1, evidence:'设备MAC', path:'A → B', pills:[['疑似同人','green']], risk:'中',
+      children:[
+        { id:'D', hop:2, evidence:'经 刘芳 设备MAC（不含查询账户）', path:'A → B → D', pills:[['经刘芳','blue']], risk:'中' },
+        { id:'E', hop:2, evidence:'经 刘芳 设备MAC', path:'A → B → E', pills:[['经刘芳','blue']], risk:'中' },
+        { id:'F', hop:2, evidence:'经 刘芳 设备MAC', path:'A → B → F', pills:[['经刘芳','blue']], risk:'中' },
+        { id:'G', hop:2, evidence:'经 刘芳 设备MAC', path:'A → B → G', pills:[['经刘芳','blue']], risk:'高' }
+      ]
+    },
+    {
+      id:'C', hop:1, evidence:'同登录IP + 登录环境', path:'A → C', pills:[['同登录IP','blue']], risk:'中',
+      children:[
+        { id:'X', hop:2, evidence:'经 赵明 扩链', path:'A → C → X', pills:[['经赵明','blue']], risk:'低' }
+      ]
+    }
+  ]
+};
+
+/* 运营一览表行：conclusion / note 与 CONCLUSION_TIPS_REL 判断逻辑保持一致 */
+const relationRows = [
+  { id:'A', hop:0, type:'起点', evidence:'—', path:'A', conclusion:'分析起点', risk:'高', note:'本次查询对象本身，不是关联算法扩出来的' },
+  { id:'B', hop:1, type:'直接关联', evidence:'设备MAC', path:'A → B', conclusion:'疑似同人（高置信）', risk:'中', note:'Hop1 直接共享设备MAC；仅作疑似同人参考，非最终认定' },
+  { id:'C', hop:1, type:'直接关联', evidence:'同登录IP + 登录环境', path:'A → C', conclusion:'同环境关联', risk:'中', note:'Hop1 直接同登录IP/登录环境，无中间户；证据弱于设备MAC，不视为疑似同人' },
+  { id:'D', hop:2, type:'间接关联', evidence:'经 刘芳 设备MAC（不含查询账户）', path:'A → B → D', conclusion:'经疑似同人扩链', risk:'中', note:'经设备疑似同人 刘芳 扩出；扩链时不再把查询账户算作新发现' },
+  { id:'E', hop:2, type:'间接关联', evidence:'经 刘芳 设备MAC', path:'A → B → E', conclusion:'经疑似同人扩链', risk:'中', note:'经设备疑似同人 刘芳 扩出；扩链时不再把查询账户算作新发现' },
+  { id:'F', hop:2, type:'间接关联', evidence:'经 刘芳 设备MAC', path:'A → B → F', conclusion:'经疑似同人扩链', risk:'中', note:'经设备疑似同人 刘芳 扩出；扩链时不再把查询账户算作新发现' },
+  { id:'G', hop:2, type:'间接关联', evidence:'经 刘芳 设备MAC', path:'A → B → G', conclusion:'经疑似同人扩链', risk:'高', note:'经设备疑似同人 刘芳 扩出；扩链时不再把查询账户算作新发现' },
+  { id:'X', hop:2, type:'间接关联', evidence:'经 赵明 扩链', path:'A → C → X', conclusion:'经 IP 支链', risk:'低', note:'经同环境户 赵明 扩出（Hop2+），非与查询账户直接同登录IP；证据弱于设备MAC支链' }
+];
+
+/* 交易类型：每笔流水必带；汇兑区为本人兑换（USDT→C币），只追本人后续交易 */
+const TX_TYPES = ['私聊红包','群聊红包','私聊转账','群聊转账','埋雷红包','接龙红包','交易区','汇兑区','地址转账'];
+
+const seedOrderTrade = {
+  id:'ORD', orderNo:'ORD-20260316-08241', time:'2026-03-16 10:24:08',
+  from:'A', to:'B', amount:'1,000', txType:'交易区', note:'交易区付款 · 追踪起点'
+};
+const seedOrderExchange = {
+  id:'ORD', orderNo:'EXC-20260316-08241', time:'2026-03-16 10:24:08',
+  from:'A', to:'A', amount:'1,000 USDT→C币', txType:'汇兑区', note:'本人 USDT 兑换 C币 · 追踪本人后续交易'
+};
+let seedOrder = Object.assign({}, seedOrderTrade);
+
+/* 普通订单：付款方/收款方双侧流水；每笔自带订单号+类型 */
+const orderFlowsTrade = [
+  { id:'ORD', time:'10:24:08', rel:'下单当时', side:'本笔', io:'本笔', dir:'A → B', amount:'1,000', peer:'B', orderNo:'ORD-20260316-08241', txType:'交易区', relPayer:'本人', relPayee:'本人', risk:'高' },
+  { id:'D', time:'10:32:40', rel:'下单后 8 分钟', side:'付款方', io:'支出', dir:'A → D', amount:'300', peer:'D', orderNo:'TFR-20260316-08324', txType:'私聊转账', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'Z', time:'10:34:12', rel:'下单后 10 分钟', side:'收款方', io:'收入', dir:'Z → B', amount:'1,000', peer:'Z', orderNo:'ADDR-20260316-08341', txType:'地址转账', relPayer:'无', relPayee:'无', risk:'中' },
+  { id:'G', time:'10:40:05', rel:'下单后 16 分钟', side:'收款方', io:'支出', dir:'B → G', amount:'100', peer:'G', orderNo:'GRP-RP-20260316-08400', txType:'群聊红包', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'H', time:'10:41:22', rel:'下单后 17 分钟', side:'收款方', io:'支出', dir:'B → H', amount:'100', peer:'H', orderNo:'PM-RP-20260316-08412', txType:'私聊红包', relPayer:'无', relPayee:'无', risk:'中' },
+  { id:'A', time:'10:43:10', rel:'下单后 19 分钟', side:'付款方', io:'收入', dir:'G → A', amount:'50', peer:'G', orderNo:'TFR-20260316-08431', txType:'私聊转账', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'E', time:'10:45:50', rel:'下单后 21 分钟', side:'收款方', io:'支出', dir:'B → E', amount:'400', peer:'E', orderNo:'MINE-20260316-08455', txType:'埋雷红包', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'F', time:'10:48:20', rel:'下单后 24 分钟', side:'收款方', io:'支出', dir:'B → F', amount:'500', peer:'F', orderNo:'SEQ-20260316-08482', txType:'接龙红包', relPayer:'间接', relPayee:'直接', risk:'高' }
+];
+
+/* 汇兑区：本人兑换后，只看本人在追踪时长内的其他交易 */
+const orderFlowsExchange = [
+  { id:'ORD', time:'10:24:08', rel:'兑换当时', side:'本笔', io:'兑换', dir:'A → A', amount:'1,000 USDT→C币', peer:'A', orderNo:'EXC-20260316-08241', txType:'汇兑区', relPayer:'本人', relPayee:'本人', risk:'中' },
+  { id:'D', time:'10:32:40', rel:'兑换后 8 分钟', side:'本人', io:'支出', dir:'A → D', amount:'300 C币', peer:'D', orderNo:'TFR-20260316-08324', txType:'私聊转账', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'G', time:'10:40:05', rel:'兑换后 16 分钟', side:'本人', io:'支出', dir:'A → G', amount:'100 C币', peer:'G', orderNo:'GRP-RP-20260316-08400', txType:'群聊红包', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'E', time:'10:45:50', rel:'兑换后 21 分钟', side:'本人', io:'收入', dir:'E → A', amount:'80 C币', peer:'E', orderNo:'PM-RP-20260316-08455', txType:'私聊红包', relPayer:'间接', relPayee:'直接', risk:'高' },
+  { id:'H', time:'10:48:20', rel:'兑换后 24 分钟', side:'本人', io:'支出', dir:'A → H', amount:'200 C币', peer:'H', orderNo:'ADDR-20260316-08482', txType:'地址转账', relPayer:'无', relPayee:'无', risk:'中' }
+];
+
+let orderFlows = orderFlowsTrade.slice();
+
+function isExchangeMode(){ return seedOrder.txType === '汇兑区'; }
+
+function applyTxType(txType){
+  if (txType === '汇兑区') {
+    seedOrder = Object.assign({}, seedOrderExchange);
+    orderFlows = orderFlowsExchange.slice();
+  } else {
+    seedOrder = Object.assign({}, seedOrderTrade, { txType: txType });
+    orderFlows = orderFlowsTrade.map(f => {
+      if (f.id !== 'ORD') return Object.assign({}, f);
+      return Object.assign({}, f, { txType: txType, orderNo: seedOrder.orderNo });
+    });
+  }
+  const inp = document.getElementById('orderInput');
+  if (inp) inp.value = seedOrder.orderNo;
+  if (nodes.ORD) {
+    nodes.ORD.uid = seedOrder.orderNo;
+    nodes.ORD.flow = isExchangeMode()
+      ? ('汇兑区 · '+seedOrder.amount+' · '+seedOrder.time)
+      : (displayName(seedOrder.from)+' 付款 '+seedOrder.amount+' → '+displayName(seedOrder.to)+' · '+seedOrder.time);
+  }
+  updateFlowInsight();
+}
+
+function updateFlowInsight(){
+  const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  const total = orderFlows.length;
+  if (isExchangeMode()) {
+    const selfRows = orderFlows.filter(f => f.side === '本人');
+    const relN = selfRows.filter(f => f.relPayer !== '无' || f.relPayee !== '无').length;
+    const unN = selfRows.filter(f => f.relPayer === '无' && f.relPayee === '无').length;
+    set('insOrderNo', seedOrder.orderNo.replace(/^(.{3}).+(.{4})$/, '$1…$2'));
+    set('insOrderMeta', '汇兑区 · '+seedOrder.time.slice(11)+' · 本人 '+seedOrder.amount);
+    set('insFlowCount', String(total));
+    set('insFlowScope', '本人账户兑换后收支');
+    set('insRelCount', String(relN));
+    set('insRelHint', '对手与本人关联范围内有关联');
+    set('insUnrelCount', String(unN));
+    set('insUnrelHint', '本人转出给无关对手');
+  } else {
+    const relN = orderFlows.filter(f => f.side!=='本笔' && (f.relPayer!=='无' || f.relPayee!=='无')).length;
+    const unN = orderFlows.filter(f => f.side!=='本笔' && f.relPayer==='无' && f.relPayee==='无').length;
+    set('insOrderNo', seedOrder.orderNo.replace(/^(.{3}).+(.{4})$/, '$1…$2'));
+    set('insOrderMeta', seedOrder.txType+' · '+seedOrder.time.slice(11)+' · '+displayName(seedOrder.from)+'→'+displayName(seedOrder.to)+' '+seedOrder.amount);
+    set('insFlowCount', String(total));
+    set('insFlowScope', '付款方收支 + 收款方收支');
+    set('insRelCount', String(relN));
+    set('insRelHint', '对手与付款方或收款方有关联');
+    set('insUnrelCount', String(unN));
+    set('insUnrelHint', '黄涛汇入 · 马超转出');
+  }
+}
+
+function relChip(label, val){
+  if (val === '本人') return '<span class="rel-chip self">'+label+'：本人</span>';
+  if (val === '直接') return '<span class="rel-chip yes">'+label+'：直接关联</span>';
+  if (val === '间接') return '<span class="rel-chip mid">'+label+'：间接关联</span>';
+  return '<span class="rel-chip no">'+label+'：无关联</span>';
+}
+
+/* 付款方支出四种情况：①直接 ②间接 ③再付给本笔收款方 ④无关 */
+function payerOutCase(f){
+  if (!(f.side === '付款方' && f.io === '支出')) return null;
+  if (f.peer === 'B' || f.relPayee === '本人') return { n:'③', label:'再付给本笔收款方', hint:'继续付给刘芳' };
+  if (f.relPayer === '直接') return { n:'①', label:'直接关联户', hint:'与付款方直接命中' };
+  if (f.relPayer === '间接') return { n:'②', label:'间接关联户', hint:'经收款方扩出 · 对刘芳直接、对陈浩间接' };
+  return { n:'④', label:'无关外部人', hint:'与付款方、收款方都无关联' };
+}
+
+function flowTitle(f){
+  if (f.txType === '汇兑区' && f.side === '本笔') return '汇兑区 · 本人兑换 USDT→C币';
+  if (f.side === '本笔') return f.txType+' · 本笔订单 · '+pathDisplay(f.dir);
+  const peer = displayName(f.peer);
+  if (f.side === '本人') return '本人'+(f.io==='收入'?'收入':'支出')+' · '+f.txType+' · '+(f.io==='收入'?'从':'给')+peer;
+  if (f.side === '付款方' && f.io === '支出') {
+    const c = payerOutCase(f);
+    return '付款方支出 · '+f.txType+' · 情况'+c.n+c.label+' · 给'+peer;
+  }
+  if (f.side === '付款方') return '付款方收入 · '+f.txType+' · 从'+peer;
+  return (f.io === '收入' ? '收款方收入' : '收款方支出')+' · '+f.txType+' · '+(f.io==='收入'?'从':'给')+peer;
+}
+
+function flowMeta(f){
+  const relLine = isExchangeMode()
+    ? relChip('本人陈浩', f.relPayer)
+    : (relChip('付款方陈浩', f.relPayer)+relChip('收款方刘芳', f.relPayee));
+  return f.time+' · '+f.rel+' · '+f.amount+
+    '<div style="margin-top:4px;font-size:11px;color:#64748b">订单号 '+f.orderNo+' · '+f.txType+'</div>'+
+    '<div class="rel-line">'+relLine+'</div>';
+}
+
+function flowPills(f){
+  const pills = [[f.txType, 'teal']];
+  pills.push([f.side, f.side==='付款方'||f.side==='本人'?'blue':f.side==='收款方'?'orange':'teal']);
+  if (f.io !== '本笔' && f.io !== '兑换') pills.push([f.io, f.io==='收入'?'green':'orange']);
+  return pills;
+}
+
+function flowCard(f){
+  return itemCard({
+    id: f.id,
+    forceTitle: flowTitle(f),
+    sub: f.side === '本笔' ? (f.txType+(f.io==='兑换'?' · 兑换':' · 订单本金')) : (f.side+' · '+f.io+' · '+f.txType),
+    meta: flowMeta(f),
+    pills: flowPills(f),
+    risk: f.risk,
+    kind: f.io
+  });
+}
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+/* 关联快照：资金模式里看「为什么属于关联」 */
+function relInfo(id){
+  if (id === 'ORD') return null;
+  const row = relationRows.find(r => r.id === id);
+  if (row) {
+    return { inCluster:true, hop:row.hop, type:row.type, evidence:row.evidence, path:row.path, conclusion:row.conclusion, note:row.note };
+  }
+  const n = nodes[id];
+  return {
+    inCluster:false, hop:null, type:'不在关联范围', evidence:'—', path:'—',
+    conclusion:'无关对手', note:(n && n.rel) || '与查询起点（付款方）无设备/环境关联'
+  };
+}
+
+function relSnapHtml(id, opts){
+  opts = opts || {};
+  const info = relInfo(id);
+  if (!info) return '';
+  const party = opts.partyLabel ? `<span class="pill ${opts.partyClass||'teal'}">${opts.partyLabel}</span>` : '';
+  const badge = info.inCluster
+    ? `<span class="badge-pill ok">属于关联</span>`
+    : `<span class="badge-pill risk-l">不属于关联</span>`;
+  const hop = info.hop != null ? `<span class="badge-pill ${hopClass(info.hop)}">Hop${info.hop}</span>` : '';
+  return `<div class="rel-snap">
+    <div class="rs-top">
+      <div><span class="rs-name">${displayName(id)}</span> ${party} ${badge} ${hop}</div>
+    </div>
+    <div class="acc-uid">${displayUid(id)||''}</div>
+    <div class="rs-line">${info.type} · 证据：${info.evidence}</div>
+    ${info.path && info.path !== '—' ? `<div class="rs-line">路径：${pathDisplay(info.path)}</div>` : ''}
+  </div>`;
+}
+
+function renderPartyRelPanel(){
+  return `
+    <div class="order-seed">
+      <div class="k">资金归因依赖的关联范围</div>
+      <div class="v">付款方陈浩 + 收款方刘芳</div>
+      <div class="s">「属于关联」结论来自①账户关联（设备MAC / 登录环境）。资金页只展示对手与付款方/收款方的直接、间接或无关联。</div>
+    </div>
+    <div class="party-rel-card">
+      <div class="prt">付款方 · 分析起点</div>
+      ${relSnapHtml('A', { partyLabel:'付款方', partyClass:'blue' })}
+    </div>
+    <div class="party-rel-card payee">
+      <div class="prt">收款方 · 与付款方关系</div>
+      ${relSnapHtml('B', { partyLabel:'收款方', partyClass:'orange' })}
+    </div>
+    <div class="party-rel-card">
+      <div class="prt">下单后 2 小时内对手 · 有关联优先，兼看付款方</div>
+      ${relSnapHtml('G', { partyLabel:'刘→孙丽·收+付', partyClass:'green' })}
+      ${relSnapHtml('E', { partyLabel:'刘→吴敏·收+付', partyClass:'green' })}
+      ${relSnapHtml('F', { partyLabel:'刘→郑强·收+付', partyClass:'green' })}
+      ${relSnapHtml('H', { partyLabel:'刘→马超·无关联', partyClass:'red' })}
+      ${relSnapHtml('D', { partyLabel:'陈→周杰·付款方', partyClass:'blue' })}
+      ${relSnapHtml('Z', { partyLabel:'黄→刘·混合', partyClass:'orange' })}
+    </div>`;
+}
+
+function avClass(id){
+  if (id==='ORD') return 'order';
+  if (id==='A') return 'main';
+  if (id==='G') return 'green';
+  if (id==='H'||id==='B') return 'orange';
+  if (id==='Z') return 'gray';
+  if (id==='D'||id==='E'||id==='F'||id==='X') return 'purple';
+  return '';
+}
+
+function riskClass(r){
+  return r==='高' ? 'risk-h' : r==='低' ? 'risk-l' : 'risk-m';
+}
+
+function hopClass(h){ return h===0?'h0':h===1?'h1':'h2'; }
+
+function flattenTree(node, acc){
+  acc = acc || [];
+  if (isActiveAccount(node.id)) acc.push(node);
+  (node.children||[]).forEach(c => flattenTree(c, acc));
+  return acc;
+}
+
+function itemCard(it){
+  const nid = it.node || it.id;
+  const active = nid === selectedId ? ' active' : '';
+  const pills = (it.pills||[]).map(p => `<span class="pill ${p[1]}">${p[0]}</span>`).join('');
+  const hopSub = it.sub || it.rel || (it.hop===0?'Hop0 · 起点':it.hop===1?'Hop1 · 直接':'Hop'+(it.hop||'')+' · 间接');
+  const meta = it.meta || (it.kind ? `${pathDisplay(it.dir)||it.dir} · ${it.amount}${it.party?' · '+it.party:''}` : ('证据：'+(it.evidence||'—')+'　'+(it.path?pathDisplay(it.path):'')));
+  const attrPart = (it.attr && meta !== it.attr && !String(meta).includes(it.attr)) ? ' · '+it.attr : '';
+  const isFlowRow = !!(it.kind || it.forceTitle);
+  const title = it.forceTitle || (it.kind ? pathDisplay(it.dir) : displayName(nid));
+  const uidLine = (!isFlowRow && displayUid(nid)) ? `<div class="uid">${displayUid(nid)}</div>` : '';
+  const avText = displayShort(nid);
+  return `<div class="item${active}" data-node="${nid}" onclick="event.stopPropagation();selectNode('${nid}')">
+    <div class="rowtop"><div class="av ${avClass(nid)}">${avText}</div>
+    <div><div class="name">${title} <span class="pill">${it.risk||'中'}风险</span></div>
+    ${uidLine}
+    <div class="sub">${hopSub}</div></div></div>
+    <div class="meta">${meta}${attrPart}</div>
+    <div class="tags">${pills}</div>
+  </div>`;
+}
+
+function renderTreeNode(node, depth){
+  const kids = node.children || [];
+  let html = `<div class="tree-node">${itemCard(node)}`;
+  if (kids.length) {
+    html += `<div class="tree-kids"><div class="expand-hint">↳ 扩链 ${kids.length} 个（Hop${node.hop+1}）</div>`;
+    html += `<div class="tree-branch depth-${Math.min(depth+1,2)}">`;
+    kids.forEach(ch => { html += renderTreeNode(ch, depth+1); });
+    html += `</div></div>`;
+  }
+  return html + `</div>`;
+}
+
+function renderRelationTree(){
+  const root = relationTree;
+  const hop1 = root.children || [];
+  const hop2Count = hop1.reduce((n,c) => n + (c.children||[]).length, 0);
+  return `
+    <div class="hop-group">
+      <div class="hop-head"><span class="hop-badge h0">Hop0</span>起点<span class="hop-count">1</span></div>
+      <div style="padding:0 2px">${itemCard(root)}</div>
+    </div>
+    <div class="hop-group">
+      <div class="hop-head"><span class="hop-badge h1">Hop1</span>直接 → 嵌套 Hop2<span class="hop-count">${hop1.length}+${hop2Count}</span></div>
+      <div class="tree-branch">${hop1.map(n => renderTreeNode(n,1)).join('')}</div>
+    </div>`;
+}
+
+function renderByAccount(){
+  const win = document.getElementById('windowSelect').value;
+  const winLabel = win==='30'?'30 分钟':win==='1440'?'24 小时':'2 小时';
+  const block = (cls, title, rows) => `
+    <div class="acct-group">
+      <div class="acct-head ${cls}"><span>${title}</span><span class="cnt">${rows.length}</span></div>
+      ${rows.map(flowCard).join('') || '<div class="empty" style="padding:8px;color:#94a3b8">无</div>'}
+    </div>`;
+  if (isExchangeMode()) {
+    const seed = orderFlows.filter(f => f.side==='本笔');
+    const out = orderFlows.filter(f => f.side==='本人' && f.io==='支出');
+    const inn = orderFlows.filter(f => f.side==='本人' && f.io==='收入');
+    return `
+    <div class="order-seed">
+      <div class="k">汇兑区 · 本人兑换后流水</div>
+      <div class="v">${seedOrder.orderNo}</div>
+      <div class="s">兑换 ${seedOrder.time} · 追踪 ${winLabel}<br>类型：汇兑区（自己跟自己）· ${seedOrder.amount}<br>只追本人账户在时长内的其他交易</div>
+    </div>
+    ${block('order', '① 本笔兑换', seed)}
+    ${block('payer', '② 本人支出', out)}
+    <div class="io-label">支出 ${out.length} 笔</div>
+    ${block('payee', '③ 本人收入', inn)}
+    <div class="io-label">收入 ${inn.length} 笔</div>`;
+  }
+  const order = orderFlows.filter(f => f.side==='本笔');
+  const payerOut = orderFlows.filter(f => f.side==='付款方' && f.io==='支出');
+  const payerIn = orderFlows.filter(f => f.side==='付款方' && f.io==='收入');
+  const payeeIn = orderFlows.filter(f => f.side==='收款方' && f.io==='收入');
+  const payeeOut = orderFlows.filter(f => f.side==='收款方' && f.io==='支出');
+  return `
+    <div class="order-seed">
+      <div class="k">追踪时长内流水</div>
+      <div class="v">${seedOrder.orderNo}</div>
+      <div class="s">下单 ${seedOrder.time} · 追踪 ${winLabel}<br>类型：${seedOrder.txType}<br>按账户分层看收支 · 每笔自带订单号与交易类型</div>
+    </div>
+    ${block('order', '① 本笔订单', order)}
+    ${block('payer', '② 付款方 陈浩', [...payerOut, ...payerIn])}
+    <div class="io-label">支出 ${payerOut.length} 笔 · 收入 ${payerIn.length} 笔</div>
+    ${block('payee', '③ 收款方 刘芳', [...payeeIn, ...payeeOut])}
+    <div class="io-label">收入 ${payeeIn.length} 笔 · 支出 ${payeeOut.length} 笔</div>`;
+}
+
+
+function renderOrderTimeline(){
+  const win = document.getElementById('windowSelect').value;
+  const winLabel = win==='30'?'30 分钟':win==='1440'?'24 小时':'2 小时';
+  return `
+    <div class="order-seed">
+      <div class="k">按时间顺序</div>
+      <div class="v">${seedOrder.orderNo}</div>
+      <div class="s">下单 ${seedOrder.time} · 追踪 ${winLabel}<br>同一笔：属于谁 · 收入/支出 · 对手与双方有无关联</div>
+    </div>
+    <div class="tl-mark seed">下单当时</div>
+    ${orderFlows.map((f,i) => {
+      const mark = i===0 ? '' : `<div class="tl-mark window">${f.rel} · ${f.side}${f.io!=='本笔'?' · '+f.io:''}</div>`;
+      return mark + flowCard(f);
+    }).join('')}`;
+}
+
+function renderList(){
+  const box = document.getElementById('listBody');
+  if (currentTab === 'relation') { box.innerHTML = renderRelationTree(); return; }
+  if (currentTab === 'relationFlat') {
+    box.innerHTML = flattenTree(relationTree).map(n => itemCard(n)).join('');
+    return;
+  }
+  if (currentTab === 'byAccount') { box.innerHTML = renderByAccount(); return; }
+  if (currentTab === 'timeline') { box.innerHTML = renderOrderTimeline(); return; }
+  box.innerHTML = '<div class="empty">暂无数据</div>';
+}
+
+function renderRelTable(){
+  const body = document.getElementById('relTableBody');
+  body.innerHTML = relationRows.filter(r => isActiveAccount(r.id)).map(r => `
+    <tr data-node="${r.id}" class="${r.id===selectedId?'active':''}" onclick="selectNode('${r.id}')">
+      <td class="td-user"><span class="nm">${displayName(r.id)}</span><span class="uid">${displayUid(r.id)}</span></td>
+      <td><span class="badge-pill ${hopClass(r.hop)}">Hop${r.hop}</span></td>
+      <td>${r.type}</td>
+      <td>${r.evidence}</td>
+      <td class="mono">${pathDisplay(r.path)}</td>
+      <td><span class="badge-pill ${r.conclusion.includes('同人')?'ok':'warn'}">${r.conclusion}</span></td>
+      <td><span class="badge-pill ${riskClass(r.risk)}">${r.risk}</span></td>
+      <td>${r.note}</td>
+    </tr>`).join('');
+}
+
+function renderOrderTable(){
+  const body = document.getElementById('orderTableBody');
+  const relCell = (f) => isExchangeMode()
+    ? ('本人'+f.relPayer)
+    : ('付款方'+f.relPayer+' · 收款方'+f.relPayee);
+  body.innerHTML = orderFlows.map(f => `
+    <tr data-node="${f.id}" class="${f.id===selectedId?'active':''}" onclick="selectNode('${f.id}')">
+      <td class="mono">${f.time}</td>
+      <td>${f.rel}</td>
+      <td class="mono">${f.orderNo||''}</td>
+      <td>${f.txType||''}</td>
+      <td>${f.side}${(f.io!=='本笔'&&f.io!=='兑换')?' · '+f.io:''}</td>
+      <td class="mono">${pathDisplay(f.dir)}</td>
+      <td>${f.amount}</td>
+      <td>${(f.txType==='汇兑区'&&f.side==='本笔')?'本人':displayName(f.peer)}<div class="uid" style="font-family:ui-monospace;font-size:10px;color:#94a3b8">${(f.txType==='汇兑区'&&f.side==='本笔')?'':(displayUid(f.peer)||'')}</div></td>
+      <td>${relCell(f)}</td>
+      <td>${flowTitle(f)}</td>
+    </tr>`).join('');
+}
+
+
+function csvEscape(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }
+
+function downloadCSV(filename, rows){
+  const bom = '\uFEFF';
+  const csv = bom + rows.map(r => r.map(csvEscape).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已导出 '+filename);
+}
+
+function exportOrderCSV(){
+  const rows = [['时间','距下单多久','订单号','交易类型','账户','收支','方向','金额','对手','与付款方','与收款方','种子订单号','下单时间','追踪时长(分)']];
+  const win = document.getElementById('windowSelect').value;
+  orderFlows.forEach(f => rows.push([f.time,f.rel,f.orderNo,f.txType,f.side,f.io,f.dir,f.amount,f.peer,f.relPayer,f.relPayee,seedOrder.orderNo,seedOrder.time,win]));
+  downloadCSV('订单下单后流水_'+seedOrder.orderNo+'.csv', rows);
+}
+
+
+function copyTableText(tableId){
+  const table = document.getElementById(tableId);
+  const lines = [];
+  table.querySelectorAll('tr').forEach(tr => {
+    lines.push([...tr.children].map(td => td.innerText.replace(/\s+/g,' ').trim()).join('\t'));
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => toast('已复制到剪贴板')).catch(() => toast('复制失败，请手动选择'));
+}
+function copyRelationTable(){ copyTableText('relTable'); }
+function copyOrderTable(){ copyTableText('orderTable'); }
+
+let flowLegendFilter = null;
+
+function toggleFlowLegend(key){
+  flowLegendFilter = (flowLegendFilter === key) ? null : key;
+  applyFlowLegendFilter();
+}
+
+function clearFlowLegendFilter(){
+  flowLegendFilter = null;
+  applyFlowLegendFilter();
+}
+
+function applyFlowLegendFilter(){
+  const panel = document.getElementById('panelFlow');
+  if (!panel) return;
+  const key = flowLegendFilter;
+  panel.classList.toggle('filtering', !!key);
+  document.querySelectorAll('#legendFlow .leg-item').forEach(el => {
+    el.classList.toggle('on', !!key && el.getAttribute('data-filter') === key);
+  });
+  panel.querySelectorAll('[data-leg]').forEach(el => {
+    const legs = (el.getAttribute('data-leg') || '').split(/\s+/).filter(Boolean);
+    const hit = !key || legs.indexOf(key) >= 0;
+    el.classList.toggle('dim', !!key && !hit);
+    el.classList.toggle('leg-hit', !!key && hit);
+  });
+}
+
+function findInTree(node, id, trail){
+  const t = (trail||[]).concat([node]);
+  if (node.id === id) return t;
+  for (const ch of (node.children||[])) {
+    const found = findInTree(ch, id, t);
+    if (found) return found;
+  }
+  return null;
+}
+
+
+function flowSummaryHtml(){
+  if (isExchangeMode()) {
+    return `<div class="attr-box">
+      <div class="row"><span>本笔兑换</span><span class="yes">本人 USDT→C币 1,000</span></div>
+      <div class="row"><span>本人支出</span><span class="yes">私聊转账→周杰 300 · 群聊红包→孙丽 100 · 地址转账→马超 200</span></div>
+      <div class="row"><span>本人收入</span><span class="yes">私聊红包←吴敏 80</span></div>
+    </div>`;
+  }
+  return `<div class="attr-box">
+    <div class="row"><span>本笔订单</span><span class="yes">${seedOrder.txType} · 陈浩→刘芳 1,000</span></div>
+    <div class="row"><span>付款方支出</span><span class="yes">私聊转账 陈浩→周杰 300</span></div>
+    <div class="row"><span>付款方收入</span><span class="yes">私聊转账 孙丽→陈浩 50</span></div>
+    <div class="row"><span>收款方收入</span><span class="mix">地址转账 黄涛→刘芳 1,000（无关）</span></div>
+    <div class="row"><span>收款方支出</span><span class="yes">群聊红包/埋雷/接龙 →孙丽/吴敏/郑强</span></div>
+    <div class="row"><span>收款方支出</span><span class="no">私聊红包 →马超 100（无关）</span></div>
+  </div>`;
+}
+
+function selectNode(id){
+  if (!isActiveAccount(id) && id !== 'ORD') {
+    toast('注销账户不展示');
+    return;
+  }
+  selectedId = id;
+  const n = nodes[id] || nodes.A;
+  document.querySelectorAll('.node').forEach(el => el.classList.remove('selected'));
+  const panel = document.querySelector(mode === 'relation' ? '#panelRel' : '#panelFlow');
+  panel.querySelectorAll('.node[data-node="'+id+'"]').forEach(el => el.classList.add('selected'));
+  document.querySelectorAll('.item').forEach(el => el.classList.toggle('active', el.getAttribute('data-node') === id));
+  document.querySelectorAll('#relTableBody tr, #orderTableBody tr').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('data-node') === id);
+  });
+
+  const side = document.getElementById('sidePanel');
+  const roleTip = tipHtml('tipRole', mode === 'relation' ? ROLE_TIPS_REL : ROLE_TIPS_FLOW);
+  const conclTip = tipHtml('tipConcl', mode === 'relation' ? CONCLUSION_TIPS_REL : CONCLUSION_TIPS_FLOW);
+  const tagTip = tipHtml('tipTag', mode === 'relation' ? TAG_TIPS_REL : TAG_TIPS_FLOW, 'right');
+
+  if (mode === 'relation') {
+    const trail = findInTree(relationTree, id);
+    const row = relationRows.find(r => r.id === id);
+    const conclText = row
+      ? `<strong>${row.conclusion}</strong><br><span style="color:#64748b">${row.note}</span>`
+      : n.rel;
+    side.innerHTML = `
+      <div class="account">
+        <div class="account-top">
+          <div class="avatar" style="background:${id==='A'?'#ef4444':id==='G'?'#16a34a':'#3b82f6'}">${displayShort(id)}</div>
+          <div>
+            <div class="account-name"><span class="nm">${displayName(id)}</span><span class="risk">${n.risk}风险</span></div>
+            <div class="acc-uid">${displayUid(id)}</div>
+            <div class="role-line">${n.role} ${roleTip}</div>
+          </div>
+        </div>
+        <div class="dmeta">状态：${statusHtml(n.status)}</div>
+      </div>
+      <div class="section">
+        <div class="sec-title">一句话结论 ${conclTip}</div>
+        <div class="logic">${conclText}</div>
+      </div>
+      <div class="section"><div class="sec-title">发现路径</div><div class="chain">
+        ${(trail||[{id:'A',hop:0}]).map((step,i)=>`<div class="step"><span class="n">Hop${step.hop!=null?step.hop:i}</span><div><strong>${displayName(step.id)}</strong> <span class="acc-uid">${displayUid(step.id)}</span>${step.evidence?' · '+step.evidence:''}</div></div>`).join('')}
+      </div></div>
+      <div class="section">
+        <div class="sec-title">标签 ${tagTip}</div>
+        <div class="tags">
+          <span class="tag">设备MAC优先</span><span class="tag green">实名不跨户</span><span class="tag gray">生物识别不比对</span>
+        </div>
+      </div>`;
+  } else {
+    const flow = orderFlows.find(f => f.id === id);
+    const isOrd = id === 'ORD';
+    const flowRole = isOrd ? '本笔订单 · 追踪起点' : (flow && flow.pills && flow.pills[0] ? flow.pills[0][0]+' · '+n.role : n.role);
+    const peerId = flow && flow.peer ? flow.peer : null;
+    const snapBlock = isOrd
+      ? `<div class="section"><div class="sec-title">双方用户关联 ${conclTip}</div>
+          ${relSnapHtml('A', { partyLabel:'付款方', partyClass:'blue' })}
+          ${relSnapHtml('B', { partyLabel:'收款方', partyClass:'orange' })}
+        </div>`
+      : `<div class="section"><div class="sec-title">用户关联快照 ${conclTip}</div>
+          ${relSnapHtml(id)}
+          ${peerId && peerId !== id ? relSnapHtml(peerId, { partyLabel:'对手', partyClass:'teal' }) : ''}
+        </div>`;
+    side.innerHTML = `
+      <div class="account">
+        <div class="account-top">
+          <div class="avatar ${isOrd?'order':''}" style="background:${isOrd?'#0f766e':id==='G'?'#16a34a':id==='H'?'#f97316':'#3b82f6'}">${isOrd?'订单':displayShort(id)}</div>
+          <div>
+            <div class="account-name"><span class="nm">${isOrd?seedOrder.orderNo:displayName(id)}</span><span class="risk">${n.risk}风险</span></div>
+            ${isOrd?'':`<div class="acc-uid">${displayUid(id)}</div>`}
+            <div class="role-line">${flowRole} ${roleTip}</div>
+          </div>
+        </div>
+        <div class="dmeta">${isOrd
+          ? `下单时间：${seedOrder.time}<br>方向：${pathDisplay(seedOrder.from+' → '+seedOrder.to)}<br>金额：${seedOrder.amount} USDT`
+          : `状态：${statusHtml(n.status)}`}</div>
+      </div>
+      ${snapBlock}
+      <div class="section"><div class="sec-title">本单流水摘要</div>
+        ${flowSummaryHtml()}
+      </div><div class="section">
+        <div class="sec-title">标签 ${tagTip}</div>
+        <div class="tags">
+          <span class="tag teal">订单驱动</span><span class="tag orange">追踪时长</span><span class="tag">交易类型齐全</span>
+        </div>
+      </div>`;
+  }
+}
+
+function closeAllTips(){
+  document.querySelectorAll('.tip-bubble.open').forEach(b => {
+    b.classList.remove('open');
+    b.style.top = b.style.left = b.style.right = b.style.bottom = '';
+  });
+}
+
+function toggleTip(e, tipId){
+  e.stopPropagation();
+  const bub = document.getElementById(tipId);
+  if (!bub) return;
+  const open = bub.classList.contains('open');
+  closeAllTips();
+  if (open) return;
+
+  const btn = e.currentTarget;
+  const r = btn.getBoundingClientRect();
+  const gap = 8;
+  const width = 280;
+  const maxH = Math.min(360, window.innerHeight * 0.7);
+
+  // 优先显示在按钮下方；下方不够则翻到上方
+  let top = r.bottom + gap;
+  if (top + 120 > window.innerHeight) {
+    top = Math.max(8, r.top - gap - Math.min(maxH, 280));
+  }
+
+  // 右侧贴边时向左收，避免出屏
+  let left = r.left;
+  if (left + width > window.innerWidth - 8) {
+    left = Math.max(8, window.innerWidth - width - 8);
+  }
+  if (left < 8) left = 8;
+
+  bub.style.top = top + 'px';
+  bub.style.left = left + 'px';
+  bub.style.right = 'auto';
+  bub.style.bottom = 'auto';
+  bub.classList.add('open');
+}
+
+document.addEventListener('click', closeAllTips);
+document.addEventListener('scroll', closeAllTips, true);
+
+function switchTab(type){
+  currentTab = type;
+  if (mode === 'relation') {
+    document.querySelectorAll('#listTabsRel button').forEach(b => b.classList.remove('active'));
+    document.getElementById(type==='relation'?'tab1':'tab2').classList.add('active');
+  } else {
+    document.querySelectorAll('#listTabsFlow button').forEach(b => b.classList.remove('active'));
+    document.getElementById(type==='byAccount'?'tabF1':'tabF2').classList.add('active');
+  }
+  renderList();
+  selectNode(selectedId);
+}
+
+function setMode(m, keepTab){
+  mode = m;
+  clearFlowLegendFilter();
+  document.getElementById('modeRel').classList.toggle('active', m==='relation');
+  document.getElementById('modeFlow').classList.toggle('active', m==='flow');
+  document.getElementById('filtersRel').style.display = m==='relation' ? '' : 'none';
+  document.getElementById('filtersFlow').style.display = m==='flow' ? '' : 'none';
+  document.getElementById('insightRel').style.display = m==='relation' ? '' : 'none';
+  document.getElementById('insightFlow').style.display = m==='flow' ? '' : 'none';
+  document.getElementById('summaryRel').style.display = m==='relation' ? '' : 'none';
+  document.getElementById('summaryFlow').style.display = m==='flow' ? '' : 'none';
+  document.getElementById('listTabsRel').style.display = m==='relation' ? '' : 'none';
+  document.getElementById('listTabsFlow').style.display = m==='flow' ? '' : 'none';
+  document.getElementById('panelRel').classList.toggle('show', m==='relation');
+  document.getElementById('panelFlow').classList.toggle('show', m==='flow');
+  document.getElementById('legendRel').style.display = m==='relation' ? '' : 'none';
+  document.getElementById('legendFlow').style.display = m==='flow' ? '' : 'none';
+  document.getElementById('ruleRel').style.display = m==='relation' ? '' : 'none';
+  document.getElementById('ruleFlow').style.display = m==='flow' ? '' : 'none';
+  document.getElementById('graphTitle').textContent = m==='relation' ? '身份关联图谱' : '订单资金时序图';
+  document.getElementById('detailTitle').textContent = m==='relation' ? '账户详情' : '订单 / 流水详情';
+  document.getElementById('titleHint').textContent = m==='relation'
+    ? '上排查台 · 下结论表 · 首屏可见表头+一行 · 下滑看全量'
+    : '上订单时序 · 按账户看收支 · 下流水表';
+
+  if (!keepTab) {
+    currentTab = m === 'relation' ? 'relation' : 'byAccount';
+    selectedId = m === 'relation' ? 'A' : 'ORD';
+    if (m === 'relation') {
+      document.querySelectorAll('#listTabsRel button').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab1').classList.add('active');
+    } else {
+      document.querySelectorAll('#listTabsFlow button').forEach(b => b.classList.remove('active'));
+      document.getElementById('tabF1').classList.add('active');
+    }
+  }
+  renderList();
+  if (m==='relation') renderRelTable(); else renderOrderTable();
+  selectNode(selectedId);
+  applyGraphTransform();
+}
+
+function onWindowChange(){
+  const win = document.getElementById('windowSelect').value;
+  const label = win==='30'?'30 分钟':win==='1440'?'24 小时':'2 小时';
+  document.getElementById('bandLabel').textContent = '追踪范围：下单后 '+label+' · 双方账户';
+  document.querySelector('#insightFlow .card:nth-child(2) .s').textContent = '同时看付款方陈浩 + 收款方刘芳 · 按账户查看收支'+label;
+  renderList();
+  toast('已切换追踪时长：下单后 '+label);
+}
+
+
+let graphScale = 1, graphX = 0, graphY = 0;
+let graphPanning = false, panOrigin = null;
+
+function activeStage(){
+  return document.getElementById(mode === 'flow' ? 'stageFlow' : 'stageRel');
+}
+
+function applyGraphTransform(){
+  const tf = 'translate('+graphX+'px,'+graphY+'px) scale('+graphScale+')';
+  ['stageRel','stageFlow'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.transform = tf;
+  });
+}
+
+function zoom(factor, mx, my){
+  const wrap = document.getElementById('graph');
+  if (!wrap) return;
+  const rect = wrap.getBoundingClientRect();
+  const cx = mx != null ? mx : rect.width / 2;
+  const cy = my != null ? my : rect.height / 2;
+  // allow zoom(1.1) style multiplicative calls from buttons
+  const mult = (typeof factor === 'number' && factor > 0.2 && factor < 5) ? factor : 1.15;
+  const prev = graphScale;
+  graphScale = Math.max(0.5, Math.min(2.8, graphScale * mult));
+  const k = graphScale / prev;
+  graphX = cx - (cx - graphX) * k;
+  graphY = cy - (cy - graphY) * k;
+  applyGraphTransform();
+}
+
+function resetGraph(){
+  graphScale = 1;
+  graphX = 0;
+  graphY = 0;
+  applyGraphTransform();
+}
+
+function bindGraphPanZoom(){
+  const wrap = document.getElementById('graph');
+  if (!wrap || wrap._panBound) return;
+  wrap._panBound = true;
+
+  wrap.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = wrap.getBoundingClientRect();
+    zoom(e.deltaY < 0 ? 1.12 : 1/1.12, e.clientX - rect.left, e.clientY - rect.top);
+  }, { passive: false });
+
+  wrap.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest && e.target.closest('.node')) return;
+    graphPanning = true;
+    panOrigin = { x: e.clientX, y: e.clientY, gx: graphX, gy: graphY };
+    wrap.classList.add('panning');
+    try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  wrap.addEventListener('pointermove', (e) => {
+    if (!graphPanning || !panOrigin) return;
+    graphX = panOrigin.gx + (e.clientX - panOrigin.x);
+    graphY = panOrigin.gy + (e.clientY - panOrigin.y);
+    applyGraphTransform();
+  });
+
+  const endPan = (e) => {
+    if (!graphPanning) return;
+    graphPanning = false;
+    panOrigin = null;
+    wrap.classList.remove('panning');
+    try { wrap.releasePointerCapture(e.pointerId); } catch (_) {}
+  };
+  wrap.addEventListener('pointerup', endPan);
+  wrap.addEventListener('pointercancel', endPan);
+}
+
+
+function runQuery(){
+  const raw = document.getElementById('queryInput').value || 'K7M2X9P4Q1';
+  const q = resolveQuery(raw);
+  document.getElementById('queryInput').value = displayUid(q) || raw;
+  if (nodes[q] && nodes[q].status === '注销') {
+    toast('注销账户不参与关联展示');
+    return;
+  }
+  selectedId = q;
+  setMode('relation', true);
+  toast('已查询 '+displayName(q));
+}
+
+function runOrderQuery(){
+  const no = (document.getElementById('orderInput').value||'').trim() || seedOrder.orderNo;
+  document.getElementById('orderInput').value = no;
+  seedOrder.orderNo = no;
+  if (orderFlows[0]) orderFlows[0].orderNo = no;
+  nodes.ORD.uid = no;
+  selectedId = 'ORD';
+  setMode('flow', true);
+  updateFlowInsight();
+  toast(isExchangeMode() ? ('汇兑区追踪：'+no+' · 本人兑换后交易') : ('已按订单追踪：'+no));
+}
+
+
+document.querySelectorAll('#filtersRel .range .btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#filtersRel .range .btn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+}));
+
+renderRelTable();
+renderOrderTable();
+renderList();
+selectNode('A');
+bindGraphPanZoom();
+applyGraphTransform();
+</script>
+</body>
+</html>

@@ -1,0 +1,1017 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>消息/全部 · Albert Flores</title>
+  <style>
+    :root {
+      --bg: #f5f1eb;
+      --header: #f3f0ea;
+      --sent: #d1e8ff;
+      --recv: #ffffff;
+      --text: #000;
+      --sub: #81818d;
+      --placeholder: #979797;
+      --danger: #fb2826;
+      --theme: #178aff;
+      --line: #e0e0e0;
+      --phone-w: 414px;
+      --phone-h: 896px;
+      --icon: #323232;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", "Segoe UI", sans-serif;
+      background: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+    }
+
+    .stage {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px 16px;
+    }
+
+    .stage-hint {
+      color: rgba(255,255,255,.55);
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100vh - 80px);
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+      box-shadow:
+        0 0 0 10px #111,
+        0 0 0 12px #2a2a2a,
+        0 30px 80px rgba(0,0,0,.55);
+      flex-shrink: 0;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .phone-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("assets/media/pattern.png") top left / 440px 799px;
+      opacity: .12;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ico {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      pointer-events: none;
+    }
+
+    .status-bar {
+      height: 48px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 20;
+      background: var(--header);
+      flex-shrink: 0;
+    }
+
+    .status-time {
+      width: 68px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .dynamic-island {
+      width: 124px;
+      height: 36px;
+      background: #000;
+      border-radius: 33px;
+    }
+
+    .status-right {
+      width: 78px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-right svg { display: block; }
+
+    .header {
+      height: 50px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--header);
+      border-bottom: 0.5px solid #c8c7cb;
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+
+    .header-side { width: 80px; display: flex; align-items: center; }
+    .header-side.right { justify-content: flex-end; }
+
+    .btn-icon {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .btn-icon .ico { width: 10px; height: 18px; }
+    .btn-icon.back .ico { transform: scaleX(-1); }
+
+    .header-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .header-name {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--sub);
+    }
+
+    .header-status .ico {
+      width: 6px;
+      height: 6px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      cursor: pointer;
+    }
+
+    .chat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px 16px 12px;
+      position: relative;
+      z-index: 1;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: #fff;
+      border-radius: 100px;
+      padding: 2px 8px;
+      font-size: 10px;
+      margin: 0 auto 8px;
+      max-width: 100%;
+    }
+
+    .chip .ico { width: 16px; height: 16px; flex-shrink: 0; }
+    .chip.date { font-size: 12px; padding: 4px 8px; line-height: 12px; }
+
+    .msg-row {
+      display: flex;
+      width: 100%;
+      margin-bottom: 8px;
+      position: relative;
+      align-items: flex-start;
+    }
+
+    .msg-row.sent { justify-content: flex-end; }
+    .msg-row.recv { justify-content: flex-start; }
+    .msg-row.select-mode { align-items: center; gap: 10px; }
+    .msg-row.select-mode.sent { flex-direction: row-reverse; }
+
+    .check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid #c8c7cb;
+      background: rgba(255,255,255,.85);
+      flex-shrink: 0;
+      display: none;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone.selecting .check { display: grid; }
+    .check.on {
+      border: 2px solid #178aff;
+      background: #178aff;
+      box-shadow: inset 0 0 0 3px #fff;
+    }
+    .check .ico-on { display: none !important; }
+
+    .bubble {
+      position: relative;
+      max-width: 287px;
+      border-radius: 12px;
+      user-select: none;
+      cursor: pointer;
+      transition: transform .12s ease;
+    }
+
+    .bubble:active { transform: scale(.985); }
+    .bubble.sent { background: var(--sent); }
+    .bubble.recv { background: var(--recv); }
+    .bubble.highlight { box-shadow: 0 0 0 2px rgba(23,138,255,.35); }
+
+    .bubble-text {
+      padding: 8px 20px 24px 12px;
+      font-size: 16px;
+      line-height: 22px;
+      word-break: break-word;
+    }
+
+    .bubble-media { width: 281px; max-width: 100%; }
+
+    .media-box {
+      position: relative;
+      width: 279px;
+      max-width: calc(100% - 2px);
+      height: 116px;
+      margin: 1px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #e0e0e0;
+    }
+
+    .media-box img.thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 42px;
+      height: 48px;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 6px rgba(0,0,0,.15));
+    }
+
+    .expired-mask {
+      position: absolute;
+      inset: 0;
+      background: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--sub);
+      font-size: 12px;
+    }
+
+    .expired-mask .ico { width: 30px; height: 30px; }
+
+    .caption {
+      padding: 8px 64px 8px 12px;
+      font-size: 16px;
+      line-height: 22px;
+      min-height: 38px;
+    }
+
+    .meta {
+      position: absolute;
+      right: 8px;
+      bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--sub);
+      letter-spacing: .24px;
+    }
+
+    .meta.on-media {
+      background: rgba(0,0,0,.4);
+      color: #fff;
+    }
+
+    .meta .read {
+      width: 14px;
+      height: 14px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .meta .read .ico {
+      position: absolute;
+      width: 8px;
+      height: 9px;
+      top: 2px;
+    }
+
+    .meta .read .ico:first-child { left: 5px; }
+    .meta .read .ico:last-child { left: 1px; }
+
+    .composer {
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.12));
+      backdrop-filter: blur(3px);
+    }
+
+    .reply-card {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 4px;
+      background: rgba(129,129,141,.12);
+      border-radius: 10px;
+      border-left: 3px solid var(--theme);
+    }
+
+    .input-box.replying .reply-card { display: flex; }
+    .reply-card .body { flex: 1; min-width: 0; }
+    .reply-card .label { font-size: 12px; color: var(--theme); line-height: 1.2; }
+    .reply-card .preview {
+      font-size: 12px;
+      color: var(--sub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .reply-close {
+      width: 20px;
+      height: 20px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .reply-close .ico { width: 12px; height: 12px; opacity: .55; transform: rotate(45deg); }
+
+    .forward-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 12px 4px;
+      padding: 8px 12px;
+      background: rgba(209,232,255,.9);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #178aff;
+    }
+
+    .forward-bar.show { display: flex; }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 8px 12px;
+    }
+
+    .round-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 100px;
+      border: 0;
+      background: rgba(255,255,255,.44);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .round-btn .ico { width: 22px; height: 22px; }
+    .round-btn.mic .ico { width: 15px; height: 19px; }
+
+    .input-box {
+      flex: 1;
+      min-height: 36px;
+      background: rgba(255,255,255,.44);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3px 8px 3px 12px;
+      gap: 0;
+    }
+
+    .input-box .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 30px;
+    }
+
+    .input-box input {
+      flex: 1;
+      border: 0;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      font-family: inherit;
+      min-width: 0;
+    }
+
+    .input-box input::placeholder { color: var(--placeholder); }
+
+    .round-btn.send {
+      background: var(--theme);
+      display: none;
+    }
+    .round-btn.send .ico { width: 14px; height: 16px; }
+    .phone.can-send .round-btn.mic { display: none; }
+    .phone.can-send .round-btn.send { display: grid; }
+
+    .emoji-btn {
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .emoji-btn .ico { width: 24px; height: 24px; }
+
+    .home-indicator {
+      height: 34px;
+      position: relative;
+    }
+
+    .home-indicator::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      border-radius: 100px;
+      background: #000;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: none;
+    }
+
+    .overlay.show { display: block; }
+
+    .dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(16px);
+    }
+
+    .ctx-menu {
+      position: absolute;
+      right: 16px;
+      top: 338px;
+      width: 208px;
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(24px);
+      border-radius: 12px;
+      box-shadow: 0 0 8px rgba(0,0,0,.1);
+      overflow: hidden;
+      transform-origin: top right;
+      animation: pop .18s ease;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .ctx-item {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 0;
+      border-bottom: 0.5px solid var(--line);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 16px;
+      font-family: inherit;
+      cursor: pointer;
+      color: #000;
+    }
+
+    .ctx-item:last-child { border-bottom: 0; }
+    .ctx-item.danger { color: var(--danger); }
+    .ctx-item .menu-ico {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .ctx-item .menu-ico .ico { width: 22px; height: 22px; }
+    .ctx-item.danger .menu-ico .ico { filter: none; }
+    .ctx-item:active { background: rgba(0,0,0,.04); }
+
+    .sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      pointer-events: none;
+    }
+
+    .sheet.show { display: block; }
+
+    .delete-pop {
+      position: absolute;
+      right: 16px;
+      top: 339px;
+      width: 260px;
+      max-width: calc(100% - 32px);
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(24px);
+      border-radius: 12px;
+      box-shadow: 0 0 8px rgba(0,0,0,.1);
+      overflow: hidden;
+      pointer-events: auto;
+      animation: pop .18s ease;
+    }
+
+    .delete-pop .ctx-item { pointer-events: auto; }
+
+    .select-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 40px 0;
+      background: rgba(209,232,255,.55);
+      backdrop-filter: blur(12px);
+    }
+
+    .phone.selecting .composer-normal { display: none; }
+    .phone.selecting .select-bar { display: flex; }
+
+    .select-fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 0;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .select-fab:disabled { opacity: .35; }
+    .select-fab .ico { width: 22px; height: 22px; }
+    .select-fab.forward .ico { width: 20px; height: 18px; transform: scaleX(-1); }
+
+    .select-header {
+      display: none;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .phone.selecting .header-normal { display: none; }
+    .phone.selecting .select-header { display: flex; }
+
+    .sel-left, .sel-right {
+      width: 88px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .sel-right { justify-content: flex-end; }
+
+    .link-btn {
+      border: 0;
+      background: transparent;
+      color: #323232;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 4px 0;
+      white-space: nowrap;
+    }
+
+    .select-count {
+      flex: 1;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .select-count .n { color: var(--theme); }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 120px;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(0,0,0,.78);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .plus-panel {
+      display: none;
+      padding: 12px 20px 8px;
+      background: rgba(243,240,234,.95);
+      border-top: 0.5px solid #ddd;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px 8px;
+    }
+
+    .plus-panel.show { display: grid; }
+
+    .plus-item {
+      border: 0;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #333;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .plus-item .tile {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    .plus-item .tile .ico { width: 28px; height: 28px; }
+
+    .float-video {
+      display: none;
+      position: absolute;
+      left: 117px;
+      top: 175px;
+      width: 281px;
+      z-index: 45;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      background: var(--sent);
+      animation: pop .16s ease;
+    }
+
+    .float-video.show { display: block; }
+
+    @media (max-width: 480px) {
+      body { background: var(--bg); }
+      .stage { padding: 0; min-height: 100dvh; }
+      .stage-hint { display: none; }
+      .phone {
+        width: 100vw;
+        height: 100dvh;
+        max-height: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" id="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <div class="status-time">9:41</div>
+          <div class="dynamic-island"></div>
+          <div class="status-right" aria-hidden="true">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><rect x="0" y="7.5" width="3" height="3.5" rx=".6" fill="#000"/><rect x="4.5" y="5" width="3" height="6" rx=".6" fill="#000"/><rect x="9" y="2.5" width="3" height="8.5" rx=".6" fill="#000"/><rect x="13.5" y="0" width="3" height="11" rx=".6" fill="#000"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 2.2a7.1 7.1 0 0 1 5.1 2.1l1.1-1.2A8.8 8.8 0 0 0 7.5.5 8.8 8.8 0 0 0 1.3 3.1l1.1 1.2A7.1 7.1 0 0 1 7.5 2.2zm0 2.7c1.2 0 2.3.5 3.1 1.3l1.1-1.2A5.9 5.9 0 0 0 7.5 3.5 5.9 5.9 0 0 0 3.3 5l1.1 1.2A4.3 4.3 0 0 1 7.5 4.9zm0 2.7c.7 0 1.3.3 1.8.7L7.5 10.3 5.7 8.3c.5-.4 1.1-.7 1.8-.7z" fill="#000"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="2.5" stroke="#000" stroke-opacity=".35"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#000"/><path d="M23 4v4a2 2 0 0 0 0-4z" fill="#000" fill-opacity=".4"/></svg>
+          </div>
+        </div>
+
+        <div class="header">
+          <div class="header-normal" style="display:contents">
+            <div class="header-side">
+              <button class="btn-icon back" id="btnBack" aria-label="返回">
+                <img class="ico" src="assets/icons/back.svg" alt="">
+              </button>
+            </div>
+            <div class="header-center">
+              <div class="header-name">Albert Flores</div>
+              <div class="header-status">
+                <img class="ico" src="assets/icons/online.svg" alt="">
+                <span>在线</span>
+              </div>
+            </div>
+            <div class="header-side right">
+              <img class="avatar" src="assets/media/avatar.png" alt="头像">
+            </div>
+          </div>
+          <div class="select-header">
+            <div class="sel-left">
+              <button class="btn-icon back" id="btnClearBack" aria-label="返回">
+                <img class="ico" src="assets/icons/back.svg" alt="">
+              </button>
+              <button class="link-btn" id="btnClearAll">清空消息</button>
+            </div>
+            <div class="select-count" id="selectCount">选择了<span class="n">0</span>条信息</div>
+            <div class="sel-right">
+              <button class="link-btn" id="btnCancelSelect">取消</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-scroll" id="chatScroll">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:8px">
+            <div class="chip">
+              <img class="ico" src="assets/icons/lock.svg" alt="">
+              此对话中的信息和通话已经进行了端对端加密
+            </div>
+            <div class="chip date">2026年1月16日</div>
+          </div>
+
+          <div class="msg-row sent" data-id="m1" data-type="video" data-preview="看得到吗">
+            <div class="check">
+              <img class="ico-on" src="assets/icons/radio_on.svg" alt="">
+            </div>
+            <div class="bubble sent bubble-media" data-msg>
+              <div class="media-box">
+                <img class="thumb" src="assets/media/video_thumb.png" alt="">
+                <img class="play ico" src="assets/icons/play.svg" alt="">
+              </div>
+              <div class="caption">看得到吗</div>
+              <div class="meta">
+                <span>12:00 PM</span>
+                <span class="read">
+                  <img class="ico" src="assets/icons/read_a.svg" alt="">
+                  <img class="ico" src="assets/icons/read_b.svg" alt="">
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="msg-row recv" data-id="m2" data-type="image-expired" data-preview="图片已过期">
+            <div class="check">
+              <img class="ico-on" src="assets/icons/radio_on.svg" alt="">
+            </div>
+            <div class="bubble recv bubble-media" data-msg>
+              <div class="media-box" style="height:154px;width:279px">
+                <div class="expired-mask">
+                  <img class="ico" src="assets/icons/expired.svg" alt="">
+                  <span>图片已过期</span>
+                </div>
+              </div>
+              <div class="meta on-media"><span>12:00 PM</span></div>
+            </div>
+          </div>
+
+          <div class="msg-row sent" data-id="m3" data-type="video-expired" data-preview="Short text">
+            <div class="check">
+              <img class="ico-on" src="assets/icons/radio_on.svg" alt="">
+            </div>
+            <div class="bubble sent bubble-media" data-msg>
+              <div class="media-box">
+                <div class="expired-mask">
+                  <img class="ico" src="assets/icons/expired.svg" alt="">
+                  <span>视频已过期</span>
+                </div>
+              </div>
+              <div class="caption">Short text</div>
+              <div class="meta">
+                <span>12:00 PM</span>
+                <span class="read">
+                  <img class="ico" src="assets/icons/read_a.svg" alt="">
+                  <img class="ico" src="assets/icons/read_b.svg" alt="">
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="msg-row recv" data-id="m4" data-type="text" data-preview="这个是较短的文本">
+            <div class="check">
+              <img class="ico-on" src="assets/icons/radio_on.svg" alt="">
+            </div>
+            <div class="bubble recv" data-msg>
+              <div class="bubble-text">这个是较短的文本</div>
+              <div class="meta"><span>12:00 PM</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:center;margin:8px 0">
+            <div class="chip date">今天</div>
+          </div>
+
+          <div class="msg-row sent" data-id="m5" data-type="text" data-preview="长文本展示和结尾留白；长文本展示和结尾留白">
+            <div class="check">
+              <img class="ico-on" src="assets/icons/radio_on.svg" alt="">
+            </div>
+            <div class="bubble sent" data-msg>
+              <div class="bubble-text">长文本展示和结尾留白；长文本展示和结尾留白</div>
+              <div class="meta">
+                <span>12:00 PM</span>
+                <span class="read">
+                  <img class="ico" src="assets/icons/read_a.svg" alt="">
+                  <img class="ico" src="assets/icons/read_b.svg" alt="">
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="composer">
+          <div class="composer-normal">
+            <div class="forward-bar" id="forwardBar">
+              <span id="forwardText">转发1条消息</span>
+              <button class="reply-close" id="forwardClose" aria-label="取消转发">
+                <img class="ico" src="assets/icons/add.svg" alt="">
+              </button>
+            </div>
+            <div class="input-row">
+              <button class="round-btn" id="btnPlus" aria-label="更多">
+                <img class="ico" src="assets/icons/add.svg" alt="">
+              </button>
+              <div class="input-box" id="inputBox">
+                <div class="reply-card" id="replyCard">
+                  <div class="body">
+                    <div class="label">Albert Flores</div>
+                    <div class="preview" id="replyPreview">[图片]</div>
+                  </div>
+                  <button class="reply-close" id="replyClose" aria-label="关闭回复">
+                    <img class="ico" src="assets/icons/add.svg" alt="">
+                  </button>
+                </div>
+                <div class="row">
+                  <input id="msgInput" type="text" placeholder="输入消息" autocomplete="off">
+                  <button class="emoji-btn" id="btnEmoji" aria-label="表情">
+                    <img class="ico" src="assets/icons/emoji.svg" alt="">
+                  </button>
+                </div>
+              </div>
+              <button class="round-btn mic" id="btnMic" aria-label="语音">
+                <img class="ico" src="assets/icons/mic.svg" alt="">
+              </button>
+              <button class="round-btn send" id="btnSend" aria-label="发送">
+                <img class="ico" src="assets/icons/send.svg" alt="">
+              </button>
+            </div>
+            <div class="plus-panel" id="plusPanel">
+              <button class="plus-item" data-toast="图片"><span class="tile"><img class="ico" src="assets/icons/fn_image.svg" alt=""></span>图片</button>
+              <button class="plus-item" data-toast="拍摄"><span class="tile"><img class="ico" src="assets/icons/fn_camera.svg" alt=""></span>拍摄</button>
+              <button class="plus-item" data-toast="视频通话"><span class="tile"><img class="ico" src="assets/icons/fn_video.svg" alt=""></span>视频通话</button>
+              <button class="plus-item" data-toast="名片"><span class="tile"><img class="ico" src="assets/icons/fn_card.svg" alt=""></span>名片</button>
+              <button class="plus-item" data-toast="文件"><span class="tile"><img class="ico" src="assets/icons/fn_file.svg" alt=""></span>文件</button>
+              <button class="plus-item" data-toast="红包"><span class="tile"><img class="ico" src="assets/icons/fn_redpacket.svg" alt=""></span>红包</button>
+              <button class="plus-item" data-toast="私聊转账"><span class="tile"><img class="ico" src="assets/icons/fn_transfer.svg" alt=""></span>私聊转账</button>
+            </div>
+          </div>
+
+          <div class="select-bar">
+            <button class="select-fab" id="selDelete" disabled aria-label="删除">
+              <img class="ico" src="assets/icons/del_trash.svg" alt="">
+            </button>
+            <button class="select-fab forward" id="selForward" disabled aria-label="转发">
+              <img class="ico" src="assets/icons/forward.svg" alt="">
+            </button>
+          </div>
+          <div class="home-indicator"></div>
+        </div>
+
+        <div class="overlay" id="ctxOverlay">
+          <div class="dim" id="ctxDim"></div>
+          <div class="float-video" id="floatVideo">
+            <div class="media-box" style="margin:0;width:100%;height:156px;border-radius:12px">
+              <img class="thumb" src="assets/media/video_thumb.png" alt="">
+              <img class="play ico" src="assets/icons/play.svg" alt="">
+              <div class="meta on-media" style="position:absolute">
+                <span>12:00 PM</span>
+                <span class="read">
+                  <img class="ico" src="assets/icons/read_a.svg" alt="">
+                  <img class="ico" src="assets/icons/read_b.svg" alt="">
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="ctx-menu" id="ctxMenu"></div>
+        </div>
+
+        <div class="overlay" id="sheetOverlay" style="z-index:48">
+          <div class="dim" id="sheetDim" style="backdrop-filter:blur(6px);background:rgba(0,0,0,.28)"></div>
+        </div>
+        <div class="sheet" id="deleteSheet">
+          <div class="delete-pop" id="deletePop">
+            <button class="ctx-item danger" id="delMine">
+              <span>仅为我删除</span>
+              <span class="menu-ico"><img class="ico" src="assets/icons/del_trash.svg" alt=""></span>
+            </button>
+            <button class="ctx-item danger" id="delBoth">
+              <span>为我和“Ngo”删除</span>
+              <span class="menu-ico"><img class="ico" src="assets/icons/del_trash.svg" alt=""></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+    <div class="stage-hint">
+      桌面端 414×896 真机框 · 手机端全屏<br>
+      长按消息打开菜单 · 图标来自 Figma 导出
+    </div>
+  </div>
+
+  <script src="chat_message_all.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>打赏 · 送礼动画演示</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="live_reward_proto.css">
+    <style>
+        .lr-demo-panel {
+            flex: 1;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            background: var(--lr-page-bg);
+        }
+        .lr-demo-panel p {
+            font-size: 14px;
+            color: #636366;
+            text-align: center;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+        .lr-replay-btn {
+            padding: 12px 28px;
+            border-radius: 24px;
+            border: none;
+            background: linear-gradient(180deg, #42a5ff 0%, var(--app-blue) 100%);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(24, 144, 255, 0.35);
+        }
+    </style>
+</head>
+<body class="lr-proto lr-page-light">
+    <header class="lr-status-bar lr-status-light">
+        <span class="lr-sb-time">9:41</span>
+        <span class="lr-dynamic-island" aria-hidden="true"></span>
+        <div class="lr-sb-icons">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </header>
+
+    <div class="lr-nav-header">
+        <button type="button" class="lr-nav-back"><i class="fas fa-chevron-left"></i></button>
+        <div class="lr-nav-meta" style="flex:1;text-align:center;margin-right:32px;">
+            <div class="lr-nav-title" style="font-size:17px;">送礼动画</div>
+            <div class="lr-nav-sub">原型演示 · 可绑定赠送成功回调</div>
+        </div>
+    </div>
+
+    <div class="lr-demo-panel">
+        <p>点击下方按钮重新播放：礼物图标爆开、粒子飞溅，并沿弧线飞向画面上方（开发可替换为 Lottie / 粒子引擎）。</p>
+        <button type="button" class="lr-replay-btn" id="replayBtn"><i class="fas fa-play"></i> 重新播放动画</button>
+    </div>
+
+    <nav class="lr-tab-bar-app">
+        <div class="lr-tab-item"><i class="far fa-comment-dots"></i><span>消息</span></div>
+        <div class="lr-tab-item"><i class="far fa-address-book"></i><span>通讯录</span></div>
+        <div class="lr-tab-item active"><i class="fas fa-tower-broadcast"></i><span>直播</span></div>
+        <div class="lr-tab-item"><i class="far fa-user"></i><span>我的</span></div>
+    </nav>
+
+    <div class="lr-gift-fx-root" id="giftFx">
+        <span class="lr-gift-fx-spark"></span>
+        <span class="lr-gift-fx-spark"></span>
+        <span class="lr-gift-fx-spark"></span>
+        <div class="lr-gift-fx-burst"><i class="fas fa-gift"></i></div>
+        <div class="lr-gift-fx-path"><i class="fas fa-heart"></i></div>
+    </div>
+
+    <script>
+        (function () {
+            var root = document.getElementById('giftFx');
+            var btn = document.getElementById('replayBtn');
+            function replay() {
+                root.querySelectorAll('.lr-gift-fx-burst, .lr-gift-fx-path, .lr-gift-fx-spark').forEach(function (el) {
+                    el.style.animation = 'none';
+                    void el.offsetWidth;
+                    el.style.removeProperty('animation');
+                });
+            }
+            btn.addEventListener('click', replay);
+            setTimeout(replay, 500);
+        })();
+    </script>
+</body>
+</html>

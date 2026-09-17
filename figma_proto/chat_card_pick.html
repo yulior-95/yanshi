@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>选择联系人 · 名片</title>
+  <style>
+    :root {
+      --bg: #edeef3;
+      --card: #fff;
+      --theme: #178aff;
+      --sub: #81818d;
+      --line: #efefef;
+      --phone-w: 414px;
+      --phone-h: 896px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+      background: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+    }
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      max-height: calc(100vh - 40px);
+      border-radius: 48px;
+      overflow: hidden;
+      background: var(--bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 0 10px #111, 0 0 0 12px #2a2a2a, 0 30px 80px rgba(0,0,0,.55);
+    }
+    .status {
+      height: 48px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 15px; font-size: 17px; font-weight: 600; flex-shrink: 0;
+    }
+    .island { width: 124px; height: 36px; background: #000; border-radius: 33px; }
+    .header {
+      height: 50px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; flex-shrink: 0;
+    }
+    .side { width: 80px; }
+    .back {
+      width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .back img { width: 10px; height: 18px; transform: scaleX(-1); }
+    .title { font-size: 18px; font-weight: 500; }
+    .search-wrap { padding: 0 16px 12px; flex-shrink: 0; }
+    .search {
+      height: 36px; border-radius: 10px; background: rgba(255,255,255,.72);
+      display: flex; align-items: center; gap: 8px; padding: 0 12px;
+    }
+    .search img { width: 14px; height: 14px; opacity: .55; }
+    .search input {
+      flex: 1; border: 0; background: transparent; outline: none;
+      font: inherit; font-size: 15px; color: #000;
+    }
+    .search input::placeholder { color: #979797; }
+    .body {
+      flex: 1; overflow: auto; padding: 0 16px 24px; position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sec-title {
+      font-size: 13px; color: var(--sub); padding: 8px 4px 8px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .row {
+      display: flex; align-items: center; gap: 8px;
+      height: 56px; padding: 0 16px; width: 100%;
+      border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer;
+    }
+    .row + .row { border-top: 1px solid var(--line); }
+    .row:active { background: #f5f5f7; }
+    .av {
+      width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    }
+    .name { font-size: 16px; font-weight: 500; }
+    .index {
+      position: absolute; right: 4px; top: 120px; bottom: 40px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1px; z-index: 2; pointer-events: none;
+    }
+    .index span {
+      font-size: 10px; color: #c5c5c7; width: 16px; height: 16px;
+      display: grid; place-items: center; line-height: 1;
+    }
+    .index span.on {
+      background: var(--theme); color: #fff; border-radius: 50%; font-weight: 600;
+    }
+    .home {
+      height: 34px; flex-shrink: 0; position: relative;
+    }
+    .home::after {
+      content: ""; position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+      width: 134px; height: 5px; border-radius: 100px; background: #000;
+    }
+    .toast {
+      position: absolute; left: 50%; top: 45%; transform: translate(-50%,-50%);
+      background: rgba(0,0,0,.78); color: #fff; padding: 10px 16px; border-radius: 10px;
+      font-size: 14px; opacity: 0; pointer-events: none; transition: .2s; z-index: 20;
+    }
+    .toast.show { opacity: 1; }
+    .confirm {
+      position: absolute; inset: 0; background: rgba(0,0,0,.4);
+      display: none; align-items: center; justify-content: center; z-index: 15; padding: 32px;
+    }
+    .confirm.show { display: flex; }
+    .confirm .box {
+      width: 100%; max-width: 300px; background: #fff; border-radius: 14px; overflow: hidden;
+      text-align: center;
+    }
+    .confirm .box p { padding: 28px 20px 20px; font-size: 16px; line-height: 1.5; }
+    .confirm .acts { display: flex; border-top: 1px solid var(--line); }
+    .confirm .acts button {
+      flex: 1; height: 50px; border: 0; background: transparent; font: inherit;
+      font-size: 16px; cursor: pointer;
+    }
+    .confirm .acts button + button { border-left: 1px solid var(--line); color: var(--theme); font-weight: 500; }
+    @media (max-width: 480px) {
+      body { background: var(--bg); }
+      .phone {
+        width: 100vw; height: 100vh; max-height: none; border-radius: 0; box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span>9:41</span>
+      <div class="island"></div>
+      <span>100%</span>
+    </div>
+    <div class="header">
+      <div class="side">
+        <button class="back" id="btnBack" aria-label="返回">
+          <img src="assets/icons/back.svg" alt="">
+        </button>
+      </div>
+      <div class="title">选择联系人</div>
+      <div class="side"></div>
+    </div>
+    <div class="search-wrap">
+      <label class="search">
+        <img src="assets/icons/search.svg" alt="">
+        <input id="q" type="search" placeholder="搜索" autocomplete="off">
+      </label>
+    </div>
+    <div class="body" id="list">
+      <div class="sec" data-letter="★">
+        <div class="sec-title">星标朋友</div>
+        <div class="card" id="star"></div>
+      </div>
+      <div class="sec" data-letter="A">
+        <div class="sec-title">A</div>
+        <div class="card" id="secA"></div>
+      </div>
+      <div class="sec" data-letter="B">
+        <div class="sec-title">B</div>
+        <div class="card" id="secB"></div>
+      </div>
+      <div class="sec" data-letter="C">
+        <div class="sec-title">C</div>
+        <div class="card" id="secC"></div>
+      </div>
+    </div>
+    <div class="index" id="index"></div>
+    <div class="home"></div>
+    <div class="confirm" id="confirm">
+      <div class="box">
+        <p id="confirmText">发送名片给 Albert Flores？</p>
+        <div class="acts">
+          <button id="btnCancel">取消</button>
+          <button id="btnSend">发送</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <script>
+    const contacts = {
+      star: [
+        { name: "Albert Flores", av: "assets/media/avatar_contact1.png" },
+        { name: "Arlene McCoy", av: "assets/media/avatar_contact3.png" },
+      ],
+      A: [
+        { name: "Ngo", av: "assets/media/avatar_contact1.png" },
+        { name: "Arlene McCoy", av: "assets/media/avatar_contact3.png" },
+        { name: "Annette Black", av: "assets/media/avatar_contact4.png" },
+      ],
+      B: [
+        { name: "Bessie Cooper", av: "assets/media/avatar_contact5.png" },
+        { name: "Brooklyn Simmons", av: "assets/media/avatar_contact6.png" },
+      ],
+      C: [
+        { name: "Csatár Géza", av: "assets/media/avatar_contact7.png" },
+        { name: "Comic Con Revolution Ontario", av: "assets/media/avatar_contact8.png" },
+        { name: "CloverCon", av: "assets/media/avatar_contact9.png" },
+      ],
+    };
+
+    function rowHtml(c) {
+      return `<button class="row" data-name="${c.name}"><img class="av" src="${c.av}" alt=""><span class="name">${c.name}</span></button>`;
+    }
+    function fill(id, arr) {
+      document.getElementById(id).innerHTML = arr.map(rowHtml).join("");
+    }
+    fill("star", contacts.star);
+    fill("secA", contacts.A);
+    fill("secB", contacts.B);
+    fill("secC", contacts.C);
+
+    const letters = ["#","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+    document.getElementById("index").innerHTML = letters.map((l) =>
+      `<span class="${l === "A" ? "on" : ""}" data-l="${l}">${l}</span>`
+    ).join("");
+
+    let picked = "";
+    const confirm = document.getElementById("confirm");
+    function toast(t) {
+      const el = document.getElementById("toast");
+      el.textContent = t; el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 1400);
+    }
+
+    document.getElementById("btnBack").onclick = () => history.length > 1 ? history.back() : (location.href = "chat_message_all.html");
+    document.getElementById("list").onclick = (e) => {
+      const row = e.target.closest(".row");
+      if (!row) return;
+      picked = row.dataset.name;
+      document.getElementById("confirmText").textContent = `发送「${picked}」的名片？`;
+      confirm.classList.add("show");
+    };
+    document.getElementById("btnCancel").onclick = () => confirm.classList.remove("show");
+    document.getElementById("btnSend").onclick = () => {
+      confirm.classList.remove("show");
+      toast(`已发送 ${picked} 名片`);
+      setTimeout(() => (location.href = "chat_message_all.html"), 900);
+    };
+
+    document.getElementById("q").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll(".row").forEach((r) => {
+        const show = !q || r.dataset.name.toLowerCase().includes(q);
+        r.style.display = show ? "" : "none";
+      });
+      document.querySelectorAll(".sec").forEach((sec) => {
+        const any = [...sec.querySelectorAll(".row")].some((r) => r.style.display !== "none");
+        sec.style.display = any ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>

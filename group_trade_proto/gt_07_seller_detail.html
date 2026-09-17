@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>卖方 · 确认收款</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:46</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_05_chat_packet.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">交易详情</div><div class="sub">卖方视角</div></div>
+      <div class="side"></div>
+    </div>
+
+    <div class="body pad">
+      <div style="display:flex;justify-content:center;margin-bottom:4px">
+        <span class="tag blue"><i class="fa-solid fa-check"></i> 买方已付款</span>
+      </div>
+      <div class="countdown">
+        <div class="clock">05:52</div>
+        <div class="hint">请核对到账后点击「我已收到」放币</div>
+      </div>
+      <div class="amount-hero">
+        <div class="coin">待放币 / 待收人民币</div>
+        <div class="num">200.00</div>
+        <div style="font-size:13px;color:var(--sub)">USDT · 买家应付 <b style="color:var(--theme)">¥1,450.00</b>（汇率 7.25）</div>
+      </div>
+
+      <div class="pay-box">
+        <div class="row"><span class="k">买方</span><span class="v" style="display:flex;align-items:center;gap:6px"><img class="avatar sm" src="../figma_proto/assets/media/avatar_contact2.png" alt=""> Alex Chen</span></div>
+        <div class="row"><span class="k">应付人民币</span><span class="v" style="color:var(--theme)">¥1,450.00</span></div>
+        <div class="row"><span class="k">成交汇率</span><span class="v">1 USDT = 7.25 CNY</span></div>
+        <div class="row"><span class="k">付款确认时间</span><span class="v">09:44:12</span></div>
+        <div class="row"><span class="k">你的收款方式</span><span class="v">支付宝 · 陈*</span></div>
+        <div class="row"><span class="k">订单号</span><span class="v">GT202608210941882</span></div>
+      </div>
+
+      <div class="card" style="font-size:12px;color:var(--sub);line-height:1.6;background:var(--warn-soft);color:#9a5b00">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        即使买方未点「我已付款」，你也可以在核实到账后直接点「我已收到」立即放币。
+      </div>
+
+      <button class="btn ok" type="button" id="btnRecv" style="margin-top:8px">我已收到</button>
+      <div style="font-size:12px;color:var(--sub);text-align:center;margin-top:10px">需要两步确认 · 放币后不可撤销</div>
+    </div>
+    <div class="home-indicator"></div>
+
+    <div class="overlay center" id="dlg1">
+      <div class="dialog">
+        <h3>确认已收到款项？</h3>
+        <p>确认已收到买家转账的 <b>¥1,450.00</b>？<br>确认后将进入二次确认。</p>
+        <div class="acts">
+          <button class="btn ghost" type="button" data-close="dlg1">再核对</button>
+          <button class="btn ok" type="button" id="step2">下一步</button>
+        </div>
+      </div>
+    </div>
+    <div class="overlay center" id="dlg2">
+      <div class="dialog">
+        <h3>二次确认放币</h3>
+        <p>确认放行 <b>200.00 USDT</b> 给买方？资金将立即从托管转出。</p>
+        <div class="acts">
+          <button class="btn ghost" type="button" data-close="dlg2">取消</button>
+          <a class="btn ok" href="gt_08_success.html" style="display:grid;place-items:center;text-decoration:none">确认放币</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const show = id => document.getElementById(id).classList.add('show');
+    const hide = id => document.getElementById(id).classList.remove('show');
+    document.getElementById('btnRecv').onclick = () => show('dlg1');
+    document.getElementById('step2').onclick = () => { hide('dlg1'); show('dlg2'); };
+    document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => hide(b.dataset.close));
+  </script>
+</body>
+</html>

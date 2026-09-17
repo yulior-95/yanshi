@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>买方 · 交易详情</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="gt_common.css">
+</head>
+<body>
+  <div class="phone">
+    <div class="status">
+      <span class="time">9:42</span>
+      <div class="island"></div>
+      <div class="right"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+    </div>
+    <div class="nav">
+      <a class="back" href="gt_05_chat_packet.html"><i class="fa-solid fa-chevron-left"></i></a>
+      <div class="title-wrap"><div class="title">交易详情</div><div class="sub">买方视角</div></div>
+      <div class="side"></div>
+    </div>
+
+    <div class="body pad">
+      <div style="display:flex;justify-content:center;margin-bottom:4px">
+        <span class="tag orange"><i class="fa-regular fa-clock"></i> 待付款</span>
+      </div>
+      <div class="countdown">
+        <div class="clock" id="clock">09:42</div>
+        <div class="hint">请在倒计时结束前完成付款并确认</div>
+      </div>
+
+      <div class="amount-hero">
+        <div class="coin" style="color:var(--theme);font-weight:600">请向卖方支付人民币</div>
+        <div class="num" style="color:var(--theme)">¥1,450.00</div>
+        <div style="font-size:13px;color:var(--sub);margin-top:6px">对应获得 200.00 USDT · 汇率 1 USDT = 7.25 CNY</div>
+      </div>
+
+      <div class="section-title">付款指引</div>
+      <div class="pay-box">
+        <div class="row"><span class="k">应付金额</span><span class="v" style="color:var(--theme);font-size:16px">¥1,450.00</span></div>
+        <div class="row"><span class="k">付款方式</span><span class="v"><i class="fa-brands fa-alipay" style="color:#1677ff"></i> 支付宝</span></div>
+        <div class="row"><span class="k">收款人</span><span class="v">陈*</span></div>
+        <div class="row"><span class="k">账号</span><span class="v">138****8821</span></div>
+        <img class="qr" src="https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&q=80" alt="收款二维码">
+        <div style="text-align:center;font-size:12px;color:var(--danger);font-weight:500">请务必按 ¥1,450.00 准确转账，勿多付少付</div>
+      </div>
+
+      <div class="pay-box">
+        <div class="row"><span class="k">卖出币种</span><span class="v">200.00 USDT</span></div>
+        <div class="row"><span class="k">成交汇率</span><span class="v">1 USDT = 7.25 CNY</span></div>
+        <div class="row"><span class="k">指定买家</span><span class="v" style="display:flex;align-items:center;gap:6px"><img class="avatar sm" src="../figma_proto/assets/media/avatar_contact2.png" alt=""> Alex Chen</span></div>
+        <div class="row"><span class="k">交易时长</span><span class="v">10 分钟</span></div>
+        <div class="row"><span class="k">订单号</span><span class="v">GT202608210941882</span></div>
+      </div>
+
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn ghost" type="button" id="btnCancel">取消付款</button>
+        <button class="btn" type="button" id="btnPaid">我已付款</button>
+      </div>
+      <div style="font-size:12px;color:var(--sub);text-align:center;margin-top:12px;line-height:1.5">
+        重要操作需两步确认 · 虚假付款可能导致申诉失败
+      </div>
+    </div>
+    <div class="home-indicator"></div>
+
+    <!-- 两步确认：我已付款 -->
+    <div class="overlay center" id="dlgPaid">
+      <div class="dialog">
+        <h3>确认已付款？</h3>
+        <p>请确保已按卖方收款信息完成转账。<br>确认后订单进入「已付款」状态，等待卖方放币。</p>
+        <div class="acts">
+          <button class="btn ghost" type="button" data-close="dlgPaid">再想想</button>
+          <button class="btn" type="button" id="paidStep2">下一步</button>
+        </div>
+      </div>
+    </div>
+    <div class="overlay center" id="dlgPaid2">
+      <div class="dialog">
+        <h3>二次确认</h3>
+        <p>我确认已向卖方账户支付 <b>¥1,450.00</b>，并知晓虚假确认需承担相应责任。</p>
+        <div class="acts">
+          <button class="btn ghost" type="button" data-close="dlgPaid2">取消</button>
+          <a class="btn" href="gt_06b_buyer_paid.html" style="display:grid;place-items:center;text-decoration:none">确认已付款</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 两步确认：取消付款 -->
+    <div class="overlay center" id="dlgCancel">
+      <div class="dialog">
+        <h3>取消本次付款？</h3>
+        <p>取消后交易包将关闭，冻结资产退回卖方。</p>
+        <div class="acts">
+          <button class="btn ghost" type="button" data-close="dlgCancel">再想想</button>
+          <button class="btn danger" type="button" id="cancelStep2">下一步</button>
+        </div>
+      </div>
+    </div>
+    <div class="overlay center" id="dlgCancel2">
+      <div class="dialog">
+        <h3>二次确认取消</h3>
+        <p>确定取消付款并关闭订单？此操作不可撤销。</p>
+        <div class="acts">
+          <button class="btn ghost" type="button" data-close="dlgCancel2">返回</button>
+          <a class="btn danger" href="gt_09_cancelled.html" style="display:grid;place-items:center;text-decoration:none">确认取消</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let left = 9 * 60 + 42;
+    const clock = document.getElementById('clock');
+    setInterval(() => {
+      if (left <= 0) return;
+      left--;
+      const m = String(Math.floor(left / 60)).padStart(2, '0');
+      const s = String(left % 60).padStart(2, '0');
+      clock.textContent = m + ':' + s;
+    }, 1000);
+
+    const show = id => document.getElementById(id).classList.add('show');
+    const hide = id => document.getElementById(id).classList.remove('show');
+    document.getElementById('btnPaid').onclick = () => show('dlgPaid');
+    document.getElementById('btnCancel').onclick = () => show('dlgCancel');
+    document.getElementById('paidStep2').onclick = () => { hide('dlgPaid'); show('dlgPaid2'); };
+    document.getElementById('cancelStep2').onclick = () => { hide('dlgCancel'); show('dlgCancel2'); };
+    document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => hide(b.dataset.close));
+  </script>
+</body>
+</html>
