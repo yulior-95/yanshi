@@ -173,6 +173,19 @@ table.rel .mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;color
 .node .badge.hot{background:#fff1f2;border-color:#fecdd3;color:#e11d48}
 .node .badge.ok{background:#ecfdf5;border-color:#a7f3d0;color:#059669}
 .node .badge.warn{background:#fffbeb;border-color:#fde68a;color:#d97706}
+
+
+
+
+
+
+
+#nodeHoverTip{display:none;position:fixed;z-index:10001;min-width:140px;padding:8px 10px;background:#0f172a;color:#e2e8f0;border-radius:8px;font-size:12px;line-height:1.45;box-shadow:0 10px 28px rgba(15,23,42,.35);pointer-events:none;white-space:nowrap}
+#nodeHoverTip.show{display:block}
+#nodeHoverTip .nh-row{display:flex;gap:8px;align-items:baseline}
+#nodeHoverTip .nh-k{color:#94a3b8;font-size:11px;min-width:32px;flex-shrink:0}
+#nodeHoverTip .nh-v{color:#fff;font-weight:600}
+#nodeHoverTip .nh-uid{font-family:ui-monospace,Consolas,monospace;font-weight:500;letter-spacing:.04em;color:#cbd5e1}
 .edge-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .hop-label{position:absolute;z-index:2;font-size:10px;color:#64748b;background:rgba(255,255,255,.92);border:1px solid #e6ebf3;border-radius:5px;padding:2px 6px}
 .flow-amt{position:absolute;z-index:4;font-size:10px;background:#fff;border:1px solid #dbe3ee;border-radius:5px;padding:1px 6px;color:#334155;font-weight:600;transform:translate(-50%,-50%)}
@@ -182,8 +195,8 @@ table.rel .mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;color
 .detail{flex:1;overflow:auto}
 .account{padding:14px;border-bottom:1px solid #edf1f6}
 .account-top{display:flex;gap:10px;align-items:center}
-.account-top > div{min-width:0;flex:1}
-.avatar{width:40px;height:40px;border-radius:50%;background:#ef4444;color:#fff;display:grid;place-items:center;font-weight:700;flex-shrink:0}
+.account-top > div:not(.avatar){min-width:0;flex:1}
+.avatar{width:40px;height:40px;border-radius:50%;background:#ef4444;color:#fff;display:grid;place-items:center;font-weight:700;flex:0 0 40px}
 .avatar.order{border-radius:10px;background:#0f766e;font-size:11px}
 .account-name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:nowrap}
 .account-name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
@@ -348,14 +361,14 @@ table.rel .mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;color
         <div class="hop-label" style="left:12px;top:12px">Hop0</div>
         <div class="hop-label" style="left:12px;top:100px">Hop1 直接</div>
         <div class="hop-label" style="left:12px;top:36px">Hop2 间接</div>
-        <div class="node main" data-node="A" style="left:47%;top:46%" onclick="selectNode('A')" title="陈浩 · K7M2X9P4Q1">陈</div>
-        <div class="node mid" data-node="B" style="left:27%;top:27%" onclick="selectNode('B')" title="刘芳 · R3N8W1L6H2">刘<span class="badge hot">疑似同人</span></div>
-        <div class="node mid teal" data-node="C" style="left:68%;top:27%" onclick="selectNode('C')" title="赵明 · T5Q9C2V8M4">赵<span class="badge">同登录IP</span></div>
-        <div class="node mid purple" data-node="D" style="left:13%;top:10%" onclick="selectNode('D')" title="周杰 · P1H6J4Y9K3">周</div>
-        <div class="node mid purple" data-node="E" style="left:23%;top:6%" onclick="selectNode('E')" title="吴敏 · W8D3F7A2N5">吴</div>
-        <div class="node mid purple" data-node="F" style="left:35%;top:6%" onclick="selectNode('F')" title="郑强 · M4B9S1E6L0">郑</div>
-        <div class="node mid purple" data-node="X" style="left:80%;top:10%" onclick="selectNode('X')" title="林雪 · L3C8N6B1Q4">林</div>
-        <div class="node mid green" data-node="G" style="left:18%;top:48%" onclick="selectNode('G')" title="孙丽 · Q2Z7X5C9R8">孙</div>
+        <div class="node main" data-node="A" style="left:47%;top:46%" onclick="selectNode('A')">陈</div>
+        <div class="node mid" data-node="B" style="left:27%;top:27%" onclick="selectNode('B')">刘<span class="badge hot">疑似同人</span></div>
+        <div class="node mid teal" data-node="C" style="left:68%;top:27%" onclick="selectNode('C')">赵<span class="badge">同登录IP</span></div>
+        <div class="node mid purple" data-node="D" style="left:13%;top:10%" onclick="selectNode('D')">周</div>
+        <div class="node mid purple" data-node="E" style="left:23%;top:6%" onclick="selectNode('E')">吴</div>
+        <div class="node mid purple" data-node="F" style="left:35%;top:6%" onclick="selectNode('F')">郑</div>
+        <div class="node mid purple" data-node="X" style="left:80%;top:10%" onclick="selectNode('X')">林</div>
+        <div class="node mid green" data-node="G" style="left:18%;top:48%" onclick="selectNode('G')">孙</div>
       
         </div></div>
       <div class="panel" id="panelFlow">
@@ -389,15 +402,15 @@ table.rel .mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;color
         <div class="flow-amt" data-leg="payee payeeDirect" style="left:68%;top:34%">刘→吴敏</div>
         <div class="flow-amt" data-leg="payee payeeDirect" style="left:68%;top:58%">刘→郑强</div>
         <div class="flow-amt" data-leg="payee unrelated" style="left:68%;top:78%">刘→马超</div>
-        <div class="node main" data-node="A" data-leg="payer order payerIn" style="left:16%;top:53%" onclick="selectNode('A')" title="陈浩 · 付款方">陈<span class="badge">付款方</span></div>
+        <div class="node main" data-node="A" data-leg="payer order payerIn" style="left:16%;top:53%" onclick="selectNode('A')">陈<span class="badge">付款方</span></div>
         <div class="node order" data-node="ORD" data-leg="order" style="left:31%;top:53%" onclick="selectNode('ORD')">订单<span class="badge ok">本笔</span></div>
-        <div class="node mid orange" data-node="B" data-leg="payee order" style="left:52%;top:53%" onclick="selectNode('B')" title="刘芳 · 收款方">刘<span class="badge warn">收款方</span></div>
-        <div class="node mid gray" data-node="Z" data-leg="unrelated" style="left:16%;top:21%" onclick="selectNode('Z')" title="黄涛 · 与双方均无关联">黄<span class="badge warn">无关联</span></div>
-        <div class="node mid purple" data-node="D" data-leg="payeeDirect payer" style="left:16%;top:82%" onclick="selectNode('D')" title="周杰 · 对刘芳直接 · 对陈浩间接">周<span class="badge ok">刘芳直接</span></div>
-        <div class="node mid green" data-node="G" data-leg="payeeDirect payerIn" style="left:82%;top:18%" onclick="selectNode('G')" title="孙丽 · 对刘芳直接 · 对陈浩间接（陈浩→刘芳→孙丽）">孙<span class="badge ok">刘芳直接</span></div>
-        <div class="node mid purple" data-node="E" data-leg="payeeDirect" style="left:82%;top:39%" onclick="selectNode('E')" title="吴敏 · 对刘芳直接 · 对陈浩间接">吴<span class="badge ok">刘芳直接</span></div>
-        <div class="node mid purple" data-node="F" data-leg="payeeDirect" style="left:82%;top:63%" onclick="selectNode('F')" title="郑强 · 对刘芳直接 · 对陈浩间接">郑<span class="badge ok">刘芳直接</span></div>
-        <div class="node mid orange" data-node="H" data-leg="unrelated" style="left:82%;top:85%" onclick="selectNode('H')" title="马超 · 与收/付款方均无关联">马<span class="badge hot">无关联</span></div>
+        <div class="node mid orange" data-node="B" data-leg="payee order" style="left:52%;top:53%" onclick="selectNode('B')">刘<span class="badge warn">收款方</span></div>
+        <div class="node mid gray" data-node="Z" data-leg="unrelated" style="left:16%;top:21%" onclick="selectNode('Z')">黄<span class="badge warn">无关联</span></div>
+        <div class="node mid purple" data-node="D" data-leg="payeeDirect payer" style="left:16%;top:82%" onclick="selectNode('D')">周<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid green" data-node="G" data-leg="payeeDirect payerIn" style="left:82%;top:18%" onclick="selectNode('G')">孙<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid purple" data-node="E" data-leg="payeeDirect" style="left:82%;top:39%" onclick="selectNode('E')">吴<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid purple" data-node="F" data-leg="payeeDirect" style="left:82%;top:63%" onclick="selectNode('F')">郑<span class="badge ok">刘芳直接</span></div>
+        <div class="node mid orange" data-node="H" data-leg="unrelated" style="left:82%;top:85%" onclick="selectNode('H')">马<span class="badge hot">无关联</span></div>
         </div>
       </div>
     </div>
@@ -489,6 +502,7 @@ table.rel .mono{font-family:ui-monospace,Consolas,monospace;font-size:11px;color
 </details>
 
 <div class="toast" id="toast"></div>
+<div id="nodeHoverTip" role="tooltip"></div>
 
 <script>
 let mode = 'relation', currentTab = 'relation', selectedId = 'A';
@@ -520,6 +534,7 @@ function displayUid(id){
   if (!n || id==='ORD') return n && n.uid || '';
   return n.uid || '';
 }
+
 function displayLabel(id){
   if (id==='ORD') return displayName(id);
   const uid = displayUid(id);
@@ -594,7 +609,14 @@ const TAG_TIPS_FLOW = [
   ['订单驱动', '判断入口：订单号 → 下单时间 → 交易类型 → 追踪时长。'],
   ['追踪时长', '判断范围：仅统计下单/兑换时刻之后 N 分钟内的流水。'],
   ['交易类型齐全', '每笔流水标注类型：私聊/群聊红包与转账、埋雷/接龙红包、交易区、汇兑区、地址转账。']
-]
+];
+
+/* 风险等级说明（侧栏徽章） */
+const RISK_TIPS = [
+  ['高风险', '判断：命中强关联或资金异常信号，需优先排查。常见：查询起点本身；设备MAC疑似同人链上出现资金回流/快进快出；本笔订单或追踪流水中金额集中、对手与付款方强相关。'],
+  ['中风险', '判断：有关联或资金往来，但证据/行为未到最高档。常见：直接同环境（同登录IP）、间接关联扩链户、与订单双方无身份关联但有流水的对手。'],
+  ['低风险', '判断：关联弱或离种子订单远。常见：经同环境支链扩出的远端户，且无突出资金异常。仍可点开路径复核，不代表绝对安全。']
+];
 
 function tipHtml(tipId, items, align){
   const body = items.map(([h,d]) => `<div class="tb-h">${h}</div><div class="tb-d">${d}</div>`).join('');
@@ -1149,6 +1171,7 @@ function selectNode(id){
   const roleTip = tipHtml('tipRole', mode === 'relation' ? ROLE_TIPS_REL : ROLE_TIPS_FLOW);
   const conclTip = tipHtml('tipConcl', mode === 'relation' ? CONCLUSION_TIPS_REL : CONCLUSION_TIPS_FLOW);
   const tagTip = tipHtml('tipTag', mode === 'relation' ? TAG_TIPS_REL : TAG_TIPS_FLOW, 'right');
+  const riskTip = tipHtml('tipRisk', RISK_TIPS, 'right');
 
   if (mode === 'relation') {
     const trail = findInTree(relationTree, id);
@@ -1161,7 +1184,7 @@ function selectNode(id){
         <div class="account-top">
           <div class="avatar" style="background:${id==='A'?'#ef4444':id==='G'?'#16a34a':'#3b82f6'}">${displayShort(id)}</div>
           <div>
-            <div class="account-name"><span class="nm">${displayName(id)}</span><span class="risk">${n.risk}风险</span></div>
+            <div class="account-name"><span class="nm">${displayName(id)}</span><span class="risk">${n.risk}风险</span>${riskTip}</div>
             <div class="acc-uid">${displayUid(id)}</div>
             <div class="role-line">${n.role} ${roleTip}</div>
           </div>
@@ -1200,7 +1223,7 @@ function selectNode(id){
         <div class="account-top">
           <div class="avatar ${isOrd?'order':''}" style="background:${isOrd?'#0f766e':id==='G'?'#16a34a':id==='H'?'#f97316':'#3b82f6'}">${isOrd?'订单':displayShort(id)}</div>
           <div>
-            <div class="account-name"><span class="nm">${isOrd?seedOrder.orderNo:displayName(id)}</span><span class="risk">${n.risk}风险</span></div>
+            <div class="account-name"><span class="nm">${isOrd?seedOrder.orderNo:displayName(id)}</span><span class="risk">${n.risk}风险</span>${riskTip}</div>
             ${isOrd?'':`<div class="acc-uid">${displayUid(id)}</div>`}
             <div class="role-line">${flowRole} ${roleTip}</div>
           </div>
@@ -1368,6 +1391,43 @@ function resetGraph(){
   applyGraphTransform();
 }
 
+
+function hideNodeHoverTip(){
+  const tip = document.getElementById('nodeHoverTip');
+  if (tip) tip.classList.remove('show');
+}
+
+function showNodeHoverTip(el){
+  const tip = document.getElementById('nodeHoverTip');
+  if (!tip || !el) return;
+  const id = el.getAttribute('data-node');
+  if (!id) return;
+  const name = displayName(id);
+  const uid = id === 'ORD' ? ((nodes.ORD && nodes.ORD.uid) || '') : displayUid(id);
+  tip.innerHTML = '<div class="nh-row"><span class="nh-k">昵称</span><span class="nh-v">' + name + '</span></div>' +
+    (uid ? '<div class="nh-row"><span class="nh-k">UID</span><span class="nh-v nh-uid">' + uid + '</span></div>' : '');
+  tip.classList.add('show');
+  const r = el.getBoundingClientRect();
+  const tw = tip.offsetWidth || 160;
+  const th = tip.offsetHeight || 48;
+  let left = r.left + r.width / 2 - tw / 2;
+  let top = r.top - th - 8;
+  if (top < 8) top = r.bottom + 8;
+  if (left < 8) left = 8;
+  if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+
+function bindNodeHoverTips(){
+  document.querySelectorAll('.node[data-node]').forEach(el => {
+    el.removeAttribute('title');
+    el.addEventListener('mouseenter', () => showNodeHoverTip(el));
+    el.addEventListener('mouseleave', hideNodeHoverTip);
+  });
+  window.addEventListener('scroll', hideNodeHoverTip, true);
+}
+
 function bindGraphPanZoom(){
   const wrap = document.getElementById('graph');
   if (!wrap || wrap._panBound) return;
@@ -1383,6 +1443,7 @@ function bindGraphPanZoom(){
     if (e.button !== 0) return;
     if (e.target.closest && e.target.closest('.node')) return;
     graphPanning = true;
+    hideNodeHoverTip();
     panOrigin = { x: e.clientX, y: e.clientY, gx: graphX, gy: graphY };
     wrap.classList.add('panning');
     try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
@@ -1443,6 +1504,8 @@ renderOrderTable();
 renderList();
 selectNode('A');
 bindGraphPanZoom();
+bindNodeHoverTips();
+
 applyGraphTransform();
 </script>
 </body>
